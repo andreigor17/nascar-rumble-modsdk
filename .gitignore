@@ -1,0 +1,41 @@
+# === NUNCA versionar a ISO original ou dumps de disco ===
+*.bin
+*.cue
+*.iso
+*.img
+*.mdf
+*.mds
+NASCAR Rumble (USA)/
+
+# Recursos extraídos (regeneráveis a partir da ISO)
+extracted/
+!extracted/.gitkeep
+
+# Emulador: savestates, memory cards, BIOS
+emulator/**
+!emulator/.gitkeep
+*.mcd
+*.mcr
+*.srm
+*.sav
+saves/*.mcd
+saves/*.mcr
+*.savestate
+*.state
+*.pxstate
+
+# Ghidra: manter apenas exports .gzf/.xml, ignorar projeto de trabalho
+ghidra/*.rep/
+ghidra/*.lock
+ghidra/*.gpr
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Sistema
+.DS_Store
+Thumbs.db

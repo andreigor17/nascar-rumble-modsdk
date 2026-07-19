@@ -1,0 +1,1164 @@
+{
+  "meta": {
+    "source": "NASCAR Rumble (USA).bin",
+    "volume_id": "RUMBLE",
+    "volume_sectors": 111075,
+    "generated": "2026-07-19",
+    "file_count": 108,
+    "dir_count": 12
+  },
+  "entries": [
+    {
+      "path": "/CW",
+      "type": "dir",
+      "lba": 6620,
+      "size": 2048
+    },
+    {
+      "path": "/CW/ABOUTEA",
+      "type": "dir",
+      "lba": 6621,
+      "size": 2048
+    },
+    {
+      "path": "/CW/ABOUTEA/CREDITS.WVE",
+      "type": "file",
+      "lba": 6622,
+      "size": 19257264,
+      "sha1": "de07c35a61759380d2aa2eeaf4a69386a2435ba6",
+      "magic_hex": "564c4330000001c8",
+      "format": "Vídeo EA (VLC0 / família WVE-TGV)",
+      "class": "🟡"
+    },
+    {
+      "path": "/CW/ABOUTEA/PAYOFF.WVE",
+      "type": "file",
+      "lba": 16025,
+      "size": 6506720,
+      "sha1": "85c1feaa7b1d1966b8569fe674579d543c72dc59",
+      "magic_hex": "564c4330000001c8",
+      "format": "Vídeo EA (VLC0 / família WVE-TGV)",
+      "class": "🟡"
+    },
+    {
+      "path": "/CW/ABOUTEA/PROD1.WVE",
+      "type": "file",
+      "lba": 19203,
+      "size": 13214464,
+      "sha1": "b72743bed6fa6edecb28125a5381a7737e2538ab",
+      "magic_hex": "564c4330000001c8",
+      "format": "Vídeo EA (VLC0 / família WVE-TGV)",
+      "class": "🟡"
+    },
+    {
+      "path": "/CW/ABOUTEA/PROD2.WVE",
+      "type": "file",
+      "lba": 25656,
+      "size": 14212648,
+      "sha1": "fb1dfb4e78546da27c6b63498fb158a160a15939",
+      "magic_hex": "564c4330000001c8",
+      "format": "Vídeo EA (VLC0 / família WVE-TGV)",
+      "class": "🟡"
+    },
+    {
+      "path": "/CW/FEND",
+      "type": "dir",
+      "lba": 32596,
+      "size": 2048
+    },
+    {
+      "path": "/CW/FEND/FE.TRK",
+      "type": "file",
+      "lba": 32597,
+      "size": 21209088,
+      "sha1": "f2083405782c50249160bc7121109fcbe891f3b6",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/FEND/FELD.LSC",
+      "type": "file",
+      "lba": 42953,
+      "size": 46280,
+      "sha1": "498b5cd3637bb218d7f814659f51c40bc29dcb57",
+      "magic_hex": "4e660000724e0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/HELPSCRN",
+      "type": "dir",
+      "lba": 42976,
+      "size": 2048
+    },
+    {
+      "path": "/CW/HELPSCRN/HELP1.LSC",
+      "type": "file",
+      "lba": 42977,
+      "size": 36150,
+      "sha1": "056d14d352e1bddee852b7a9c996c3e436f5ed22",
+      "magic_hex": "a44600008a460000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/HELPSCRN/HELP2.LSC",
+      "type": "file",
+      "lba": 42995,
+      "size": 35224,
+      "sha1": "e1d7c86c56895289d3858e860e11f70dd88bac37",
+      "magic_hex": "9a430000f6450000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/HELPSCRN/TIPS1.LSC",
+      "type": "file",
+      "lba": 43013,
+      "size": 38776,
+      "sha1": "99a3205d9cb85d86042a2d6f3320553c57346d64",
+      "magic_hex": "365100003a460000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/HELPSCRN/TIPS2.LSC",
+      "type": "file",
+      "lba": 43032,
+      "size": 42522,
+      "sha1": "4ac7e7328ac4e84fc03fe86139ddd836f7c4f9b0",
+      "magic_hex": "60530000b2520000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/HELPSCRN/TIPS3.LSC",
+      "type": "file",
+      "lba": 43053,
+      "size": 53164,
+      "sha1": "37f61ed854ad4a3b8ef49006372b6ed0bbae2ef1",
+      "magic_hex": "287000007c5f0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBB",
+      "type": "dir",
+      "lba": 43079,
+      "size": 2048
+    },
+    {
+      "path": "/CW/LOCBB/BB.AV",
+      "type": "file",
+      "lba": 43080,
+      "size": 9707520,
+      "sha1": "984a2116fd681d9ca1e729c0f226ed6b9b364348",
+      "magic_hex": "5256575324000000",
+      "format": "EA SWVR (áudio/stream — família Future Cop)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCBB/BB1.TRK",
+      "type": "file",
+      "lba": 47820,
+      "size": 1179648,
+      "sha1": "63ebd7584c0b0e5b7bf5be7f0e5a751f403ae0c8",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCBB/BB1A.LSC",
+      "type": "file",
+      "lba": 48396,
+      "size": 50376,
+      "sha1": "753f916b4cc3f91e6421d5c0181d2523b6ffcd6d",
+      "magic_hex": "a0650000205f0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBB/BB1B.LSC",
+      "type": "file",
+      "lba": 48421,
+      "size": 49212,
+      "sha1": "39f8bf2d8035d3bbd589e08be252aadbb6b26a9e",
+      "magic_hex": "7c550000b86a0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBB/BB1C.LSC",
+      "type": "file",
+      "lba": 48446,
+      "size": 31370,
+      "sha1": "1b12f46bbb069b273e4919adec74dcbe6796711a",
+      "magic_hex": "92320000f0470000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBB/BB2.TRK",
+      "type": "file",
+      "lba": 48462,
+      "size": 1179648,
+      "sha1": "517c86f99e9cbafc1c44546bf56af6ddad463333",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCBB/BB2A.LSC",
+      "type": "file",
+      "lba": 49038,
+      "size": 46436,
+      "sha1": "82c612e0c7de1190aeba1c8727b9307606ee4507",
+      "magic_hex": "1654000046610000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBB/BB2B.LSC",
+      "type": "file",
+      "lba": 49061,
+      "size": 44206,
+      "sha1": "27446af54c97cf55ab219c70843b1a92c94d7d2e",
+      "magic_hex": "da560000cc550000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBB/BB2C.LSC",
+      "type": "file",
+      "lba": 49083,
+      "size": 41686,
+      "sha1": "0b32ff23ceba1bf1138cd8125895454d5fe80194",
+      "magic_hex": "06470000c85b0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBB/BB3.TRK",
+      "type": "file",
+      "lba": 49104,
+      "size": 1179648,
+      "sha1": "2bcefacf96185384d73f9598829ac2fa0f77d13e",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCBB/BB3A.LSC",
+      "type": "file",
+      "lba": 49680,
+      "size": 38448,
+      "sha1": "0dde4bf98c83687e1f9692eee58bdc3ccf51889c",
+      "magic_hex": "7c480000ac4d0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBB/BB3B.LSC",
+      "type": "file",
+      "lba": 49699,
+      "size": 36550,
+      "sha1": "176dddef99f296880ef4fdec0d11ba83dcd9f18c",
+      "magic_hex": "ea440000d4490000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBB/BB3C.LSC",
+      "type": "file",
+      "lba": 49717,
+      "size": 47046,
+      "sha1": "d92d3e9cbcb81f9d447a7ae7b9b633f8a55cb0f4",
+      "magic_hex": "fa6d0000c4490000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBL",
+      "type": "dir",
+      "lba": 49740,
+      "size": 2048
+    },
+    {
+      "path": "/CW/LOCBL/BL.AV",
+      "type": "file",
+      "lba": 49741,
+      "size": 10690560,
+      "sha1": "0e3bd3a873fbf916e1345a20f42f6ad983f3f52d",
+      "magic_hex": "5256575324000000",
+      "format": "EA SWVR (áudio/stream — família Future Cop)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCBL/BL1.TRK",
+      "type": "file",
+      "lba": 54961,
+      "size": 1032192,
+      "sha1": "43ad58c1727ec5f9f51b0e063231a405400e876d",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCBL/BL1A.LSC",
+      "type": "file",
+      "lba": 55465,
+      "size": 43608,
+      "sha1": "1a1937872f76d31c852f1cca7692875d27a0ee0b",
+      "magic_hex": "8e570000c2520000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBL/BL1B.LSC",
+      "type": "file",
+      "lba": 55487,
+      "size": 36026,
+      "sha1": "12bb89242f7d61b89ac1be9bea3ebe9230da4d85",
+      "magic_hex": "c63b0000ec500000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBL/BL1C.LSC",
+      "type": "file",
+      "lba": 55505,
+      "size": 41694,
+      "sha1": "3bdc7634394d5379a704dc2211944fd48cced12d",
+      "magic_hex": "34520000a2500000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBL/BL2.TRK",
+      "type": "file",
+      "lba": 55526,
+      "size": 1155072,
+      "sha1": "59dcfa02fc96801ed86020954a3e250d793ec028",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCBL/BL2A.LSC",
+      "type": "file",
+      "lba": 56090,
+      "size": 47900,
+      "sha1": "29ff4c9a815a3c82fc5d425390a116ff1112328f",
+      "magic_hex": "62560000b2640000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBL/BL2B.LSC",
+      "type": "file",
+      "lba": 56114,
+      "size": 50816,
+      "sha1": "7243b2503fbbe43eb94cf3f00be7d7b3383599a8",
+      "magic_hex": "f860000080650000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBL/BL2C.LSC",
+      "type": "file",
+      "lba": 56139,
+      "size": 43036,
+      "sha1": "49d719693bd5f1e882c4d91e322ca711871a65d4",
+      "magic_hex": "e66000002e470000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBL/BL3.TRK",
+      "type": "file",
+      "lba": 56161,
+      "size": 1155072,
+      "sha1": "46b69cc8d9be6e31bd027ba5de6215dea17a32a0",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCBL/BL3A.LSC",
+      "type": "file",
+      "lba": 56725,
+      "size": 55016,
+      "sha1": "df2d4c4e4175007ac85aa59f683d973136188b20",
+      "magic_hex": "be6c0000226a0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBL/BL3B.LSC",
+      "type": "file",
+      "lba": 56752,
+      "size": 25672,
+      "sha1": "ab68cc60b9e9fc56c69a8de9dc52e615a5e4d219",
+      "magic_hex": "92290000ae3a0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCBL/BL3C.LSC",
+      "type": "file",
+      "lba": 56765,
+      "size": 47254,
+      "sha1": "430e5d2e72aaabe0e5fe6d9ee6a3512c829fe2f2",
+      "magic_hex": "3a5f000054590000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCGR",
+      "type": "dir",
+      "lba": 56789,
+      "size": 2048
+    },
+    {
+      "path": "/CW/LOCGR/GR.AV",
+      "type": "file",
+      "lba": 56790,
+      "size": 10567680,
+      "sha1": "c6be31b336f4a1b483311505bff3d93d967f7f3c",
+      "magic_hex": "5256575324000000",
+      "format": "EA SWVR (áudio/stream — família Future Cop)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCGR/GR1.TRK",
+      "type": "file",
+      "lba": 61950,
+      "size": 1130496,
+      "sha1": "b1ef105caf49197866ec06af0fa1dbce7a2d96d8",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCGR/GR1A.LSC",
+      "type": "file",
+      "lba": 62502,
+      "size": 49156,
+      "sha1": "3ba3094ef472f1f50f45ac2abcf828e59ea31c4a",
+      "magic_hex": "c866000034590000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCGR/GR1B.LSC",
+      "type": "file",
+      "lba": 62527,
+      "size": 45748,
+      "sha1": "b58fc1761d9430406a86b4a6730c4944e4d4d6fb",
+      "magic_hex": "804b00002c670000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCGR/GR1C.LSC",
+      "type": "file",
+      "lba": 62550,
+      "size": 51674,
+      "sha1": "3a75425701cfb575964a3bb602244ec5ab6181f5",
+      "magic_hex": "4260000090690000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCGR/GR2.TRK",
+      "type": "file",
+      "lba": 62576,
+      "size": 1179648,
+      "sha1": "b7e29681342c25179ca7ff08a4e85cdd3e4e7d06",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCGR/GR2A.LSC",
+      "type": "file",
+      "lba": 63152,
+      "size": 40140,
+      "sha1": "8222cf6c3bb2e83335520245af127d9a61276ef3",
+      "magic_hex": "3e4b000086510000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCGR/GR2B.LSC",
+      "type": "file",
+      "lba": 63172,
+      "size": 43528,
+      "sha1": "66432ebc50d62468b91529708c456adc14821676",
+      "magic_hex": "9e4a0000625f0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCGR/GR2C.LSC",
+      "type": "file",
+      "lba": 63194,
+      "size": 51706,
+      "sha1": "69fa3febba7417fca7e9456a1a586d7e45cb6783",
+      "magic_hex": "9a5f0000586a0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCGR/GR3.TRK",
+      "type": "file",
+      "lba": 63220,
+      "size": 1228800,
+      "sha1": "35dd158421c2dc54b36ec9b4be659be35cd5e823",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCGR/GR3A.LSC",
+      "type": "file",
+      "lba": 63820,
+      "size": 47202,
+      "sha1": "686c32e2fb96ee9072d7593f018673b5a1c211a2",
+      "magic_hex": "305c00002a5c0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCGR/GR3B.LSC",
+      "type": "file",
+      "lba": 63844,
+      "size": 36668,
+      "sha1": "474075cde258f66fa12ffb89f0414e73fb937614",
+      "magic_hex": "f84200003c4c0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCGR/GR3C.LSC",
+      "type": "file",
+      "lba": 63862,
+      "size": 37182,
+      "sha1": "ed02dc94c9168ce791192645b7d6d89398d20d71",
+      "magic_hex": "90470000a6490000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCJT",
+      "type": "dir",
+      "lba": 63881,
+      "size": 2048
+    },
+    {
+      "path": "/CW/LOCJT/JT.AV",
+      "type": "file",
+      "lba": 63882,
+      "size": 10125312,
+      "sha1": "5bc28bc9d9a7a45cacce0aced85f09231b82ed05",
+      "magic_hex": "5256575324000000",
+      "format": "EA SWVR (áudio/stream — família Future Cop)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCJT/JT1.TRK",
+      "type": "file",
+      "lba": 68826,
+      "size": 1056768,
+      "sha1": "1ae7a910569fb6dd0caeeae85fd6100bfda1a9b8",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCJT/JT1A.LSC",
+      "type": "file",
+      "lba": 69342,
+      "size": 33506,
+      "sha1": "4376fa16714152fc7056e1e41ce767d5905c580c",
+      "magic_hex": "f4360000e64b0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCJT/JT1B.LSC",
+      "type": "file",
+      "lba": 69359,
+      "size": 30122,
+      "sha1": "7456a9ea907034e2dbce1a254a83fee06cf7a4c9",
+      "magic_hex": "943700000e3e0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCJT/JT1C.LSC",
+      "type": "file",
+      "lba": 69374,
+      "size": 30560,
+      "sha1": "703f4775338cd0bce434692d4bd7645e39b3b4b3",
+      "magic_hex": "f83d000060390000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCJT/JT2.TRK",
+      "type": "file",
+      "lba": 69389,
+      "size": 1105920,
+      "sha1": "b7503f202a3c9f5dd84d1edec5af9459aef46872",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCJT/JT2A.LSC",
+      "type": "file",
+      "lba": 69929,
+      "size": 51720,
+      "sha1": "b85b6283928276e2a43ffc465ff2386c6533fcf3",
+      "magic_hex": "305c0000d06d0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCJT/JT2B.LSC",
+      "type": "file",
+      "lba": 69955,
+      "size": 43200,
+      "sha1": "822a2bc051ce94fa23d79d94013f7c8537dc25b3",
+      "magic_hex": "6e5300004a550000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCJT/JT2C.LSC",
+      "type": "file",
+      "lba": 69977,
+      "size": 45352,
+      "sha1": "b1ac9dc011d338469a94b96bf7ae05e089c91f0a",
+      "magic_hex": "48530000d85d0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCJT/JT3.TRK",
+      "type": "file",
+      "lba": 70000,
+      "size": 835584,
+      "sha1": "dec4da014f5aedebc566f8fe8c1dcfae3a793c19",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCJT/JT3A.LSC",
+      "type": "file",
+      "lba": 70408,
+      "size": 48556,
+      "sha1": "69a70fa53fb787fe382873667f4ca58c2929a228",
+      "magic_hex": "125d000092600000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCJT/JT3B.LSC",
+      "type": "file",
+      "lba": 70432,
+      "size": 48458,
+      "sha1": "6832b2b5f812f83a0aeae0c2c106eb6a6861ef7a",
+      "magic_hex": "7c600000c65c0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCJT/JT3C.LSC",
+      "type": "file",
+      "lba": 70456,
+      "size": 44708,
+      "sha1": "c3ce47e8774bd3db8e5cd4d61b1a429ce0706af4",
+      "magic_hex": "d2570000ca560000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMC",
+      "type": "dir",
+      "lba": 70478,
+      "size": 2048
+    },
+    {
+      "path": "/CW/LOCMC/MC.AV",
+      "type": "file",
+      "lba": 70479,
+      "size": 11255808,
+      "sha1": "dd405485faf9d247706cf4abad3b9f349b70ff43",
+      "magic_hex": "5256575324000000",
+      "format": "EA SWVR (áudio/stream — família Future Cop)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCMC/MC1.TRK",
+      "type": "file",
+      "lba": 75975,
+      "size": 1155072,
+      "sha1": "ef682c0a38b270b86de3ad38065d22bb97cf46a5",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCMC/MC1A.LSC",
+      "type": "file",
+      "lba": 76539,
+      "size": 47858,
+      "sha1": "8d7b96534ece6a0cea2c723068d10681a66353d0",
+      "magic_hex": "c65e0000245c0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMC/MC1B.LSC",
+      "type": "file",
+      "lba": 76563,
+      "size": 46392,
+      "sha1": "ba8fca9b8abb90ffa12d4972acfe71519cfa0677",
+      "magic_hex": "904f0000a0650000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMC/MC1C.LSC",
+      "type": "file",
+      "lba": 76586,
+      "size": 47046,
+      "sha1": "14db6e7b5a022ada2c3f56e155ec20c55688c24d",
+      "magic_hex": "0e520000b0650000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMC/MC2.TRK",
+      "type": "file",
+      "lba": 76609,
+      "size": 1179648,
+      "sha1": "7b6a90694f0a25d9d3c4daae13c6244353fbcea3",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCMC/MC2A.LSC",
+      "type": "file",
+      "lba": 77185,
+      "size": 41382,
+      "sha1": "00324a12e9f6e2d639f85b62b5dc354f11a1ffdc",
+      "magic_hex": "aa4f0000f4510000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMC/MC2B.LSC",
+      "type": "file",
+      "lba": 77206,
+      "size": 47366,
+      "sha1": "d42c8e16597a47bc9c1ed6a9017f21f335959c6e",
+      "magic_hex": "0a500000f4680000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMC/MC2C.LSC",
+      "type": "file",
+      "lba": 77230,
+      "size": 43670,
+      "sha1": "e11f47014f8da6fe965ce98f5015fad54576d6d9",
+      "magic_hex": "c6480000c8610000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMC/MC3.TRK",
+      "type": "file",
+      "lba": 77252,
+      "size": 1204224,
+      "sha1": "a27e08f9d3c855970b40cbccd829cedab9402b82",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCMC/MC3A.LSC",
+      "type": "file",
+      "lba": 77840,
+      "size": 35676,
+      "sha1": "75568cf9bf2408e7918c46677716b0700d71c939",
+      "magic_hex": "2246000032450000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMC/MC3B.LSC",
+      "type": "file",
+      "lba": 77858,
+      "size": 37014,
+      "sha1": "4ed2fbf38236e2f314deb0e8298664eee8c730f0",
+      "magic_hex": "0e4e000080420000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMC/MC3C.LSC",
+      "type": "file",
+      "lba": 77877,
+      "size": 39222,
+      "sha1": "5695ea79e542aa9605fe58431a76e38199959e4d",
+      "magic_hex": "683e0000c65a0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMG",
+      "type": "dir",
+      "lba": 77897,
+      "size": 2048
+    },
+    {
+      "path": "/CW/LOCMG/MG.AV",
+      "type": "file",
+      "lba": 77898,
+      "size": 12337152,
+      "sha1": "6b31c8cfddb00db81f6daf9fcc9b6cf8f14a485b",
+      "magic_hex": "5256575324000000",
+      "format": "EA SWVR (áudio/stream — família Future Cop)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCMG/MG1.TRK",
+      "type": "file",
+      "lba": 83922,
+      "size": 1179648,
+      "sha1": "ec7f03e1b001fce0093cee3dad1481a9a48068ee",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCMG/MG1A.LSC",
+      "type": "file",
+      "lba": 84498,
+      "size": 37346,
+      "sha1": "dc3f4490ea01be8ba16f1cc9bc453f5898e71211",
+      "magic_hex": "c84b000012460000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMG/MG1B.LSC",
+      "type": "file",
+      "lba": 84517,
+      "size": 46336,
+      "sha1": "cb0c7a4fe1b6423e38c2f5ca3b93aeea602d2548",
+      "magic_hex": "6663000092510000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMG/MG1C.LSC",
+      "type": "file",
+      "lba": 84540,
+      "size": 43568,
+      "sha1": "9becaa4116ec8bf42a3d938f16f33eec9c63a65b",
+      "magic_hex": "b458000074510000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMG/MG2.TRK",
+      "type": "file",
+      "lba": 84562,
+      "size": 1105920,
+      "sha1": "09c8e571c1483550ffb1103edb472b34f3fb4b53",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCMG/MG2A.LSC",
+      "type": "file",
+      "lba": 85102,
+      "size": 41790,
+      "sha1": "f32597a580ae3af3600f882d5d3fca0ee0ee2ee8",
+      "magic_hex": "56510000e0510000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMG/MG2B.LSC",
+      "type": "file",
+      "lba": 85123,
+      "size": 39454,
+      "sha1": "6003f8f2b5443b29fa94788e1e59c5b1caca09af",
+      "magic_hex": "36510000e0480000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMG/MG2C.LSC",
+      "type": "file",
+      "lba": 85143,
+      "size": 45508,
+      "sha1": "e09895c13b4b5757190285543aa2b518c8260c16",
+      "magic_hex": "ce610000ee4f0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMG/MG3.TRK",
+      "type": "file",
+      "lba": 85166,
+      "size": 1204224,
+      "sha1": "0ee0ce3a9a117826a544d3d6daf04a11d917c7bf",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCMG/MG3A.LSC",
+      "type": "file",
+      "lba": 85754,
+      "size": 49668,
+      "sha1": "e0ff9a7389f143cacb86ce5c30b0c0774ba91e91",
+      "magic_hex": "8a620000725f0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMG/MG3B.LSC",
+      "type": "file",
+      "lba": 85779,
+      "size": 39852,
+      "sha1": "a8e9c205c8126e05ca95f23eb7629d3a4ab8cc2c",
+      "magic_hex": "5a4a00004a510000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCMG/MG3C.LSC",
+      "type": "file",
+      "lba": 85799,
+      "size": 38068,
+      "sha1": "fff1e6300d4190c113b9de6e7185046d330f3f57",
+      "magic_hex": "06490000a64b0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCSE",
+      "type": "dir",
+      "lba": 85818,
+      "size": 2048
+    },
+    {
+      "path": "/CW/LOCSE/SE.AV",
+      "type": "file",
+      "lba": 85819,
+      "size": 11575296,
+      "sha1": "e37cd7686fb98551fdc7d8ee6c20fc2e1b0d3dd8",
+      "magic_hex": "5256575324000000",
+      "format": "EA SWVR (áudio/stream — família Future Cop)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCSE/SE1.TRK",
+      "type": "file",
+      "lba": 91471,
+      "size": 1155072,
+      "sha1": "0335e089a74ac1729e4328dd69d74021fb188755",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCSE/SE1A.LSC",
+      "type": "file",
+      "lba": 92035,
+      "size": 43398,
+      "sha1": "da514eddf90729fa9bb1e7b36917e04364b832fe",
+      "magic_hex": "6a4d0000145c0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCSE/SE1B.LSC",
+      "type": "file",
+      "lba": 92057,
+      "size": 45852,
+      "sha1": "6142462c13b5351d732044d36f54d62458778376",
+      "magic_hex": "da5500003a5d0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCSE/SE1C.LSC",
+      "type": "file",
+      "lba": 92080,
+      "size": 38064,
+      "sha1": "24cbfecda9e0af3130f597fa30836961ba9868a5",
+      "magic_hex": "a64d000002470000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCSE/SE2.TRK",
+      "type": "file",
+      "lba": 92099,
+      "size": 1228800,
+      "sha1": "6e26939fef11f4d3417c5d0f4952f82f3b4d31f6",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCSE/SE2A.LSC",
+      "type": "file",
+      "lba": 92699,
+      "size": 48188,
+      "sha1": "47c287dc9a109a092cfd836997b075057727f3fc",
+      "magic_hex": "68500000cc6b0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCSE/SE2B.LSC",
+      "type": "file",
+      "lba": 92723,
+      "size": 45610,
+      "sha1": "378172b3a7107d10b7bf4320e942dd42e3797744",
+      "magic_hex": "7c550000a65c0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCSE/SE2C.LSC",
+      "type": "file",
+      "lba": 92746,
+      "size": 54138,
+      "sha1": "3e6386fabb0973a777b7ef960b18d49e96d1f8fc",
+      "magic_hex": "086600006a6d0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCSE/SE3.TRK",
+      "type": "file",
+      "lba": 92773,
+      "size": 1253376,
+      "sha1": "dd3ddaa47cf218cfb02657b43e5682d2acb5765d",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/CW/LOCSE/SE3A.LSC",
+      "type": "file",
+      "lba": 93385,
+      "size": 43266,
+      "sha1": "96a9b0a24ee84ae5a75e5ee88274460a944ac928",
+      "magic_hex": "ac5600004e520000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCSE/SE3B.LSC",
+      "type": "file",
+      "lba": 93407,
+      "size": 42686,
+      "sha1": "e28ca47d910a8559ac5470edb88b60a315dd3b3e",
+      "magic_hex": "d85a0000de4b0000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/LOCSE/SE3C.LSC",
+      "type": "file",
+      "lba": 93428,
+      "size": 36028,
+      "sha1": "04eea941ec1feb35b3eafa76cc362e68d87ca9dc",
+      "magic_hex": "3443000080490000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/CW/OPENING",
+      "type": "dir",
+      "lba": 93446,
+      "size": 2048
+    },
+    {
+      "path": "/CW/OPENING/INTRO.WVE",
+      "type": "file",
+      "lba": 93447,
+      "size": 8109596,
+      "sha1": "cf97154e70ad9e9b82eb83bb395eb31aa3edc912",
+      "magic_hex": "564c4330000001c8",
+      "format": "Vídeo EA (VLC0 / família WVE-TGV)",
+      "class": "🟡"
+    },
+    {
+      "path": "/CW/OPENING/LEGAL.LSC",
+      "type": "file",
+      "lba": 97407,
+      "size": 35136,
+      "sha1": "8f9eba9bf67629491611ff4efcf8b3a961b71a47",
+      "magic_hex": "86440000b2440000",
+      "format": "Loading screen (provável imagem comprimida)",
+      "class": "🔵"
+    },
+    {
+      "path": "/DUMMY.DAT",
+      "type": "file",
+      "lba": 97425,
+      "size": 27648000,
+      "sha1": "8971df6ec5aba765699da263a630d68db2527bb8",
+      "magic_hex": "0000000000000000",
+      "format": "Padding de posicionamento de setores",
+      "class": "🟡"
+    },
+    {
+      "path": "/GLBLDATA.PSX",
+      "type": "file",
+      "lba": 344,
+      "size": 12853248,
+      "sha1": "0c294a484d4cc449875c05278c6e431f2db9aef1",
+      "magic_hex": "4c52544318000000",
+      "format": "Container EA CTRL/SHOC/SHDR (chunks 4CC invertido)",
+      "class": "✅"
+    },
+    {
+      "path": "/SLUS_010.68",
+      "type": "file",
+      "lba": 24,
+      "size": 655360,
+      "sha1": "2726ac3e6f3d756f78982f7c66e507fc3aaf7aff",
+      "magic_hex": "50532d5820455845",
+      "format": "PS-X EXE (executável MIPS R3000)",
+      "class": "✅"
+    },
+    {
+      "path": "/SYSTEM.CNF",
+      "type": "file",
+      "lba": 23,
+      "size": 66,
+      "sha1": "effcbd1904de7b05ef2fe47702d546471a671380",
+      "magic_hex": "424f4f54203d2063",
+      "format": "Config de boot (texto)",
+      "class": "✅"
+    }
+  ]
+}
