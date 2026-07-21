@@ -150,9 +150,17 @@ Com RAM_MAP + FUNCTION_MAP: física (aceleração, grip), IA (rubber-banding), p
 - **Patch Builder**: `mkpsxiso` para reconstruir a ISO com arquivos modificados preservando LBAs; distribuir mods como xdelta/PPF (nunca a ISO).
 - Validação: ISO reconstruída sem mods deve ser **byte-idêntica** à original (teste de ouro do pipeline).
 
-## Fase 10 — Decomp matching / port
+## Fase 10 — Port (duas trilhas)
 
-Só depois das fases 4–8 maduras. Referências: CTR-ModSDK (CTR-tools), decomp.me para matching de funções MIPS (compilador PsyQ), estrutura tipo "splat" para separar código/dados.
+O objetivo "rodar sem emulador" tem duas rotas complementares (ver [ANALISE_RECOMPONE.md](ANALISE_RECOMPONE.md) e [ANALISE_REFERENCIAS.md](ANALISE_REFERENCIAS.md)):
+
+- **Trilha B — Port rápido via RecompOne** (recompilação estática MIPS→C#): pode dar um primeiro
+  boot nativo em semanas-meses após a Fase 4, consumindo nosso map de funções. Não gera
+  entendimento (saída ilegível), mas atende a meta do executável nativo. Pré-requisito: FUNCTION_MAP.
+- **Trilha A/decomp matching** (o ideal a longo prazo): reescrita humana em C, batendo byte-a-byte.
+  Referências: CTR-ModSDK, decomp.me, compilador PsyQ. Gera entendimento máximo e mods fiéis.
+
+As trilhas se retroalimentam: o Ghidra alimenta o RecompOne; o RecompOne dá um ambiente vivo p/ testar.
 
 ---
 
