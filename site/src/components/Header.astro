@@ -1,0 +1,30 @@
+---
+import { href, SITE, type Lang } from '../consts';
+import { t } from '../i18n/ui';
+interface Props { lang: Lang; page?: string }
+const { lang, page = 'home' } = Astro.props;
+const tr = t(lang);
+const nav = [
+  { key: 'devlog', path: '/devlog' },
+  { key: 'roadmap', path: '/roadmap' },
+  { key: 'tools', path: '/tools' },
+  { key: 'gallery', path: '/gallery' },
+  { key: 'about', path: '/about' },
+] as const;
+// caminho equivalente na outra língua para o toggle
+const otherLang: Lang = lang === 'pt' ? 'en' : 'pt';
+const currentPath = page === 'home' ? '/' : `/${page}`;
+---
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href={href('/', lang)}>🏁 NASCAR <b>Rumble</b> ModSDK</a>
+    {nav.map((n) => (
+      <a class={`navlink hide-sm ${page === n.key ? 'active' : ''}`} href={href(n.path, lang)}>{tr(`nav.${n.key}` as any)}</a>
+    ))}
+    <a class="navlink" href={SITE.github} target="_blank" rel="noopener">{tr('nav.github')}</a>
+    <span class="lang">
+      <a class={lang === 'pt' ? 'active' : ''} href={href(currentPath, 'pt')}>PT</a>
+      <a class={lang === 'en' ? 'active' : ''} href={href(currentPath, 'en')}>EN</a>
+    </span>
+  </div>
+</header>

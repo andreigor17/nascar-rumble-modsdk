@@ -1,0 +1,27 @@
+---
+import { type Lang } from '../../consts';
+import { t } from '../../i18n/ui';
+import { ROADMAP } from '../../data/roadmap';
+const { lang } = Astro.props as { lang: Lang };
+const tr = t(lang);
+const badge = { done: tr('roadmap.done'), doing: tr('roadmap.doing'), todo: tr('roadmap.todo') };
+---
+<section class="section">
+  <div class="container">
+    <p class="eyebrow">Roadmap</p>
+    <h2>{tr('roadmap.title')}</h2>
+    <p class="lead">{tr('roadmap.intro')}</p>
+    <div>
+      {ROADMAP.map((p) => (
+        <div class="phase">
+          <div class="num">{p.n}</div>
+          <div class="body">
+            <h3>{lang === 'pt' ? p.pt : p.en}</h3>
+            <p>{lang === 'pt' ? p.pt_d : p.en_d}</p>
+          </div>
+          <span class={`badge ${p.status}`}>{badge[p.status]}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

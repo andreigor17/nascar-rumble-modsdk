@@ -1,0 +1,25 @@
+export const SITE = {
+  title: 'NASCAR Rumble ModSDK',
+  tagline_pt: 'Engenharia reversa & SDK de modding open source',
+  tagline_en: 'Reverse engineering & open-source modding SDK',
+  github: 'https://github.com/andreigor17/nascar-rumble-modsdk',
+  reference: 'https://www.online-ctr.com/',
+};
+
+export type Lang = 'pt' | 'en';
+
+/** Prefixa BASE_URL para links internos funcionarem no GitHub Pages e em dev. */
+export function href(path: string, lang: Lang = 'pt'): string {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const prefix = lang === 'en' ? '/en' : '';
+  const clean = path === '/' ? '' : path;
+  return `${base}${prefix}${clean}` || '/';
+}
+
+/** Estatísticas exibidas no hero — atualizar quando avançarmos. */
+export const STATS = [
+  { value: '2008', label_pt: 'funções mapeadas', label_en: 'functions mapped' },
+  { value: '4', label_pt: 'formatos decodificados', label_en: 'formats decoded' },
+  { value: '9', label_pt: 'ferramentas do SDK', label_en: 'SDK tools' },
+  { value: '108', label_pt: 'arquivos na ISO', label_en: 'files in the ISO' },
+];

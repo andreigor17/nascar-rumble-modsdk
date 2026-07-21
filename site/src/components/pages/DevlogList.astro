@@ -1,0 +1,24 @@
+---
+import { href, type Lang } from '../../consts';
+import { t } from '../../i18n/ui';
+import { DEVLOG } from '../../data/devlog';
+const { lang } = Astro.props as { lang: Lang };
+const tr = t(lang);
+---
+<section class="section">
+  <div class="container">
+    <p class="eyebrow">Devlog</p>
+    <h2>{tr('devlog.title')}</h2>
+    <p class="lead">{tr('devlog.intro')}</p>
+    <div class="grid cols-2">
+      {DEVLOG.map((e) => (
+        <a class="card" href={href(`/devlog/${e.slug}`, lang)}>
+          <span class="tag">{e.tag}</span>
+          <h3>{e[lang].title}</h3>
+          <div class="meta">#{e.session} · {e.date}</div>
+          <p>{e[lang].summary}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

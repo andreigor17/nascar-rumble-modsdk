@@ -1,0 +1,11 @@
+---
+import Base from '../../layouts/Base.astro';
+import DevlogPost from '../../components/pages/DevlogPost.astro';
+import { DEVLOG } from '../../data/devlog';
+
+export function getStaticPaths() {
+  return DEVLOG.map((entry) => ({ params: { slug: entry.slug }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<Base lang="pt" page="devlog" title={entry.pt.title}><DevlogPost lang="pt" entry={entry} /></Base>

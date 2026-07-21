@@ -1,0 +1,43 @@
+---
+import { SITE, type Lang } from '../../consts';
+import { t } from '../../i18n/ui';
+const { lang } = Astro.props as { lang: Lang };
+const tr = t(lang);
+---
+<section class="section">
+  <div class="container prose">
+    <p class="eyebrow">{tr('about.title')}</p>
+    <h2>{tr('about.title')}</h2>
+    {lang === 'pt' ? (
+      <>
+        <p>Este é um projeto independente de engenharia reversa e documentação do jogo <strong>NASCAR Rumble</strong>
+        (PlayStation 1). O objetivo é entender profundamente como o jogo funciona, documentar seus formatos de arquivo
+        e construir um SDK open source de modding — inspirado no <a href={SITE.reference} target="_blank" rel="noopener">online-ctr.com</a> e no CTR-ModSDK.</p>
+        <h2>Como contribuir</h2>
+        <ul>
+          <li>Código e documentação no <a href={SITE.github} target="_blank" rel="noopener">repositório do GitHub</a>.</li>
+          <li>Sugestões e achados podem virar issues.</li>
+          <li>Toda descoberta é registrada no <a href="#" >Progresso</a> com evidências e é reproduzível.</li>
+        </ul>
+        <h2>Aviso legal</h2>
+        <p>{tr('footer.disclaimer')} As ferramentas operam sobre uma cópia do jogo que você deve possuir legalmente.
+        Parte do trabalho é assistida por IA sob revisão humana.</p>
+      </>
+    ) : (
+      <>
+        <p>This is an independent reverse-engineering and documentation project for <strong>NASCAR Rumble</strong>
+        (PlayStation 1). The goal is to deeply understand how the game works, document its file formats and build an
+        open-source modding SDK — inspired by <a href={SITE.reference} target="_blank" rel="noopener">online-ctr.com</a> and CTR-ModSDK.</p>
+        <h2>How to contribute</h2>
+        <ul>
+          <li>Code and docs on the <a href={SITE.github} target="_blank" rel="noopener">GitHub repository</a>.</li>
+          <li>Suggestions and findings can become issues.</li>
+          <li>Every discovery is logged in <a href="#">Progress</a> with evidence and is reproducible.</li>
+        </ul>
+        <h2>Disclaimer</h2>
+        <p>{tr('footer.disclaimer')} The tools operate on a copy of the game you must legally own.
+        Part of this work is AI-assisted under human review.</p>
+      </>
+    )}
+  </div>
+</section>

@@ -1,0 +1,75 @@
+---
+import { href, SITE, STATS, type Lang } from '../../consts';
+import { t } from '../../i18n/ui';
+import { DEVLOG } from '../../data/devlog';
+const { lang } = Astro.props as { lang: Lang };
+const tr = t(lang);
+const latest = DEVLOG.slice(0, 3);
+const pillars = lang === 'pt'
+  ? [
+      { i: '🔧', h: 'Engenharia reversa', p: 'Análise do executável MIPS no Ghidra: física, IA, renderização, formatos.' },
+      { i: '🧰', h: 'SDK de modding', p: 'Ferramentas para extrair e editar texturas, pistas, carros e saves.' },
+      { i: '📚', h: 'Base de conhecimento', p: 'Cada descoberta documentada, reproduzível e aberta à comunidade.' },
+    ]
+  : [
+      { i: '🔧', h: 'Reverse engineering', p: 'MIPS executable analysis in Ghidra: physics, AI, rendering, formats.' },
+      { i: '🧰', h: 'Modding SDK', p: 'Tools to extract and edit textures, tracks, cars and saves.' },
+      { i: '📚', h: 'Knowledge base', p: 'Every discovery documented, reproducible and open to the community.' },
+    ];
+---
+<section class="hero">
+  <div class="container">
+    <p class="eyebrow">PlayStation 1 · EA · 2000</p>
+    <h1>NASCAR Rumble<br />ModSDK</h1>
+    <p class="sub">{lang === 'pt' ? SITE.tagline_pt : SITE.tagline_en}.</p>
+    <div class="cta">
+      <a class="btn primary" href={href('/roadmap', lang)}>{tr('hero.cta.roadmap')}</a>
+      <a class="btn" href={href('/devlog', lang)}>{tr('hero.cta.devlog')}</a>
+      <a class="btn" href={SITE.github} target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <div class="stats">
+      {STATS.map((s) => (
+        <div class="stat">
+          <div class="v">{s.value}</div>
+          <div class="l">{lang === 'pt' ? s.label_pt : s.label_en}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="eyebrow">{tr('home.what')}</p>
+    <h2>{tr('home.what')}</h2>
+    <p class="lead">{tr('home.what.body')}</p>
+    <div class="grid cols-3">
+      {pillars.map((p) => (
+        <div class="card">
+          <div style="font-size:1.8rem">{p.i}</div>
+          <h3>{p.h}</h3>
+          <p>{p.p}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px;">
+      <h2>{tr('home.latest')}</h2>
+      <a href={href('/devlog', lang)}>{tr('home.latest.all')}</a>
+    </div>
+    <div class="grid cols-3" style="margin-top:24px">
+      {latest.map((e) => (
+        <a class="card" href={href(`/devlog/${e.slug}`, lang)}>
+          <span class="tag">{e.tag}</span>
+          <h3>{e[lang].title}</h3>
+          <div class="meta">#{e.session} · {e.date}</div>
+          <p>{e[lang].summary}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
