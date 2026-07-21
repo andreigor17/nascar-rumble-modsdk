@@ -62,7 +62,35 @@ precisam permanecer alinhados a 2048**, senão o loader de streaming quebra.
 - `FE.TRK` (frontend, 20 MB): `CTRL` ×172 + `SWVR` ×172 + `SHOC` ×4751 + `VAGM` ×140 + `FILL` ×680.
   → o frontend é uma **concatenação de 172 sub-recursos**, cada um com seu container e áudio.
 
-## 5. Próximos experimentos
+## 5. Semântica confirmada pelo parser do jogo — ✅ (2026-07-21)
+
+RE de `FUN_8002a85c` (parser de stream) + `FUN_8002a2bc` (SHDR) + `FUN_8002a290` (cópia):
+
+- **SHOC** é o frame; o sub-tag fica em **+0x10** do chunk: `SHDR` ou `SDAT`.
+- **SHDR** declara um recurso. O **tipo** do recurso é um 4CC em **+0x18** (ex.: `Cpag`, `Ctrk`,
+  `Cobj`, `Cact`, `Cvkb`…). Tamanhos em +0x30/+0x34; descritor a partir de +0x38.
+- **SDAT** entrega bytes: copia `[chunk+0x14 .. chunk+size)` e **anexa** ao buffer do recurso atual
+  (via cópia por palavras — `FUN_8002a290` é um memcpy). Quando o acumulado atinge o tamanho
+  declarado, o recurso é finalizado. → **SDAT é remontagem crua; não há descompressão no stream.**
+- **CTRL** guarda contagem de blocos de `0x6000` e tamanho total do recurso.
+- **VAGB/VAGM** = áudio (upload de VAG/ADPCM para a SPU via `FUN_80022e50`).
+- Descritores de recurso passam por uma **máquina de tokens** (`FUN_80067890`) — avaliador de
+  atributos da EA (não é LZ). Alguns tipos podem ser comprimidos por essa via (a investigar).
+
+### Tipos de recurso observados num `.TRK` (`scripts/extract_resources.py` em JT3.TRK → 48 recursos)
+
+| 4CC | Provável significado | Qtde/ex. |
+|---|---|---|
+| `Cpag` | **Página de textura** (VRAM) | 13× (~43 KB) |
+| `Ctrk` | Geometria da **pista** | 1× (50 KB) |
+| `Cobj` | Objetos/modelos | vários |
+| `Cvkb`/`Cvkh` | Veículo (corpo/header?) | 107 KB / 632 B |
+| `Cact` | Atores/entidades | muitos (pequenos) |
+| `Cshd`/`Ctos`/`Cnet`/`Cdcs`/`RPNS` | shading / diversos | 1× cada |
+
+> Extrator disponível: `python3 scripts/extract_resources.py <container> <outdir>`.
+
+## 6. Próximos experimentos
 
 1. **Fase 4 (Ghidra):** achar a função que lê `CTRL`/`SHOC`. Ela revela: os 8 bytes de prefixo
    do SHOC, o significado do payload do CTRL, e se há descompressão (RefPack/EA?) no SDAT.

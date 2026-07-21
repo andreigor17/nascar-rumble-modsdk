@@ -49,3 +49,9 @@ venv/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# jpsxdec (baixado; ~MB)
+tools/jpsxdec/
+
+# logs de ferramentas
+debug*.log
