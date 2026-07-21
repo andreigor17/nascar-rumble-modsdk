@@ -14,13 +14,16 @@ Sub-chunks observados: `tReg` (região) + pares (`PIX4`, `CLUT`) em 4 níveis de
 - **CLUT** = paleta. Cor PS1 15-bit (u16 LE): `bit15=STP`, `R=bits0-4`, `G=5-9`, `B=10-14` (×8).
 - Handler no jogo: `FUN_8006710c` (dispatch de `0x43706167`).
 
-**Estado:** decodificação de pixels **confirmada** — atlas real extraído (logo EA, "LEGEND",
-rodas, emblemas). ✅
-**A refinar:** atlas grandes têm **múltiplas CLUTs de 16 cores** (ex.: 496 cores = 31 paletas),
-uma por sub-região. Para cores corretas é preciso associar cada região à sua CLUT via `TTEX`.
-Também há variantes **8bpp** (`PIX8`?) a tratar. 🟡
+**Sub-chunk `tReg` (regiões) — ✅ decodificado:** array de registros de **12 bytes**:
+`[u8 x0][u8 y0][u8 x1][u8 y1][u16 palIdx][u16][u16][u16]`. Cada região é um retângulo na página
+256×256 e usa a **paleta nº `palIdx`** (16 cores a partir de `CLUT[palIdx*16]`). O `CLUT` é a
+concatenação de N paletas de 16 cores (ex.: res_011 = 31 paletas / 37 regiões).
 
-Ferramenta: `python3 scripts/decode_cpag.py <res_Cpag.bin> <outdir>` → PNG por mipmap.
+**Estado:** **cores corretas** — decoder colore região por região com sua paleta. Atlas real
+extraído em cores (logo "NASCAR RUMBLE", pneus, grama, asfalto). ✅
+**A refinar:** algumas poucas regiões ainda saem com paleta trocada; variante 8bpp (se existir). 🟡
+
+Ferramenta: `python3 scripts/decode_cpag.py <res_Cpag.bin> <outdir>` → PNG por mipmap (colorido).
 
 ## `Ctrk` — Pista ✅ (traçado) / 🟡 (malha 3D)
 

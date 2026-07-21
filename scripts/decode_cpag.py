@@ -45,6 +45,23 @@ def clut_to_rgb(clut_bytes):
     return pal
 
 
+def parse_regions(treg_payload):
+    """tReg: registros de 12 bytes [x0,y0,x1,y1 (u8)][palIdx u16][2×u16][u16]."""
+    regs = []
+    for i in range(0, len(treg_payload) - 11, 12):
+        r = treg_payload[i:i + 12]
+        x0, y0, x1, y1 = r[0], r[1], r[2], r[3]
+        pal = struct.unpack("<H", r[4:6])[0]
+        regs.append((x0, y0, x1, y1, pal))
+    return regs
+
+
+def pix4_nibble(pix, x, y, side):
+    i = y * side + x
+    byte = pix[i >> 1]
+    return (byte & 0x0F) if (i & 1) == 0 else (byte >> 4)
+
+
 def decode(path, outdir):
     from PIL import Image
     d = Path(path).read_bytes()
@@ -52,7 +69,7 @@ def decode(path, outdir):
     out.mkdir(parents=True, exist_ok=True)
     chunks = parse_chunks(d)
 
-    # emparelha cada PIX4 com o CLUT que o segue
+    treg = next((p for t, o, s, p in chunks if t == "tReg"), None)
     levels = []
     pending_pix = None
     for tag, off, size, payload in chunks:
@@ -62,25 +79,43 @@ def decode(path, outdir):
             levels.append((pending_pix, payload))
             pending_pix = None
 
+    regions = parse_regions(treg) if treg else []
     stem = Path(path).stem
-    print(f"# {path}: {len(chunks)} sub-chunks, {len(levels)} níveis de mipmap")
+    print(f"# {path}: {len(chunks)} sub-chunks, {len(levels)} mipmaps, {len(regions)} regiões")
     made = []
     for lvl, (pix, clut) in enumerate(levels):
-        npix = len(pix) * 2                         # 4bpp -> 2 pixels/byte
-        side = int(round(npix ** 0.5))              # texturas são quadradas (256,128,64,32)
-        pal = clut_to_rgb(clut)
+        npix = len(pix) * 2
+        side = int(round(npix ** 0.5))
+        pal_all = clut_to_rgb(clut)                 # todas as paletas concatenadas
+        npal = max(1, len(pal_all) // 16)
         img = Image.new("RGB", (side, side))
         px = img.load()
-        for i in range(min(npix, side * side)):
-            byte = pix[i >> 1]
-            idx = (byte & 0x0F) if (i & 1) == 0 else (byte >> 4)
-            x, y = i % side, i // side
-            if idx < len(pal):
-                px[x, y] = pal[idx]
+
+        # escala das regiões (definidas na página 256) para o nível atual
+        scale = side / 256.0
+        if regions and npal > 1:
+            # colore cada região com sua própria paleta de 16 cores
+            for (x0, y0, x1, y1, palidx) in regions:
+                base = (palidx % npal) * 16
+                pal = pal_all[base:base + 16]
+                sx0, sy0 = int(x0 * scale), int(y0 * scale)
+                sx1, sy1 = int(round(x1 * scale)), int(round(y1 * scale))
+                for y in range(max(0, sy0), min(side, sy1 + 1)):
+                    for x in range(max(0, sx0), min(side, sx1 + 1)):
+                        idx = pix4_nibble(pix, x, y, side)
+                        if idx < len(pal):
+                            px[x, y] = pal[idx]
+        else:
+            pal = pal_all[:16]
+            for i in range(min(npix, side * side)):
+                idx = (pix[i >> 1] & 0x0F) if (i & 1) == 0 else (pix[i >> 1] >> 4)
+                if idx < len(pal):
+                    px[i % side, i // side] = pal[idx]
+
         fn = out / f"{stem}_mip{lvl}_{side}x{side}.png"
         img.save(fn)
         made.append(fn)
-        print(f"  mip{lvl}: {side}x{side}, paleta {len(pal)} cores -> {fn.name}")
+        print(f"  mip{lvl}: {side}x{side}, {npal} paleta(s) -> {fn.name}")
     return made
 
 

@@ -12,6 +12,33 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-006-texturas-coloridas',
+    date: '2026-07-21',
+    session: '006',
+    tag: 'Texturas',
+    image: '/gallery/texture-atlas.png',
+    pt: {
+      title: 'Texturas em cores: o atlas do jogo decodificado',
+      summary:
+        'Descobrimos como o jogo organiza as paletas por região e agora extraímos as texturas nas cores corretas.',
+      points: [
+        'Cada página de textura é um atlas com dezenas de regiões — cada uma com sua própria paleta de 16 cores.',
+        'Decodificamos a tabela de regiões (tReg): retângulo + índice de paleta por sub-textura.',
+        'Resultado: o logo "NASCAR RUMBLE", pneus, grama e asfalto aparecem coloridos. Primeiro Texture Viewer funcional.',
+      ],
+    },
+    en: {
+      title: 'Textures in color: the game atlas decoded',
+      summary:
+        'We found how the game organizes palettes per region and now extract textures in their correct colors.',
+      points: [
+        'Each texture page is an atlas with dozens of regions — each with its own 16-color palette.',
+        'We decoded the region table (tReg): rectangle + palette index per sub-texture.',
+        'Result: the "NASCAR RUMBLE" logo, tires, grass and asphalt appear in color. First working Texture Viewer.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-005-site-e-formatos',
     date: '2026-07-21',
     session: '005',
