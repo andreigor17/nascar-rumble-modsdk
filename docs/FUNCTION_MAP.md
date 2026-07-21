@@ -6,6 +6,26 @@
 >
 > Executável: PS-X EXE · load `0x80010000` · entry `0x800A5440` · t_size `0x9F800` · **sem overlays**.
 
+## Funções identificadas via decompilação headless — ✅ (2026-07-21)
+
+Pipeline PyGhidra (`scripts/ghidra/export_analysis.py`) analisou o EXE e exportou **2008 funções**,
+`strings_xref.csv` e `decomp_all.c` (todas decompiladas). Xrefs resolvem as âncoras:
+
+| Endereço | Nome sugerido | Papel (evidência) |
+|---|---|---|
+| `0x8002baa8` | `resource_stream_init` | Carrega `GlblData.psx` / `*.trk`. Monta sistema de streaming de **4 slots** (buffers ~0x6000, slots de 0x1805 ints), abre o arquivo via `FUN_8001bf28`, e faz fallback p/ `"GlblData.psx"` se `DAT_800af6c8==0`. É o **loader central de recursos**. |
+| `0x8001bf28` | `file_open` | Abre arquivo por nome (retorna handle/índice usado numa tabela de 4 descritores em `DAT_800afc10`). |
+| `0x80043520` | `ai_car_update` | Referencia `"AI Car %d (power = %ld/%ld)"`. Alvo p/ IA + sistema de power. |
+| `0x800921a0` | `lsc_path_build` | Monta o caminho do `.lsc` (tela de load) conforme estado do jogo. |
+| `0x80029be4` | `run_screen` | "Level/screen runner": `main` chama com `"Fe.trk"` (frontend) e depois em loop. |
+| `0x800991e4` | `play_media_fullscreen` | Exibe `Intro.wve`/`Ea_logo.fsv` em 320×240 (0x140×0xf0). |
+| `0x80079814` | `track_setup?` | Referencia a tabela de nomes de pista (`GR1.trk`…). |
+
+**Estrutura global de estado:** `DAT_800af744` é um ponteiro p/ struct de estado do jogo; campo
+`+0x10` = modo/estado atual (`main` faz loop lendo esse campo; valores 0 e 3 disparam recarga).
+
+> Tabela de nomes das 22 pistas: ponteiros em `0x800abdd8`–`0x800abe40` (índice → `"XX?.trk"`).
+
 ## SDK e compilador — ✅ Confirmado
 
 - **PsyQ (Sony/SN Systems)**: presença das strings de debug de `libgpu` (`ResetGraph`, `DrawSync`,

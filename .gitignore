@@ -24,10 +24,20 @@ saves/*.mcr
 *.state
 *.pxstate
 
-# Ghidra: manter apenas exports .gzf/.xml, ignorar projeto de trabalho
-ghidra/*.rep/
-ghidra/*.lock
-ghidra/*.gpr
+# Ghidra: manter apenas exports .gzf/.xml, ignorar projeto de trabalho (qualquer nível)
+*.rep/
+*.gpr
+*.lock
+*.ghpr
+# extensões do Ghidra (blob de 9MB, rebaixável via ROTEIRO_SETUP.md)
+tools/ghidra_extensions/*.zip
+ghidra/*.rep
+# venv do PyGhidra e logs de execução
+.venv-ghidra/
+ghidra_out_run*.log
+# saídas grandes do Ghidra (regeneráveis); versionamos só os CSVs de índice
+ghidra_out/decomp_all.c
+ghidra_out/func_*.c
 
 # Python
 __pycache__/

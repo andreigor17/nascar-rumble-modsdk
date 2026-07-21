@@ -1,0 +1,286 @@
+str_addr,text,xref_from,in_function
+0x800104c4,"Getting into flush, yet there's an unfinished flush going on!\n",0x8001a2b8,FUN_8001a24c
+0x80010584,bu0%1ld:%s,0x8001fb38,FUN_8001fae8
+0x80010584,bu0%1ld:%s,0x8001fdbc,FUN_8001fd88
+0x800108e0,Steve Park,0x800aa5ec,
+0x800108ec,Exit Audio Menu...,0x800aa8e8,
+0x80010968,Valid Password,0x800aa8d0,
+0x800109ec,Restart Replay,0x800aa8b8,
+0x80010a7c,Audio Options...,0x800aa8a0,
+0x80010ab8,Replay Paused,0x80025d2c,FUN_80025ad4
+0x80010ab8,Replay Paused,0x80025d30,FUN_80025ad4
+0x80010ac8,Game Paused,0x80025d2c,FUN_80025ad4
+0x80010b10,No Controller,0x80026e5c,FUN_80026dbc
+0x80010b10,No Controller,0x80026ee0,FUN_80026dbc
+0x80010b20,Invalid Controller,0x80026e5c,FUN_80026dbc
+0x80010b34,Insufficient Memory,0x80027c90,FUN_8002767c
+0x80010b34,Insufficient Memory,0x80027ca4,FUN_8002767c
+0x80010b34,Insufficient Memory,0x80026fa8,FUN_80026f28
+0x80010b34,Insufficient Memory,0x80026fc0,FUN_80026f28
+0x80010b48,to Continue Replay,0x80027cc8,FUN_8002767c
+0x80010b48,to Continue Replay,0x80027cdc,FUN_8002767c
+0x80010b48,to Continue Replay,0x80026fe0,FUN_80026f28
+0x80010b48,to Continue Replay,0x80026ff4,FUN_80026f28
+0x80010b5c,Press Any Key to Exit,0x80027d00,FUN_8002767c
+0x80010b5c,Press Any Key to Exit,0x80027d0c,FUN_8002767c
+0x80010b5c,Press Any Key to Exit,0x80027014,FUN_80026f28
+0x80010b5c,Press Any Key to Exit,0x80027020,FUN_80026f28
+0x80010b74,You have taken too much,0x80027d90,FUN_8002767c
+0x80010b74,You have taken too much,0x80027da4,FUN_8002767c
+0x80010b74,You have taken too much,0x80027088,FUN_80026f28
+0x80010b74,You have taken too much,0x800270a0,FUN_80026f28
+0x80010b8c,time to Finish the Race...,0x80027dc8,FUN_8002767c
+0x80010b8c,time to Finish the Race...,0x80027ddc,FUN_8002767c
+0x80010b8c,time to Finish the Race...,0x800270c0,FUN_80026f28
+0x80010b8c,time to Finish the Race...,0x800270d4,FUN_80026f28
+0x80010ba8,You are Disqualified!,0x80027e00,FUN_8002767c
+0x80010ba8,You are Disqualified!,0x80027e14,FUN_8002767c
+0x80010ba8,You are Disqualified!,0x800270f4,FUN_80026f28
+0x80010ba8,You are Disqualified!,0x80027100,FUN_80026f28
+0x80010c74,Race Results for %s,0x80028a9c,FUN_8002896c
+0x80010c88,Kid Play,0x80028b34,FUN_8002896c
+0x80010c94,     Power-Ups: ,0x80028b74,FUN_8002896c
+0x80010ca8,Best Lap,0x80028c34,FUN_8002896c
+0x80010cb4,%ld. %s (%d),0x80028d0c,FUN_8002896c
+0x80010cb4,%ld. %s (%d),0x80028d5c,FUN_8002896c
+0x80010cc4,%02d:%02d.%02d,0x80028f04,FUN_8002896c
+0x80010ce0,%02ld:%02ld.%02ld,0x80028fc8,FUN_8002896c
+0x80010ce0,%02ld:%02ld.%02ld,0x80029344,FUN_8002896c
+0x80010cf4,Team %ld,0x8002927c,FUN_8002896c
+0x80010df0,GlblData.psx,0x8002bc50,FUN_8002baa8
+0x80011204,Reduce Speed,0x80042d48,FUN_800429d0
+0x80011204,Reduce Speed,0x80042d80,FUN_800429d0
+0x80011214,Storm Alert!,0x80042d48,FUN_800429d0
+0x80011214,Storm Alert!,0x80042d80,FUN_800429d0
+0x80011224,Twister Alert!,0x80042d48,FUN_800429d0
+0x80011234,Freeze Alert!,0x80042d48,FUN_800429d0
+0x80011234,Freeze Alert!,0x80042d80,FUN_800429d0
+0x80011244,WRONG WAY,0x80042f4c,FUN_800429d0
+0x80011244,WRONG WAY,0x80042f50,FUN_800429d0
+0x80011250,RACE COMPLETED,0x80042ff8,FUN_800429d0
+0x80011250,RACE COMPLETED,0x80042ffc,FUN_800429d0
+0x80011260,lap %ld/%ld  ,0x80043974,FUN_80043520
+0x80011270,%02ld:%02ld.%02ld,0x80043a4c,FUN_80043520
+0x80011270,%02ld:%02ld.%02ld,0x80043bc4,FUN_80043520
+0x80011284,AI Car %d (power = %ld/%ld),0x80043c3c,FUN_80043520
+0x800112a0,%02ld.%01ld %s,0x80043ed4,FUN_80043520
+0x800112b0,(Far) %s,0x80043f1c,FUN_80043520
+0x80011d5c,%s%sIntro.wve,0x80079320,main
+0x80011d6c,Opening\,0x80079334,main
+0x80011d78,Ea_logo.fsv,0x80079368,main
+0x80011d84,Not Used,0x800ab9bc,
+0x80011d90,Shifting,0x800ab9b8,
+0x80011d9c,Hand Brake/Horn,0x800ab9b4,
+0x80011dac,Mirror/Horn,0x800ab9b0,
+0x80011db8,Horn/Gauges,0x800ab9ac,
+0x80011dc4,Shift Down,0x800ab9a8,
+0x80011dd0,Shift Up,0x800ab9a4,
+0x80011ddc,Brake/Reverse,0x800ab9a0,
+0x80011dec,Accelerate,0x800ab99c,
+0x80011df8,Steering,0x800ab994,
+0x80011e04,Reset Vehicle,0x800ab990,
+0x80011e14,Rearview Mirror,0x800ab98c,
+0x80011e24,Launch Power-Up,0x800ab988,
+0x80011e34,Gauge Toggle,0x800ab980,
+0x80011e44,CW\Opening\Legal.lsc,0x80090da4,FUN_80090d98
+0x80011e44,CW\Opening\Legal.lsc,0x800af470,
+0x80011e5c,BASLUS-01068NASCRMBL,0x800939a0,FUN_80093938
+0x80011e5c,BASLUS-01068NASCRMBL,0x800939c0,FUN_80093938
+0x80011e5c,BASLUS-01068NASCRMBL,0x8007dba4,FUN_8007d32c
+0x80011e5c,BASLUS-01068NASCRMBL,0x800938dc,FUN_800937f8
+0x80011e5c,BASLUS-01068NASCRMBL,0x80093900,FUN_800937f8
+0x80011e84,%s    %s,0x80080224,FUN_8007f810
+0x80011e84,%s    %s,0x80080284,FUN_8007f810
+0x80011e84,%s    %s,0x80080274,FUN_8007f810
+0x80011ea8,%s%sIntro.wve,0x80088fc4,FUN_80088edc
+0x80011eb8,Opening\,0x80088fd8,FUN_80088edc
+0x80011ec4,%s%sCredits.wve,0x80089044,FUN_80088edc
+0x80011ed4,AboutEA\,0x80089070,FUN_80088edc
+0x80011ed4,AboutEA\,0x80089098,FUN_80088edc
+0x80011ee0,%s%sPayoff.wve,0x8008905c,FUN_80088edc
+0x80011ef0,%s%sProd%ld.wve,0x80089088,FUN_80088edc
+0x80011f00,%s%sTips%ld.lsc,0x8008a568,FUN_8008a52c
+0x80011f10,HelpScrn\,0x80092234,FUN_800921a0
+0x80011f10,HelpScrn\,0x8008a580,FUN_8008a52c
+0x80011f28,%02ld:%02ld.%02ld,0x8008ef24,FUN_8008ee98
+0x80011f3c,%s%sHelp%ld.lsc,0x80092220,FUN_800921a0
+0x80011f4c,%s%s%ld%c.lsc,0x800922f0,FUN_800921a0
+0x80011f5c,%sFeld.lsc,0x8009231c,FUN_800921a0
+0x80011f68,%sLoc%s\,0x8009239c,FUN_8009233c
+0x80011f75,ASCAR RUMBLE,0x800937bc,FUN_80093748
+0x800120f4,0123456789abcdef,0x8009cb44,SPRINTF_OBJ_5A8
+0x800120f4,0123456789abcdef,0x8009cab4,SPRINTF_OBJ_5A0
+0x800121c0,CdInit: Init failed\n,0x8009d6f8,CdInit
+0x800121e0,%s: path level (%d) error\n,0x8009d98c,ISO9660_OBJ_108
+0x800121fc,%s: dir was not found\n,0x8009d9cc,ISO9660_OBJ_108
+0x80012214,CdSearchFile: disc error\n,0x8009d9fc,ISO9660_OBJ_108
+0x80012230,CdSearchFile: searching %s...\n,0x8009da24,ISO9660_OBJ_108
+0x80012250,%s:  found\n,0x8009da8c,ISO9660_OBJ_108
+0x8001225c,%s: not found\n,0x8009db00,ISO9660_OBJ_108
+0x8001226c,CD_newmedia: Read error in cd_read(PVD)\n,0x8009dbc0,ISO9660_OBJ_2F8
+0x80012298,CD001,0x8009dbd0,ISO9660_OBJ_2F8
+0x800122a0,CD_newmedia: Disc format error in cd_read(PVD)\n,0x8009dc00,ISO9660_OBJ_2F8
+0x800122d0,CD_newmedia: Read error (PT:%08x)\n,0x8009dc58,ISO9660_OBJ_2F8
+0x800122f4,CD_newmedia: sarching dir..\n,0x8009dc84,ISO9660_OBJ_2F8
+0x80012314,"	%08x,%04x,%04x,%s\n",0x8009dd78,ISO9660_OBJ_2F8
+0x80012328,CD_newmedia: %d dir entries found\n,0x8009dde4,ISO9660_OBJ_2F8
+0x8001234c,CD_cachefile: dir not found\n,0x8009df50,ISO9660_OBJ_660
+0x8001236c,CD_cachefile: searching...\n,0x8009df7c,ISO9660_OBJ_660
+0x80012390,	(%02x:%02x:%02x) %8d %s\n,0x8009e09c,ISO9660_OBJ_7F0
+0x800123ac,CD_cachefile: %d files found\n,0x8009e124,ISO9660_OBJ_7F0
+0x800123d0,CdlReadS,0x800ac618,
+0x800123dc,CdlSeekP,0x800ac604,
+0x800123e8,CdlSeekL,0x800ac600,
+0x800123f4,CdlGetTD,0x800ac5fc,
+0x80012400,CdlGetTN,0x800ac5f8,
+0x8001240c,CdlGetlocP,0x800ac5f0,
+0x80012418,CdlGetlocL,0x800ac5ec,
+0x80012428,CdlSetmode,0x800ac5e4,
+0x80012434,CdlSetfilter,0x800ac5e0,
+0x80012444,CdlDemute,0x800ac5dc,
+0x80012450,CdlMute,0x800ac5d8,
+0x80012458,CdlReset,0x800ac5d4,
+0x80012464,CdlPause,0x800ac5d0,
+0x80012470,CdlStop,0x800ac5cc,
+0x80012478,CdlStandby,0x800ac5c8,
+0x80012484,CdlReadN,0x800ac5c4,
+0x80012490,CdlBackward,0x800ac5c0,
+0x8001249c,CdlForward,0x800ac5bc,
+0x800124a8,CdlPlay,0x800ac5b8,
+0x800124b0,CdlSetloc,0x800ac5b4,
+0x800124bc,CdlNop,0x800ac5b0,
+0x800124c4,CdlSync,0x800ac5ac,
+0x800124cc,DiskError,0x800ac640,
+0x800124d8,DataEnd,0x800ac63c,
+0x800124e0,Acknowledge,0x800ac638,
+0x800124ec,Complete,0x800ac634,
+0x800124f8,DataReady,0x800ac630,
+0x80012504,NoIntr,0x8009ef3c,CD_cw
+0x80012504,NoIntr,0x8009ef44,CD_cw
+0x80012504,NoIntr,0x800ac62c,
+0x8001250c,CD timeout: ,0x8009eaa8,CD_ready
+0x8001250c,CD timeout: ,0x8009ef04,CD_cw
+0x8001250c,CD timeout: ,0x8009e828,CD_sync
+0x8001250c,CD timeout: ,0x8009f5d4,CD_datasync
+0x8001251c,"%s:(%s) Sync=%s, Ready=%s\n",0x8009eaf4,CD_ready
+0x8001251c,"%s:(%s) Sync=%s, Ready=%s\n",0x8009ef50,CD_cw
+0x8001251c,"%s:(%s) Sync=%s, Ready=%s\n",0x8009e874,CD_sync
+0x8001251c,"%s:(%s) Sync=%s, Ready=%s\n",0x8009f620,CD_datasync
+0x80012538,DiskError: ,0x8009e3d4,BIOS_1_OBJ_64
+0x80012544,"com=%s,code=(%02x:%02x)\n",0x8009e420,BIOS_1_OBJ_64
+0x80012560,CDROM: unknown intr,0x8009e728,
+0x80012574,(%d)\n,0x8009e738,
+0x80012594,CD_sync,0x8009e7d0,CD_sync
+0x80012594,CD_sync,0x8009e838,CD_sync
+0x8001259c,CD_ready,0x8009ea50,CD_ready
+0x8001259c,CD_ready,0x8009eab8,CD_ready
+0x800125a8,%s...\n,0x8009ecfc,CD_cw
+0x800125b0,%s: no param\n,0x8009ed50,CD_cw
+0x800125c0,CD_cw,0x8009ee8c,CD_cw
+0x800125c0,CD_cw,0x8009ef14,CD_cw
+0x800125c8,"$Id: bios.c,v 1.86 1997/03/28 07:42:42 makoto Exp yos $",0x800ac87c,
+0x80012600,CD_init:,0x8009f348,CD_init
+0x8001260c,addr=%08x\n,0x8009f35c,CD_init
+0x80012618,CD_datasync,0x8009f584,CD_datasync
+0x80012618,CD_datasync,0x8009f5e4,CD_datasync
+0x80012630,CdRead: sector error\n,0x8009ff6c,CDR_1_OBJ_D4
+0x80012648,CdRead: Shell open...\n,0x800a0260,CDR_1_OBJ_378
+0x80012660,CdRead: retry...\n,0x800a02a8,CDR_1_OBJ_378
+0x80012680,VSync: timeout\n,0x800a0b58,VSYNC_OBJ_178
+0x80012690,"$Id: intr.c,v 1.75 1997/02/07 09:00:36 makoto Exp $",0x800ada70,
+0x800126c4,unexpected interrupt(%04x)\n,0x800a0e58,INTR_OBJ_26C
+0x800126e0,intr timeout(%04x:%04x)\n,0x800a0f7c,INTR_OBJ_26C
+0x80012700,DMA bus error: code=%08x\n,0x800a1544,INTR_DMA_OBJ_4C
+0x8001271c,MADR[%d]=%08x\n,0x800a1558,INTR_DMA_OBJ_4C
+0x80012730,"$Id: sys.c,v 1.140 1998/01/12 07:52:27 noda Exp yos $",0x800adb28,
+0x80012768,"ResetGraph:jtb=%08x,env=%08x\n",0x800a1700,ResetGraph
+0x80012788,ResetGraph(%d)...\n,0x800a17dc,SYS_OBJ_110
+0x8001279c,"SetGraphDebug:level:%d,type:%d reverse:%d\n",0x800a1868,SetGraphDebug
+0x800127c8,SetGrapQue(%d)...\n,0x800a18b4,SetGraphQueue
+0x800127dc,DrawSyncCallback(%08x)...\n,0x800a196c,DrawSyncCallback
+0x800127f8,SetDispMask(%d)...\n,0x800a19c4,SetDispMask
+0x8001280c,DrawSync(%d)...\n,0x800a1a50,DrawSync
+0x80012820,%s:bad RECT,0x800a1b58,SYS_OBJ_3E4
+0x8001282c,"(%d,%d)-(%d,%d)\n",0x800a1b94,SYS_OBJ_4B4
+0x80012844,ClearImage,0x800a1bc0,ClearImage
+0x80012850,ClearImage2,0x800a1c50,ClearImage2
+0x8001285c,LoadImage,0x800a1cf0,LoadImage
+0x80012868,StoreImage,0x800a424c,StoreImage2
+0x80012868,StoreImage,0x800a1d50,StoreImage
+0x80012874,MoveImage,0x800a1db8,MoveImage
+0x80012874,MoveImage,0x800a4340,MoveImage2
+0x80012880,"ClearOTag(%08x,%d)...\n",0x800a1e84,ClearOTag
+0x80012898,"ClearOTagR(%08x,%d)...\n",0x800a1f44,ClearOTagR
+0x800128b0,DrawOTag(%08x)...\n,0x800a2044,DrawOTag
+0x800128b0,DrawOTag(%08x)...\n,0x800a4488,DrawOTag2
+0x800128c4,PutDrawEnv(%08x)...\n,0x800a20c4,PutDrawEnv
+0x800128dc,"DrawOTagEnv(%08x,&08x)...\n",0x800a218c,DrawOTagEnv
+0x800128f8,PutDispEnv(%08x)...\n,0x800a2294,PutDispEnv
+0x80012910,"GPU timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x\n",0x800a3fc4,SYS_OBJ_28B4
+0x80012944,LoadImage2,0x800a4160,LoadImage2
+0x80012950,MDEC_rest:bad option(%d)\n,0x800a513c,LIBPRESS_OBJ_394
+0x8001296c,MDEC_in_sync,0x800a52c4,LIBPRESS_OBJ_4CC
+0x8001297c,MDEC_out_sync,0x800a5358,LIBPRESS_OBJ_560
+0x8001298c,%s timeout:\n,0x800a53b8,LIBPRESS_OBJ_60C
+0x80012aa0,SPU:T/O [%s]\n,0x800a61c4,SPU_OBJ_390
+0x80012aa0,SPU:T/O [%s]\n,0x800a6130,SPU_OBJ_280
+0x80012aa0,SPU:T/O [%s]\n,0x800a5e70,_spu_init
+0x80012ab0,wait (reset),0x800a5e7c,_spu_init
+0x80012ac0,wait (wrdy H -> L),0x800a613c,SPU_OBJ_280
+0x80012ad4,wait (dmaf clear/W),0x800a61d0,SPU_OBJ_390
+0x80012af0,SPU:T/O [%s]\n,0x800a8620,SpuSetIRQ
+0x80012af0,SPU:T/O [%s]\n,0x800a8594,SpuSetIRQ
+0x80012b00,wait (IRQ/ON),0x800a85a0,SpuSetIRQ
+0x80012b10,wait (IRQ/OFF),0x800a8628,SpuSetIRQ
+0x800abe7c,abcdefghijklmnopqrstuvwxyz0123456789   ~~~...,0x80081844,FUN_80080cbc
+0x800abeed,01234567.,0x8008a2b8,FUN_8008927c
+0x800abeed,01234567.,0x80091e84,FUN_80091ae0
+0x800af11c,C:\PSX\,0x8001ca80,FUN_8001ca54
+0x800af18c,%03ld,0x80025598,FUN_8002552c
+0x800af18c,%03ld,0x800255e8,FUN_8002552c
+0x800af18c,%03ld,0x80025638,FUN_8002552c
+0x800af18c,%03ld,0x80025688,FUN_8002552c
+0x800af1d4,Class: ,0x80028adc,FUN_8002896c
+0x800af1dc,Rookie,0x80028b44,FUN_8002896c
+0x800af1e8,Elite,0x80028b58,FUN_8002896c
+0x800af208,Mayhem,0x80028be4,FUN_8002896c
+0x800af210,Total,0x80028c1c,FUN_8002896c
+0x800af28c,REPLAY,0x80042ad4,FUN_800429d0
+0x800af28c,REPLAY,0x80042ad8,FUN_800429d0
+0x800af294,Press,0x80042b54,FUN_800429d0
+0x800af2b4,%03ld,0x80043298,FUN_800430e4
+0x800af2b4,%03ld,0x800434e4,FUN_800430e4
+0x800af2c8,GO!!!,0x80043700,FUN_80043520
+0x800af2d0,%ld/%ld,0x800438e8,FUN_80043520
+0x800af2e0,total:,0x80043ad0,FUN_80043520
+0x800af2e8,best:,0x80043b5c,FUN_80043520
+0x800af35c,Fe.trk,0x800793a0,main
+0x800af368,Brake,0x800ab998,
+0x800af378,Cameras,0x800ab97c,
+0x800af380,Pause,0x800ab978,
+0x800af3a4,JT3.trk,0x800abe40,
+0x800af3ac,JT2.trk,0x800abe3c,
+0x800af3b4,JT1.trk,0x800abe38,
+0x800af3c0,MG3.trk,0x800abe30,
+0x800af3c8,MG2.trk,0x800abe2c,
+0x800af3d0,MG1.trk,0x800abe28,
+0x800af3dc,BL3.trk,0x800abe20,
+0x800af3e4,BL2.trk,0x800abe1c,
+0x800af3ec,BL1.trk,0x800abe18,
+0x800af3f8,BB3.trk,0x800abe10,
+0x800af400,BB2.trk,0x800abe0c,
+0x800af408,BB1.trk,0x800abe08,
+0x800af414,SE3.trk,0x800abe00,
+0x800af41c,SE2.trk,0x800abdfc,
+0x800af424,SE1.trk,0x800abdf8,
+0x800af430,MC3.trk,0x800abdf0,
+0x800af438,MC2.trk,0x800abdec,
+0x800af440,MC1.trk,0x8007a520,FUN_80079814
+0x800af440,MC1.trk,0x800abde8,
+0x800af44c,GR3.trk,0x800abde0,
+0x800af454,GR2.trk,0x800abddc,
+0x800af45c,GR1.trk,0x8007a520,FUN_80079814
+0x800af45c,GR1.trk,0x800abdd8,
+0x800af488,%s%ld,0x80080544,FUN_8007f810
+0x800af490,%s %ld,0x80082678,FUN_80081a9c
+0x800af4b8,FEnd\,0x800923ac,FUN_8009233c
