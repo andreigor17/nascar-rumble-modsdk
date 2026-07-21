@@ -12,6 +12,32 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-008-roster-e-stats',
+    date: '2026-07-21',
+    session: '008',
+    tag: 'Stats',
+    pt: {
+      title: 'O roster: 32 carros com número, rating e classe',
+      summary:
+        'Encontramos no executável a tabela de carros do jogo — com os pilotos reais, seus números e desempenho.',
+      points: [
+        'Tabela de 32 structs (12 bytes cada): nome, número do carro, índice do modelo, rating e classe.',
+        'As lendas dominam: Richard Petty (rating 63), Cale Yarborough (62), Benny Parsons (60). Novatos ficam ~20.',
+        'O índice do modelo liga cada piloto à sua pintura 3D — base para um futuro Car Editor.',
+      ],
+    },
+    en: {
+      title: 'The roster: 32 cars with number, rating and class',
+      summary:
+        'We found the game’s car table in the executable — with the real drivers, their numbers and performance.',
+      points: [
+        'Table of 32 structs (12 bytes each): name, car number, model index, rating and class.',
+        'The legends dominate: Richard Petty (rating 63), Cale Yarborough (62), Benny Parsons (60). Rookies sit ~20.',
+        'The model index links each driver to their 3D livery — groundwork for a future Car Editor.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-007-carros',
     date: '2026-07-21',
     session: '007',
