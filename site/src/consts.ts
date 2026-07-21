@@ -19,7 +19,7 @@ export function href(path: string, lang: Lang = 'pt'): string {
 /** Estatísticas exibidas no hero — atualizar quando avançarmos. */
 export const STATS = [
   { value: '2008', label_pt: 'funções mapeadas', label_en: 'functions mapped' },
-  { value: '4', label_pt: 'formatos decodificados', label_en: 'formats decoded' },
+  { value: '5', label_pt: 'formatos decodificados', label_en: 'formats decoded' },
+  { value: '171', label_pt: 'pinturas de carro extraídas', label_en: 'car liveries extracted' },
   { value: '9', label_pt: 'ferramentas do SDK', label_en: 'SDK tools' },
-  { value: '108', label_pt: 'arquivos na ISO', label_en: 'files in the ISO' },
 ];

@@ -12,6 +12,33 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-007-carros',
+    date: '2026-07-21',
+    session: '007',
+    tag: 'Carros',
+    image: '/gallery/car-livery.png',
+    pt: {
+      title: 'Os carros: 171 pinturas extraídas do jogo',
+      summary:
+        'Abrimos o arquivo de dados globais e encontramos as pinturas de todos os carros — incluindo pilotos reais da NASCAR.',
+      points: [
+        'O GlblData.psx são 172 containers concatenados: fontes, objetos e a grade de carros.',
+        'Extraímos 171 páginas de textura — as liveries dos carros — mais modelos (Cobj) e stats (Ceng).',
+        'Confirmado visualmente: o #43 do Richard Petty (patrocínio EXIDE) e outros esquemas reais.',
+      ],
+    },
+    en: {
+      title: 'The cars: 171 liveries extracted from the game',
+      summary:
+        'We opened the global data file and found every car’s paint scheme — including real NASCAR drivers.',
+      points: [
+        'GlblData.psx is 172 concatenated containers: fonts, objects and the car grid.',
+        'We extracted 171 texture pages — the car liveries — plus models (Cobj) and stats (Ceng).',
+        'Visually confirmed: Richard Petty’s #43 (EXIDE sponsor) and other real schemes.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-006-texturas-coloridas',
     date: '2026-07-21',
     session: '006',
