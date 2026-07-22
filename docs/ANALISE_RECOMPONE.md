@@ -155,3 +155,30 @@ Revisitado com o progresso da Fase 4 (Ghidra). **Agora temos exatamente o que o 
 
 **Recomendação:** RecompOne vira nossa **Trilha B (port rápido)**, rodando em paralelo à Trilha A
 (Ghidra/entendimento), que continua sendo o coração do projeto e o que alimenta o RecompOne.
+
+## Tentativa de 1º boot (2026-07-22) — recompilação ✅, boot bloqueado pela janela (macOS)
+
+Executado o pipeline completo com nossos artefatos do Ghidra:
+
+1. ✅ **Recompilador compilou** (.NET 10; instalei `dotnet-install --channel 10.0`).
+2. ✅ **`recompone recompone/nascar.json` rodou** — leu SYSTEM.CNF/PS-EXE (PC=0x800A5440,
+   load=0x80010000, batendo com nossa análise), processou **1855 funções** do nosso funcMap,
+   achou 44 jump tables, aplicou 20 reimplementações PsyQ, e **gerou `Recompiled/main.cs`
+   (188.902 linhas de C#) + Entry.cs + Stubs.cs**.
+3. ✅ **Host compilou** (`recompone/host/`: projeto que referencia `RecompOne.Runtime` + inclui o
+   C# gerado; chama `Recompiled.Entry.Run(mem, cue)`). **188k linhas, 0 erros.**
+4. ❌ **Boot travou** com `EXC_BAD_ACCESS` em `glfwSetWindowPos` (**GLFW**): a criação da janela
+   falhou no **macOS ARM** (retornou nulo) e o runtime tentou posicioná-la. É um problema de
+   **portabilidade da camada de janela/gráfico do RecompOne no macOS**, NÃO da nossa recompilação.
+
+**Conclusão:** a ponte Ghidra → RecompOne funciona de ponta a ponta — o MIPS do NASCAR Rumble
+virou C# nativo compilável a partir da NOSSA engenharia reversa. O único bloqueio é o windowing
+(GLFW/OpenGL) no macOS. Caminhos: (a) rodar no **Windows** (alvo primário do RecompOne); (b) patch
+no `HostWindow` do RecompOne para macOS (checar retorno nulo do glfwCreateWindow / hints de GL).
+
+Reprodução:
+```bash
+export PATH="$HOME/.dotnet:$PATH"; export DOTNET_ROOT="$HOME/.dotnet"
+dotnet tools/RecompOne/RecompOne.Recompiler/bin/Release/net10.0/recompone.dll recompone/nascar.json
+cd recompone/host && dotnet build -c Release && bin/Release/net10.0/NascarRumbleNative
+```

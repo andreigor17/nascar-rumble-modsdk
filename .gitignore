@@ -58,3 +58,11 @@ debug*.log
 
 # snapshots de RAM do PCSX-Redux (regeneráveis)
 experiments/ram/
+
+# clone do RecompOne (build)
+tools/RecompOne/
+
+# RecompOne: código gerado e build do host
+recompone/Recompiled/
+recompone/host/bin/
+recompone/host/obj/
