@@ -20,6 +20,6 @@ export function href(path: string, lang: Lang = 'pt'): string {
 export const STATS = [
   { value: '2008', label_pt: 'funções mapeadas', label_en: 'functions mapped' },
   { value: '5', label_pt: 'formatos decodificados', label_en: 'formats decoded' },
-  { value: '171', label_pt: 'pinturas de carro extraídas', label_en: 'car liveries extracted' },
-  { value: '9', label_pt: 'ferramentas do SDK', label_en: 'SDK tools' },
+  { value: '168', label_pt: 'carros catalogados', label_en: 'cars catalogued' },
+  { value: '188k', label_pt: 'linhas de C# nativo', label_en: 'lines of native C#' },
 ];

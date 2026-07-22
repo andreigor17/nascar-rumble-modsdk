@@ -5,10 +5,10 @@ export const JOURNEY: Step[] = [
   { key: 'understand', status: 'doing', pt: 'Entender o jogo', en: 'Understand the game' },
   { key: 'extract', status: 'doing', pt: 'Extrair os recursos', en: 'Extract the assets' },
   { key: 'tools', status: 'todo', pt: 'Editores & mods', en: 'Editors & mods' },
-  { key: 'playable', status: 'todo', pt: 'Rodar sem emulador', en: 'Run without emulator' },
+  { key: 'playable', status: 'doing', pt: 'Rodar sem emulador', en: 'Run without emulator' },
 ];
 
 export const JOURNEY_STATUS = {
-  pt: 'Em pesquisa — ainda não jogável. Acompanhe cada passo até lá.',
-  en: 'In research — not playable yet. Follow every step toward that.',
+  pt: 'Em pesquisa — já temos um build nativo que compila (falta abrir a tela). Acompanhe cada passo.',
+  en: 'In research — we already have a native build that compiles (window not opening yet). Follow along.',
 };

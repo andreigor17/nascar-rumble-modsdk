@@ -66,3 +66,7 @@ tools/RecompOne/
 recompone/Recompiled/
 recompone/host/bin/
 recompone/host/obj/
+
+recompone/boot.log
+recompone/host/settings.json
+recompone/*.sav

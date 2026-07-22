@@ -12,6 +12,58 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-011-port-nativo',
+    date: '2026-07-22',
+    session: '011',
+    tag: 'Port nativo',
+    pt: {
+      title: 'O jogo virou código nativo: 188 mil linhas de C#',
+      summary:
+        'Ligamos a nossa engenharia reversa ao recompilador RecompOne e transformamos o NASCAR Rumble num executável nativo que compila sem erros.',
+      points: [
+        'O nosso mapa de 1855 funções (do Ghidra) alimentou o RecompOne, que traduziu o MIPS do jogo em C# — main.cs com 188.902 linhas.',
+        'O build nativo compilou com 0 erros. A ponte "engenharia reversa → executável sem emulador" funciona de ponta a ponta.',
+        'O boot ainda trava na criação da janela gráfica no macOS (GLFW) — problema do runtime, não da recompilação. Próximo teste: Windows.',
+      ],
+    },
+    en: {
+      title: 'The game became native code: 188k lines of C#',
+      summary:
+        'We connected our reverse engineering to the RecompOne recompiler and turned NASCAR Rumble into a native executable that compiles cleanly.',
+      points: [
+        'Our 1855-function map (from Ghidra) fed RecompOne, which translated the game’s MIPS into C# — a 188,902-line main.cs.',
+        'The native build compiled with 0 errors. The "reverse engineering → run without emulator" bridge works end to end.',
+        'Boot still crashes on graphics window creation on macOS (GLFW) — a runtime issue, not the recompilation. Next test: Windows.',
+      ],
+    },
+  },
+  {
+    slug: 'sessao-010-emulador-e-carros',
+    date: '2026-07-22',
+    session: '010',
+    tag: 'Emulador + Carros',
+    pt: {
+      title: 'Controle total do jogo e o catálogo dos 168 carros',
+      summary:
+        'Passamos a controlar o jogo sozinhos (tela, controle e memória) e mapeamos os primeiros dados vivos + o catálogo completo de carros.',
+      points: [
+        'Controle autônomo via PCSX-Redux: vemos a tela, apertamos os botões e lemos/escrevemos a memória — navegamos e corremos por conta própria.',
+        'Primeiros endereços vivos: contador de voltas e velocidade. Classes confirmadas: Rookie 160 / Pro 170 / Elite 180; power-up de velocidade = +20.',
+        'Catálogo completo: 168 carros = 56 pilotos × 3 classes, cruzado com o roster do executável.',
+      ],
+    },
+    en: {
+      title: 'Full game control and the 168-car catalog',
+      summary:
+        'We now control the game ourselves (screen, input and memory) and mapped the first live data + the complete car catalog.',
+      points: [
+        'Autonomous control via PCSX-Redux: we see the screen, press the buttons and read/write memory — navigating and racing on our own.',
+        'First live addresses: lap counter and speed. Classes confirmed: Rookie 160 / Pro 170 / Elite 180; speed power-up = +20.',
+        'Complete catalog: 168 cars = 56 drivers × 3 classes, cross-referenced with the executable roster.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-009-catalogo-carros',
     date: '2026-07-22',
     session: '009',
