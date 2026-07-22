@@ -81,6 +81,19 @@ O Claude controla o jogo **sozinho**, sem depender do usuário observar/jogar:
 
 > Com isso o Claude navega menus, entra em corrida, dirige e faz o diffing por conta própria.
 
+### Metodologia de teste controlado (evita contaminação por batida)
+
+⚠️ Dirigir só em linha reta faz o carro **bater/sair da pista** em certos trechos, impedindo
+atingir a velocidade real (numa reta limpa o carro chega a ~181; batendo, parava em ~113).
+Solução:
+- **Esterçar:** `LEFT`(7)/`RIGHT`(5) mantêm o carro na pista.
+- **Savestate como ponto de restauração:** `PCSX.createSaveState()` (guardar num global Lua
+  `_RESTORE` — **nunca** imprimir o objeto, tem ~20 MB) e `PCSX.loadSaveState(_RESTORE)` para
+  resetar ao mesmo ponto limpo a cada teste. Round-trip confirmado (volta à posição/velocidade exatas).
+- Fluxo: posicionar numa reta → `save_state` → aplicar input controlado → `pause` → ler RAM →
+  `load_state` para repetir de forma idêntica. Comandos em `scripts/pcsx.py`.
+- Controles: **CROSS**=acelerar, **SQUARE**=frear/ré, **LEFT/RIGHT**=esterçar.
+
 ## Como caçamos uma variável (ex.: contador de voltas)
 
 ```

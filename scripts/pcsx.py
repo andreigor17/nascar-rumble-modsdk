@@ -48,6 +48,24 @@ def tap(btn, ms=120):
     press(btn); time.sleep(ms/1000.0); release(btn)
 
 
+def pause():
+    lua("PCSX.pauseEmulator() return 1")
+
+
+def resume():
+    lua("PCSX.resumeEmulator() return 1")
+
+
+def save_state():
+    """Cria um ponto de restauração limpo (global Lua _RESTORE). NUNCA imprime o objeto (é enorme)."""
+    lua("_RESTORE = PCSX.createSaveState() return 'saved'")
+
+
+def load_state():
+    """Volta ao ponto de restauração — base dos testes repetíveis sem contaminação de batida."""
+    lua("if _RESTORE then PCSX.loadSaveState(_RESTORE) end return 'loaded'")
+
+
 def rd(addr, n=1):
     with urllib.request.urlopen(BASE + "/api/v1/cpu/ram/raw", timeout=15) as r:
         return r.read()[addr-0x80000000: addr-0x80000000+n]
@@ -88,4 +106,8 @@ if __name__ == "__main__":
     elif cmd == "release_all": release_all(); print("released all")
     elif cmd == "shot": print(shot(a[1] if len(a) > 1 else "experiments/ram/shots/shot.png"))
     elif cmd == "rd": print(rd(int(a[1], 0), int(a[2]) if len(a) > 2 else 1).hex(" "))
+    elif cmd == "pause": pause(); print("paused")
+    elif cmd == "resume": resume(); print("resumed")
+    elif cmd == "save_state": save_state(); print("restore criado")
+    elif cmd == "load_state": load_state(); print("restore carregado")
     else: print("cmd?", cmd)
