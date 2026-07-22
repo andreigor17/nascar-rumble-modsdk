@@ -12,6 +12,33 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-009-catalogo-carros',
+    date: '2026-07-22',
+    session: '009',
+    tag: 'Carros',
+    image: '/cars/petty-43.png',
+    pt: {
+      title: 'Catálogo de carros e as 171 liveries da NASCAR',
+      summary:
+        'Publicamos a página dos 32 carros do grid e descobrimos que o disco guarda todas as pinturas reais da NASCAR da época.',
+      points: [
+        'Nova página "Carros": o roster completo (piloto, número, rating e classe) com barras de desempenho.',
+        'O disco tem 171 liveries — muito além dos 32 selecionáveis: Jeff Gordon #24 (DuPont), Terry Labonte #5 (Kellogg’s), e mais.',
+        'Duplas confirmadas por número: Richard Petty #43 e Stacy Compton #86. Ligar cada piloto à pintura exata é o próximo passo.',
+      ],
+    },
+    en: {
+      title: 'Car catalog and the 171 NASCAR liveries',
+      summary:
+        'We published the 32-car grid page and found the disc holds every real NASCAR paint of the era.',
+      points: [
+        'New "Cars" page: the full roster (driver, number, rating and class) with performance bars.',
+        'The disc has 171 liveries — far beyond the 32 selectable: Jeff Gordon #24 (DuPont), Terry Labonte #5 (Kellogg’s), and more.',
+        'Number-confirmed pairs: Richard Petty #43 and Stacy Compton #86. Linking each driver to their exact livery is next.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-008-roster-e-stats',
     date: '2026-07-21',
     session: '008',

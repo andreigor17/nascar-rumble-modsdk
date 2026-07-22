@@ -34,4 +34,15 @@ python3 scripts/dump_cars.py            # imprime o roster
 python3 scripts/dump_cars.py docs/cars.csv   # grava CSV
 ```
 
+## Mapeamento roster → livery (parcial)
+
+O disco tem **171 liveries** (`Cpag` no `GlblData`) = todas as pinturas reais da NASCAR da época,
+bem além dos 32 carros do roster. O campo **índice do modelo (+0x06)** NÃO é o número do container
+(testado: container 15=#5 Kellogg's, 46=#24 DuPont, 110=#86, 141=#43 — mapeamento não-linear).
+
+- ✅ Confirmado por número: **#43 = Richard Petty** (container 141) e **#86 = Stacy Compton** (110).
+- 🔵 A tabela `índice do modelo → container/recurso` é indireta (o roster em RAM `0x800AA700` é
+  acessado por ponteiro; não há referência absoluta no decomp). **Próximo passo:** achar a função
+  que carrega a livery a partir do índice do modelo para completar o mapeamento 1:1.
+
 Base para o **Car Editor** (Frente B) e para a pesquisa de física/gameplay (Fase 8).

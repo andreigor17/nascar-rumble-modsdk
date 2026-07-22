@@ -161,6 +161,18 @@ a.card:hover { border-color: var(--accent); text-decoration: none; transform: tr
 .shot img { width: 100%; image-rendering: pixelated; background: #05070c; }
 .shot .cap { padding: 12px 14px; color: var(--muted); font-size: 0.86rem; }
 
+/* roster table (Carros) */
+.tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+table.roster { width: 100%; border-collapse: collapse; font-size: 0.92rem; min-width: 420px; }
+table.roster th, table.roster td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+table.roster th { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; }
+table.roster tr:last-child td { border-bottom: none; }
+table.roster td.num { text-align: right; color: var(--muted); width: 1%; white-space: nowrap; }
+table.roster .bar { display: inline-block; width: 120px; height: 8px; background: var(--bg-elev);
+  border-radius: 999px; overflow: hidden; vertical-align: middle; margin-right: 8px; }
+table.roster .fill { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+table.roster .rv { color: var(--muted); font-variant-numeric: tabular-nums; }
+
 /* prose (devlog post & about) */
 .prose { max-width: 70ch; }
 .prose p { color: #cdd6e4; }

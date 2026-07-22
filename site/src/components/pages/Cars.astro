@@ -1,0 +1,58 @@
+---
+import { type Lang } from '../../consts';
+import { CARS, LIVERIES } from '../../data/cars';
+const { lang } = Astro.props as { lang: Lang };
+const base = import.meta.env.BASE_URL;
+const t = {
+  pt: {
+    eyebrow: 'Carros', title: 'O grid: 32 carros do jogo',
+    intro: 'A tabela de carros lida direto do executável — pilotos reais da NASCAR, com número, desempenho e classe. Ao lado, pinturas extraídas do disco.',
+    liveries: 'Pinturas extraídas', drv: 'Piloto', num: 'Nº', rat: 'Rating', cls: 'Classe',
+    note: 'O disco guarda 171 pinturas (todas as liveries da NASCAR da época). Ligar cada piloto do roster à sua pintura exata é o próximo passo.',
+  },
+  en: {
+    eyebrow: 'Cars', title: 'The grid: 32 cars in the game',
+    intro: 'The car table read straight from the executable — real NASCAR drivers, with number, performance and class. Alongside, liveries extracted from the disc.',
+    liveries: 'Extracted liveries', drv: 'Driver', num: 'No.', rat: 'Rating', cls: 'Class',
+    note: 'The disc holds 171 liveries (every NASCAR paint of the era). Linking each roster driver to their exact livery is the next step.',
+  },
+}[lang];
+const maxR = Math.max(...CARS.map((c) => c.rating));
+---
+<section class="section">
+  <div class="container">
+    <p class="eyebrow">{t.eyebrow}</p>
+    <h2>{t.title}</h2>
+    <p class="lead">{t.intro}</p>
+
+    <h3 style="margin:8px 0 16px">{t.liveries}</h3>
+    <div class="grid cols-2" style="margin-bottom:40px">
+      {LIVERIES.map((l) => (
+        <figure class="shot" style="margin:0">
+          <img src={`${base}${l.src}`.replace('//', '/')} alt={lang === 'pt' ? l.pt : l.en} loading="lazy" />
+          <figcaption class="cap">{(l.roster ? '★ ' : '') + (lang === 'pt' ? l.pt : l.en)}</figcaption>
+        </figure>
+      ))}
+    </div>
+
+    <div class="tablewrap">
+      <table class="roster">
+        <thead><tr><th>{t.drv}</th><th>{t.num}</th><th>{t.rat}</th><th>{t.cls}</th></tr></thead>
+        <tbody>
+          {CARS.map((c) => (
+            <tr>
+              <td>{c.name}</td>
+              <td class="num">{c.number}</td>
+              <td>
+                <span class="bar"><span class="fill" style={`width:${Math.round((c.rating / maxR) * 100)}%`}></span></span>
+                <span class="rv">{c.rating}</span>
+              </td>
+              <td class="num">{c.klass}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="lead" style="margin-top:20px">{t.note}</p>
+  </div>
+</section>
