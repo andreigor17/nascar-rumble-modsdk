@@ -26,6 +26,21 @@ Pipeline PyGhidra (`scripts/ghidra/export_analysis.py`) analisou o EXE e exporto
 
 > Tabela de nomes das 22 pistas: ponteiros em `0x800abdd8`–`0x800abe40` (índice → `"XX?.trk"`).
 
+## Sistema de recursos (lookup por tipo+id) — ✅ (2026-07-22)
+
+- `0x80018788` **`res_find(type, id)`** — percorre a lista encadeada `DAT_800af5b0` e retorna o
+  recurso cujo `+0x18==type` e `+0x1c==id`. É assim que o jogo pega qualquer recurso carregado.
+- `0x80022880` **`res_register(data, size, type, id, alloc)`** — cria o nó do recurso: `+0x18=type`,
+  `+0x1c=id`, `+0x20=size`, e copia os dados. Registra no sistema acima.
+- `0x8003d128` **`car_slot_alloc()`** — devolve um slot 0..7 (`DAT_800af83b`); cada carro numa
+  corrida ocupa um slot. Cvkh/Cvkb do carro são registrados com `id = slot`, não o índice do modelo.
+- Ids de `Cobj` (peças) derivam de `(carId-1000)*10 + 0x2711`.
+
+> **Conclusão sobre roster→livery:** o mapeamento índice-do-modelo → container/livery não é uma
+> constante estática simples — a livery é resolvida no carregamento do carro para um slot. O jeito
+> limpo de obter o mapeamento 1:1 é **dinâmico** (no emulador: selecionar cada carro e ler qual
+> recurso é carregado) — tarefa natural da Fase 5 (RAM Map / Memory Inspector).
+
 ## SDK e compilador — ✅ Confirmado
 
 - **PsyQ (Sony/SN Systems)**: presença das strings de debug de `libgpu` (`ResetGraph`, `DrawSync`,
