@@ -15,6 +15,13 @@ Testando `stride 0x1404`: carro[0]=`0x801a2e00`, carro[1]=`0x801a4204` (ambos vo
 carros seguintes zerados (poucos ativos?). Bytes logo após a volta diferem por carro (candidatos a
 posição/progresso). A confirmar se é o array de carros e qual o layout da struct.
 
+| `0x801a2ee8` | 4×u32 | **Vetor de velocidade (Vx,Vy,Vz,?) do jogador?** | 🟡 | Achado por diffing u32 (0 parado → grande na máxima). 4 valores adjacentes com magnitudes distintas, logo após o contador de volta do jogador (`0x801a2e00 + 0xe8`). Forte candidato à velocidade/velocidade-vetorial do jogador. A confirmar por escrita (Lua). |
+
+> **Velocidade (magnitude):** o diffing por direção (aumentou/diminuiu) pega dezenas de valores
+> físicos que escalam com a velocidade — muitos carros compartilham `máx=6144=0x1800`. O vetor em
+> `0x801a2ee8` é o candidato mais forte por ficar dentro da struct do jogador. Confirmação definitiva
+> pede **escrita na memória** (console Lua do PCSX-Redux) — próximo passo.
+
 ## Como foi achado (reprodutível)
 
 Busca `u8`: `eq 1`(34k) → volta → `eq 2`(163) → não seguiu (contador é 0-indexado). Refeito:
