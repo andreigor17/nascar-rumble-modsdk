@@ -1,0 +1,169 @@
+id,name
+0,Rookie 1 Steve Park
+1,Rookie 2 Rusty Wallace
+2,Rookie 3 Dale Earnhardt
+3,Rookie 4 Bobby Hamilton
+4,Rookie 5 Terry Labonte
+5,Rookie 6 Mark Martin
+6,Rookie 7 Michael Walrip
+7,Rookie 8 Dale Earnhardt Jr
+8,Rookie 10 Ricky Rudd
+9,Rookie 12 Jermy Maytield
+10,Rookie 16 Kevin LePage
+11,Rookie 18 Bobby Labonte
+12,Rookie 20 Tony Stewart
+13,Rookie 22 Ward Burton
+14,Rookie 24 Jeff Gordon
+15,Rookie 25 Wally Dallenbach
+16,Rookie 26 Johnny Benson
+17,Rookie 28 Kenny Irwin Jr
+18,Rookie 31 Mike Skinner
+19,Rookie 33 Ken Schrader
+20,Rookie 36 Ernie Irvan
+21,Rookie 40 Sterling Martin
+22,Rookie 42 Joe Nemechek
+23,Rookie 43 John Andretti
+24,Rookie 44 Kyle Petty
+25,Rookie 45 Adam Petty
+26,Rookie 55 Kenny Wallace
+27,Rookie 60 Geoff Bodine
+28,Rookie 66 Darrel Waltrip
+29,Rookie 88 Dale Jarret
+30,Rookie 94 Bill Elliot
+31,Rookie 97 Chad Little
+32,Rookie 99 Jeff Burton
+33,Rookie 2 Mike Wallace
+34,Rookie 6 Rick Carelli
+35,Rookie 16 Ron Hornaday
+36,Rookie 24 Jack Sprague
+37,Rookie 52 Scott Hansen
+38,Rookie 86 Stacy Compton
+39,Rookie 7 Alan Kulwicki
+40,Rookie 11 Cale Yarborough
+41,Rookie 17 David Pearson
+42,Rookie 22 Bobby Allison
+43,Rookie 28 Davey Allison
+44,Rookie 43 Richard Petty
+45,Rookie 72 Benny Parsons
+46,Rookie 153 EA Sports Car
+47,Rookie 198 Loader
+48,Rookie 209 Sprint
+49,Rookie 299 Jet Car
+50,Rookie 357 Tow Truck
+51,Rookie 455 Chicken Truck
+52,Rookie 528 RV
+53,Rookie 574 Golf Cart
+54,Rookie 609 Hot Rod
+55,Rookie 707 Road Captain
+56,Pro 1 Steve Park
+57,Pro 2 Rusty Wallace
+58,Pro 3 Dale Earnhardt
+59,Pro 4 Bobby Hamilton
+60,Pro 5 Terry Labonte
+61,Pro 6 Mark Martin
+62,Pro 7 Michael Walrip
+63,Pro 8 Dale Earnhardt Jr
+64,Pro 10 Ricky Rudd
+65,Pro 12 Jermy Maytield
+66,Pro 16 Kevin LePage
+67,Pro 18 Bobby Labonte
+68,Pro 20 Tony Stewart
+69,Pro 22 Ward Burton
+70,Pro 24 Jeff Gordon
+71,Pro 25 Wally Dallenbach
+72,Pro 26 Johnny Benson
+73,Pro 28 Kenny Irwin Jr
+74,Pro 31 Mike Skinner
+75,Pro 33 Ken Schrader
+76,Pro 36 Ernie Irvan
+77,Pro 40 Sterling Martin
+78,Pro 42 Joe Nemechek
+79,Pro 43 John Andretti
+80,Pro 44 Kyle Petty
+81,Pro 45 Adam Petty
+82,Pro 55 Kenny Wallace
+83,Pro 60 Geoff Bodine
+84,Pro 66 Darrel Waltrip
+85,Pro 88 Dale Jarret
+86,Pro 94 Bill Elliot
+87,Pro 97 Chad Little
+88,Pro 99 Jeff Burton
+89,Pro 2 Mike Wallace
+90,Pro 6 Rick Carelli
+91,Pro 16 Ron Hornaday
+92,Pro 24 Jack Sprague
+93,Pro 52 Scott Hansen
+94,Pro 86 Stacy Compton
+95,Pro 7 Alan Kulwicki
+96,Pro 11 Cale Yarborough
+97,Pro 17 David Pearson
+98,Pro 22 Bobby Allison
+99,Pro 28 Davey Allison
+100,Pro 43 Richard Petty
+101,Pro 72 Benny Parsons
+102,Pro 153 EA Sports Car
+103,Pro 198 Loader
+104,Pro 209 Sprint
+105,Pro 299 Jet Car
+106,Pro 357 Tow Truck
+107,Pro 455 Chicken Truck
+108,Pro 528 RV
+109,Pro 574 Golf Cart
+110,Pro 609 Hot Rod
+111,Pro 707 Road Captain
+112,Elite 1 Steve Park
+113,Elite 2 Rusty Wallace
+114,Elite 3 Dale Earnhardt
+115,Elite 4 Bobby Hamilton
+116,Elite 5 Terry Labonte
+117,Elite 6 Mark Martin
+118,Elite 7 Michael Walrip
+119,Elite 8 Dale Earnhardt Jr
+120,Elite 10 Ricky Rudd
+121,Elite 12 Jermy Maytield
+122,Elite 16 Kevin LePage
+123,Elite 18 Bobby Labonte
+124,Elite 20 Tony Stewart
+125,Elite 22 Ward Burton
+126,Elite 24 Jeff Gordon
+127,Elite 25 Wally Dallenbach
+128,Elite 26 Johnny Benson
+129,Elite 28 Kenny Irwin Jr
+130,Elite 31 Mike Skinner
+131,Elite 33 Ken Schrader
+132,Elite 36 Ernie Irvan
+133,Elite 40 Sterling Martin
+134,Elite 42 Joe Nemechek
+135,Elite 43 John Andretti
+136,Elite 44 Kyle Petty
+137,Elite 45 Adam Petty
+138,Elite 55 Kenny Wallace
+139,Elite 60 Geoff Bodine
+140,Elite 66 Darrel Waltrip
+141,Elite 88 Dale Jarret
+142,Elite 94 Bill Elliot
+143,Elite 97 Chad Little
+144,Elite 99 Jeff Burton
+145,Elite 2 Mike Wallace
+146,Elite 6 Rick Carelli
+147,Elite 16 Ron Hornaday
+148,Elite 24 Jack Sprague
+149,Elite 52 Scott Hansen
+150,Elite 86 Stacy Compton
+151,Elite 7 Alan Kulwicki
+152,Elite 11 Cale Yarborough
+153,Elite 17 David Pearson
+154,Elite 22 Bobby Allison
+155,Elite 28 Davey Allison
+156,Elite 43 Richard Petty
+157,Elite 72 Benny Parsons
+158,Elite 153 EA Sports Car
+159,Elite 198 Loader
+160,Elite 209 Sprint
+161,Elite 299 Jet Car
+162,Elite 357 Tow Truck
+163,Elite 455 Chicken Truck
+164,Elite 528 RV
+165,Elite 574 Golf Cart
+166,Elite 609 Hot Rod
+167,Elite 707 Road Captain
