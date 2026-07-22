@@ -18,6 +18,26 @@ Na seleção de carro dá para escolher a **classe** do carro (`Rookie` / `Pro` 
   `*(u16*)(*(0x800b6188)+0xCC)`, batendo com o HUD).
 - 🟡 Pro (170/171) e Elite (180/181) informados pelo usuário — a verificar com o mesmo leitor.
 
+## Fluxo de menus e seleção de oponentes — ✅ (verificado ao vivo)
+
+Estrutura (confirmada navegando o jogo):
+- **Menu superior:** 1 Player · 2 Players · **Racing Class** (Rookie/Pro/Elite, global) ·
+  **Power-Ups** (Some/...) · Hall of Champs · Game Options · Showcase.
+- **1 Player →** Single Race · Championship · Time Trial · Showdown · Race Options.
+- Em *Game Options* há **"Select Opponents"** (on/off).
+
+**Diferença crucial (base para o mod "campeonato com qualquer carro"):**
+
+| Modo | Após escolher SEU carro |
+|---|---|
+| **Single Race** (Select Opponents = on) | vai para a **seleção de oponentes** (escolhe "Opponent 1", 2… ou "Skip Rest" p/ randomizar o resto) |
+| **Championship** | pula direto para a **seleção de cup/pista** (ex.: copa *Metropolis*: Night Flight/Urban Decay/Ship Shape). **Não deixa escolher oponentes** — o grid é montado pelo jogo. |
+
+→ **Mod alvo:** injetar/hookar o preenchimento do grid de oponentes no Championship (usar o
+mecanismo de seleção que JÁ existe no Single Race, ou escrever os IDs de carro direto no grid).
+Temos a tabela de carros (`0x800b6188`) e o catálogo (168), então sabemos *quais* valores injetar;
+falta localizar a **função que monta o grid do championship** (RE — próximo passo).
+
 ## Power-up de velocidade
 
 - **+20** de velocidade ao pegar o power-up de velocidade (temporário).
