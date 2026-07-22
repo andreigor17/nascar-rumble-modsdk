@@ -33,6 +33,19 @@ posição/progresso). A confirmar se é o array de carros e qual o layout da str
 > **inteiro em MPH** (não a velocidade física interna, que fica na struct do carro em `0x801a…`).
 > Achado 100% autônomo: Claude navegou os menus, dirigiu, leu o HUD (VRAM) e correlacionou a RAM.
 
+## Struct dos carros (tabela de ponteiros) — ✅ (2026-07-22)
+
+- **`0x800b6188`** = **tabela de ponteiros dos carros dos jogadores humanos** (stride 0x40; getter
+  em `FUN_80045590`; `(&DAT_800b6188)[i*0x10]` = ponteiro do carro do jogador `i`). Em single-player
+  só o índice 0 é válido (os carros da IA ficam em OUTRA estrutura, a localizar).
+- **Struct-entidade do jogador** = ponteiro dinâmico da tabela (ex.: `0x800c095c`). A velocidade
+  (`0x800c0a28`) fica em `struct+0xcc`.
+- **`carro+0x22`** = byte de **tipo/controle** (0x01/0x11). `FUN_80043520` (update de carro; imprime
+  "AI Car power") só processa carros com +0x22 ∈ {0x01,0x11}. `param_1==0` = jogador (hardcoded).
+
+> **Foothold para "IA dirige o P1":** achar as structs dos carros da IA + o flag humano/CPU. Viável,
+> mas investigação de código de várias etapas. Ponto de partida: tabela `0x800b6188` e byte `+0x22`.
+
 ## Como foi achado (reprodutível)
 
 Busca `u8`: `eq 1`(34k) → volta → `eq 2`(163) → não seguiu (contador é 0-indexado). Refeito:
