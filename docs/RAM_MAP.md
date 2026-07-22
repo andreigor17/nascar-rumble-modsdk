@@ -30,8 +30,15 @@ posição/progresso). A confirmar se é o array de carros e qual o layout da str
 | `0x800c0a28` | u16 | Velocidade (cópia/HUD) | ✅ | Idêntico ao anterior em todos os pontos (mirror do valor de velocidade). |
 
 > Controles confirmados: **CROSS = acelerar**, **SQUARE = frear/ré**. A velocidade exibida é
-> **inteiro em MPH** (não a velocidade física interna, que fica na struct do carro em `0x801a…`).
-> Achado 100% autônomo: Claude navegou os menus, dirigiu, leu o HUD (VRAM) e correlacionou a RAM.
+> **inteiro em MPH**. Achado 100% autônomo: Claude navegou os menus, dirigiu, leu o HUD e correlacionou a RAM.
+>
+> ⚠️ **CORREÇÃO (2026-07-22):** `0x800c0a28` fica DENTRO da **struct do carro, que é realocada a
+> cada corrida** — NÃO é um endereço estável entre partidas. Numa corrida nova o ponteiro do carro
+> muda (ex.: `0x800c095c` → `0x800bf5ac`), tornando o endereço fixo obsoleto (lê 0). **Leia sempre
+> via o ponteiro:** `car = *(u32*)0x800b6188` (tabela de carros humanos), depois `speed` num offset
+> dentro da struct (o offset `+0xcc` NÃO bateu na 2ª corrida — o offset da velocidade dentro da
+> struct ainda precisa ser re-derivado de forma race-independente). Alternativa robusta: **ler o
+> velocímetro pela tela (VRAM)**, que independe de endereço.
 
 ## Struct dos carros (tabela de ponteiros) — ✅ (2026-07-22)
 
