@@ -55,3 +55,6 @@ tools/jpsxdec/
 
 # logs de ferramentas
 debug*.log
+
+# snapshots de RAM do PCSX-Redux (regeneráveis)
+experiments/ram/

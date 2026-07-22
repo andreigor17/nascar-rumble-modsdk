@@ -50,7 +50,27 @@ Alvos iniciais (ordem sugerida):
 `docs/RAM_MAP.md` com os endereços confirmados (nome, endereço, tipo, evidência, classificação
 ✅🟡🔵). Base do **Memory Inspector** e do futuro **Save Editor**.
 
-## Primeiro passo concreto
+## Setup concluído (2026-07-22) — ✅
 
-Instalar o PCSX-Redux, rodar o NASCAR Rumble e ligar o Web Server. Quando estiver rodando, me avise
-que eu verifico a conexão e a leitura de memória, e começamos o diffing pelo contador de voltas.
+- PCSX-Redux instalado em `/Applications` (build ARM oficial do distrib.app); **OpenBIOS** ativo
+  (sem BIOS real). Config em `~/.config/pcsx-redux/pcsx.json` com `emulator.Debug.WebServer=true`.
+- Jogo carregado via `open -a PCSX-Redux --args -iso "<.cue>" -run`.
+- **Web API confirmada:** `GET http://localhost:8080/api/v1/cpu/ram/raw` → 2 MB de RAM (offset 0 =
+  `0x80000000`). Verificado: roster em `0x800aa700` bate com a análise estática (John Andretti #43).
+  Também: `/api/v1/gpu/vram/raw` (VRAM) e `/api/v1/execution-flow` (status/controle).
+- Ferramenta: **`scripts/memsearch.py`** (cheat-search com numpy). Comandos: `new u8|u16|u32`,
+  `snap`, `eq <v>`, `changed`, `unchanged`, `inc`, `dec`, `list`.
+
+## Como caçamos uma variável (ex.: contador de voltas)
+
+```
+python scripts/memsearch.py new u8      # estado A (candidatos = todos)
+python scripts/memsearch.py eq 1        # onde valor == volta atual
+# (jogador completa uma volta)
+python scripts/memsearch.py snap
+python scripts/memsearch.py eq 2        # estreita para os que viraram 2
+# repetir até sobrar 1 endereço -> registrar no RAM_MAP.md
+```
+
+**Próximo passo (você):** entrar numa corrida no jogo. Aí eu diffo ao vivo — começando pelo
+contador de voltas — e vou preenchendo o `docs/RAM_MAP.md`.
