@@ -32,13 +32,21 @@ posição/progresso). A confirmar se é o array de carros e qual o layout da str
 > Controles confirmados: **CROSS = acelerar**, **SQUARE = frear/ré**. A velocidade exibida é
 > **inteiro em MPH**. Achado 100% autônomo: Claude navegou os menus, dirigiu, leu o HUD e correlacionou a RAM.
 >
-> ⚠️ **CORREÇÃO (2026-07-22):** `0x800c0a28` fica DENTRO da **struct do carro, que é realocada a
-> cada corrida** — NÃO é um endereço estável entre partidas. Numa corrida nova o ponteiro do carro
-> muda (ex.: `0x800c095c` → `0x800bf5ac`), tornando o endereço fixo obsoleto (lê 0). **Leia sempre
-> via o ponteiro:** `car = *(u32*)0x800b6188` (tabela de carros humanos), depois `speed` num offset
-> dentro da struct (o offset `+0xcc` NÃO bateu na 2ª corrida — o offset da velocidade dentro da
-> struct ainda precisa ser re-derivado de forma race-independente). Alternativa robusta: **ler o
-> velocímetro pela tela (VRAM)**, que independe de endereço.
+> ✅ **LEITOR DE VELOCIDADE ESTÁVEL (2026-07-22):** a velocidade fica **dentro da struct do carro**,
+> que é realocada a cada corrida — então endereços FIXOS (`0x800c0a28`) ficam obsoletos. A leitura
+> correta e **race-independente** é via o ponteiro:
+>
+> ```
+> car_ptr = *(u32*)0x800b6188          # ponteiro do carro do jogador (tabela de carros humanos)
+> speed   = *(u16*)(car_ptr + 0xCC)    # velocidade exibida (MPH), = HUD
+> ```
+>
+> Confirmado: com o carro no topo mostrando 161 no HUD, `*(u16*)(car_ptr+0xcc) == 161`. O offset
+> `+0xCC` é constante; só o `car_ptr` muda por corrida. (Antes eu lia o endereço fixo e via 0 quando
+> o ponteiro tinha mudado — daí a confusão.)
+>
+> **Velocidade máxima observada:** ~**161** (reta indoor) a ~**181** (Copper Canyon; possível
+> ladeira/vácuo ou reta mais longa). Savestate da reta boa guardado como `_TOPSTRAIGHT`.
 
 ## Struct dos carros (tabela de ponteiros) — ✅ (2026-07-22)
 
