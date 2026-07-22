@@ -61,6 +61,26 @@ Alvos iniciais (ordem sugerida):
 - Ferramenta: **`scripts/memsearch.py`** (cheat-search com numpy). Comandos: `new u8|u16|u32`,
   `snap`, `eq <v>`, `changed`, `unchanged`, `inc`, `dec`, `list`.
 
+## Controle autônomo total (2026-07-22) — ✅ olhos + mãos + memória
+
+O Claude controla o jogo **sozinho**, sem depender do usuário observar/jogar:
+
+- **Canal Lua arbitrário:** lançar o emulador com `-dofile scripts/pcsx_bootstrap.lua` registra o
+  handler `POST /api/v1/lua/x?code=<lua>` (executa Lua qualquer: memória, GPU, input, execução).
+  Comando de launch:
+  ```bash
+  open -a PCSX-Redux --args -iso "<.cue>" -run -dofile "<repo>/scripts/pcsx_bootstrap.lua"
+  ```
+- **Ver a tela:** `GET /api/v1/gpu/vram/raw` (VRAM 1024×512, 16bpp X1B5G5R5) → screenshot dos 2
+  framebuffers. Dá pra ler HUD (velocidade, volta, posição, piloto).
+- **Input do controle:** `pad:setOverride(bit)` segura, `pad:clearOverride(bit)` solta
+  (`PCSX.SIO0.slots[1].pads[1]`). Bits: SELECT=0 START=3 UP=4 RIGHT=5 DOWN=6 LEFT=7 L2=8 R2=9
+  L1=10 R1=11 TRIANGLE=12 CIRCLE=13 CROSS=14 SQUARE=15. (Ativo-baixo: override zera o bit = pressiona.)
+- **Memória:** `GET/POST /api/v1/cpu/ram/raw` (POST precisa `?offset=&size=` + corpo de `size` bytes).
+- **Ferramenta:** `scripts/pcsx.py` (lua/tap/press/release/rd/wr/shot) + `scripts/memsearch.py`.
+
+> Com isso o Claude navega menus, entra em corrida, dirige e faz o diffing por conta própria.
+
 ## Como caçamos uma variável (ex.: contador de voltas)
 
 ```
