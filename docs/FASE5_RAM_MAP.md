@@ -73,7 +73,7 @@ O Claude controla o jogo **sozinho**, sem depender do usuário observar/jogar:
   ```
 - **Ver a tela:** `GET /api/v1/gpu/vram/raw` (VRAM 1024×512, 16bpp X1B5G5R5) → screenshot dos 2
   framebuffers. Dá pra ler HUD (velocidade, volta, posição, piloto).
-- **Input do controle:** `pad:setOverride(bit)` segura, `pad:clearOverride(bit)` solta
+- **Input do controle:** `pad.setOverride(bit)` segura, `pad.clearOverride(bit)` solta (⚠️ PONTO, não `:` — a função espera o botão como 1º arg)
   (`PCSX.SIO0.slots[1].pads[1]`). Bits: SELECT=0 START=3 UP=4 RIGHT=5 DOWN=6 LEFT=7 L2=8 R2=9
   L1=10 R1=11 TRIANGLE=12 CIRCLE=13 CROSS=14 SQUARE=15. (Ativo-baixo: override zera o bit = pressiona.)
 - **Memória:** `GET/POST /api/v1/cpu/ram/raw` (POST precisa `?offset=&size=` + corpo de `size` bytes).

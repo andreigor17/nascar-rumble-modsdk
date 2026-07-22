@@ -31,17 +31,17 @@ def _btn(b):
 
 def press(*btns):
     for b in btns:
-        lua(f"PCSX.SIO0.slots[1].pads[1]:setOverride({_btn(b)}) return 1")
+        lua(f"PCSX.SIO0.slots[1].pads[1].setOverride({_btn(b)}) return 1")
 
 
 def release(*btns):
     for b in btns:
-        lua(f"PCSX.SIO0.slots[1].pads[1]:clearOverride({_btn(b)}) return 1")
+        lua(f"PCSX.SIO0.slots[1].pads[1].clearOverride({_btn(b)}) return 1")
 
 
 def release_all():
     for b in BTN.values():
-        lua(f"PCSX.SIO0.slots[1].pads[1]:clearOverride({b}) return 1")
+        lua(f"PCSX.SIO0.slots[1].pads[1].clearOverride({b}) return 1")
 
 
 def tap(btn, ms=120):
