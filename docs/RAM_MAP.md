@@ -45,8 +45,9 @@ posição/progresso). A confirmar se é o array de carros e qual o layout da str
 > `+0xCC` é constante; só o `car_ptr` muda por corrida. (Antes eu lia o endereço fixo e via 0 quando
 > o ponteiro tinha mudado — daí a confusão.)
 >
-> **Velocidade máxima observada:** ~**161** (reta indoor) a ~**181** (Copper Canyon; possível
-> ladeira/vácuo ou reta mais longa). Savestate da reta boa guardado como `_TOPSTRAIGHT`.
+> **Velocidade máxima:** **161** = teto da classe **Rookie** (Jeff Gordon, medido). Os 181 do
+> Copper Canyon eram Rookie 161 **+20 de um power-up de velocidade** (não ladeira/vácuo). Classes:
+> Rookie ~160, Pro ~170, Elite ~180 (ver `docs/GAMEPLAY.md`). Savestate `_TOPSTRAIGHT`.
 
 ## Struct dos carros (tabela de ponteiros) — ✅ (2026-07-22)
 
