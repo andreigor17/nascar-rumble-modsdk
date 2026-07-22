@@ -1,0 +1,14 @@
+{
+ "game": {
+  "name": "NASCAR Rumble (USA)",
+  "region": "NTSC-U"
+ },
+ "cue": "../NASCAR Rumble (USA)/NASCAR Rumble (USA).cue",
+ "funcMap": "nascar_funcmap.json",
+ "main": "800a5440",
+ "linearSweep": false,
+ "overlays": [],
+ "stubs": [],
+ "ignored": [],
+ "patches": []
+}

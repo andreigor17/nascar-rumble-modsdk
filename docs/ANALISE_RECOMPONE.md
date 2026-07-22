@@ -109,6 +109,31 @@ Com o RecompOne existindo, reviso a estimativa que dei antes (que assumia constr
 Ou seja: o RecompOne **não elimina** o trabalho, mas troca "anos construindo um recompilador" por
 "meses adaptando um recompilador existente". É a maior aceleração possível para a sua meta.
 
+## Status "RecompOne-ready" (2026-07-22) — ✅ pronto para tentar o boot
+
+Revisitado com o progresso da Fase 4 (Ghidra). **Agora temos exatamente o que o RecompOne consome.**
+
+- Repo **ativo** (atualizado 2026-07-22, 337 stars). Uso: `recompone <config>.json`.
+- **.NET 8 instalado** (8.0.416) → dá para compilar/rodar o recompilador (é C#).
+- Formato de config (de `ConfigLoader.cs`): `cue`, `elf`/`map`/**`funcMap`**, `main`, `overlays`,
+  `stubs`, `ignored`, `patches`, `linearSweep`. O **`funcMap`** é um JSON `functions[]` com
+  `address`(hex), `name`, `size` — **idêntico ao nosso export do Ghidra** (`ghidra_out/functions.csv`).
+- **Artefatos gerados** (a partir do nosso Ghidra):
+  - `recompone/nascar_funcmap.json` — **1855 funções** do texto do EXE (0x80010030–0x800a9be8),
+    568 já nomeadas (PsyQ + nosso trabalho).
+  - `recompone/nascar.json` — config: aponta o `.cue`, o funcMap, `main=800a5440`, **sem overlays**.
+- **NASCAR Rumble é EXE único (sem overlays)** → dispensa a parte mais complexa (dispatch de overlay).
+
+### Plano para o 1º boot (Trilha B)
+
+1. `git clone` do RecompOne e `dotnet build`.
+2. `recompone recompone/nascar.json` → gera C# (um arquivo por segmento) usando nosso funcMap.
+3. `dotnet build`+`run` do projeto gerado (runtime = GTE/GPU/SPU/CD já prontos) → tentar o boot.
+4. Catalogar o que quebra → escrever `patches` (C#) para funções problemáticas (código
+   automodificável, quirks do streaming EA). Iterar.
+> Expectativa realista: 1º boot (com falhas) plausível; polimento é longo. Respeitar a postura
+> anti-IA do autor (não pedir suporte upstream para trabalho assistido por IA).
+
 ## Ações concretas
 
 1. ✅ Manter a Fase 4 (Ghidra) como prioridade — ela é pré-requisito das DUAS trilhas.
