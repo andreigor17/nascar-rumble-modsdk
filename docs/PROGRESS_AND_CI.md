@@ -68,4 +68,5 @@ montadas como somente leitura e não entraram no contexto nem na imagem Docker.
 
 No GitHub, `MATCHING_CI_ENABLED=false` mantém o job completo pulado até existir um
 `REFERENCE_ARCHIVE_URL` privado e legal. Os gates públicos e o delta continuam funcionando. A
-Etapa 4 só pode ser marcada concluída depois que o job byte-identical passar em um PR real.
+execução do PR #1 confirmou os jobs públicos de config/métricas/testes/formato e site. A Etapa 4
+só pode ser marcada concluída depois que o job byte-identical passar em um PR real.

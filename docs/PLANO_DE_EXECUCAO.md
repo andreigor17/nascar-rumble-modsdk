@@ -147,9 +147,9 @@ subsistema, Docker Linux, CI público/full, guia de contribuição e template de
 implementados. `make docker-matching` passou numa VM x86-64/QEMU com 23 testes e rebuild SHA-256
 idêntico; o build do site também passou. O `gh` está autenticado e a variável remota
 `MATCHING_CI_ENABLED=false` impede que assets proprietários sejam buscados sem autorização. Resta
-observar os jobs públicos no PR e, quando houver um `REFERENCE_ARCHIVE_URL` privado e legal,
-habilitar/validar o job matching remoto; até isso ocorrer, a etapa não recebe `CONCLUÍDA`. Ver
-`docs/PROGRESS_AND_CI.md`.
+quando houver um `REFERENCE_ARCHIVE_URL` privado e legal, habilitar/validar o job matching remoto;
+os dois jobs públicos já passaram no PR #1. Até o gate byte-identical remoto passar, a etapa não
+recebe `CONCLUÍDA`. Ver `docs/PROGRESS_AND_CI.md`.
 
 ### Etapa 5 — Primeira fatia vertical: grid de campeonato
 

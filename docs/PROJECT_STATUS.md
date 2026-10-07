@@ -10,10 +10,10 @@
 - **Etapa 2 — Esqueleto reproduzível e split integral: CONCLUÍDA em 2026-10-06**
 - **Etapa 3 — Loop produtivo por função: CONCLUÍDA em 2026-10-06**
 - **Etapa 4 — Métricas, CI e governança: EM VALIDAÇÃO em 2026-10-07**.
-- Ponto exato de retomada: observar os jobs públicos no PR da Etapa 4. O GitHub CLI já está
-  autenticado e `MATCHING_CI_ENABLED=false` está configurado de propósito; habilitar o job privado
-  somente após obter uma URL legal para `REFERENCE_ARCHIVE_URL`. Não iniciar a Etapa 5 antes do
-  gate remoto byte-identical.
+- Ponto exato de retomada: os jobs públicos do PR #1 passaram. O GitHub CLI está autenticado e
+  `MATCHING_CI_ENABLED=false` está configurado de propósito; obter uma URL privada e legal para
+  `REFERENCE_ARCHIVE_URL`, habilitar o job e confirmar o gate remoto byte-identical. Não iniciar a
+  Etapa 5 antes desse resultado.
 
 ## Registro
 
@@ -196,9 +196,10 @@ ASM serem byte-idênticos não significa que estejam compreendidos ou tipados.
 
 Estado remoto: o `gh` está autenticado como `andreigor17` e a variável
 `MATCHING_CI_ENABLED=false` foi criada no repositório público. Não há runner privado nem secret com
-assets do jogo, por escolha legal e de segurança. A etapa permanece em validação até existir um
-bundle privado autorizado e o job `Byte-identical matching build` passar em um PR; os jobs públicos
-podem ser publicados e validados sem esse material.
+assets do jogo, por escolha legal e de segurança. No PR #1, `Config, metrics, tests, and format` e
+`Site consumes progress.json` passaram; o job privado foi corretamente pulado. A etapa permanece
+em validação até existir um bundle privado autorizado e o job `Byte-identical matching build`
+passar em um PR.
 
 ## Protocolo para finalizar uma etapa
 
