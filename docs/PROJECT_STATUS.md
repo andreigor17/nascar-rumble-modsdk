@@ -11,9 +11,9 @@
 - **Etapa 3 — Loop produtivo por função: CONCLUÍDA em 2026-10-06**
 - **Etapa 4 — Métricas, validação local e governança: CONCLUÍDA em 2026-10-07**.
 - **Etapa 5 — Primeira fatia vertical: grid de campeonato: PRÓXIMA**.
-- Decisão do mantenedor em 2026-10-07: não armazenar a cópia do jogo na nuvem e não executar
-  testes de decompilação no GitHub Actions. O código continua versionado no Git; antes de cada
-  envio, os gates rodam localmente com a cópia legal existente no Mac.
+- Decisão do mantenedor em 2026-10-07: não armazenar a cópia do jogo na nuvem e não usar GitHub
+  Actions neste momento. O código continua versionado no Git; antes de cada envio, os gates rodam
+  localmente com a cópia legal existente no Mac.
 - Trilha B (port nativo): `NascarRumbleNative` agora abre no macOS ARM, executa o boot até localizar
   `CW/OPENING/LEGAL.LSC` e aguarda correção do fluxo assíncrono de CD após `ReadN`; intro e menu
   ainda não aparecem.
@@ -196,8 +196,8 @@ bytes de dados reconstruídos; 596.152 bytes de funções ainda em ASM; 1.855 s�
 ASM serem byte-idênticos não significa que estejam compreendidos ou tipados.
 
 Política vigente: `make ci-public` e `make ci-full` rodam no Mac antes de cada push. Nenhum BIN,
-CUE, EXE ou bundle do jogo é enviado ao GitHub. O workflow de testes remoto foi removido; o
-workflow separado de publicação do site permanece sem acesso aos arquivos do jogo.
+CUE, EXE ou bundle do jogo é enviado ao GitHub. Os workflows do GitHub Actions foram removidos;
+por enquanto o GitHub é usado somente para preservar e compartilhar o código.
 
 ## Protocolo para finalizar uma etapa
 

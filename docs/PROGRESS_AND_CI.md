@@ -33,9 +33,9 @@ e de um rebuild byte a byte antes de atualizar a baseline.
 
 ## Gates locais antes do Git
 
-Por decisão do mantenedor, a cópia legal do jogo permanece somente no Mac. Não há workflow remoto
-de testes da decompilação nem bundle privado. O GitHub é usado para versionar o código e publicar o
-site, sem receber BIN, CUE ou EXE.
+Por decisão do mantenedor, a cópia legal do jogo permanece somente no Mac. Não há workflows do
+GitHub Actions nem bundle privado. O GitHub é usado somente para versionar o código, sem receber
+BIN, CUE ou EXE.
 
 Antes de cada push:
 
@@ -68,5 +68,5 @@ Validação local de 2026-10-07: `make docker-matching` passou em um perfil Coli
 `e90e3c7e4cf286a7a0a5e827b3a404bfe8407b15f8b2fd54536d426682b20f75`. As referências foram
 montadas como somente leitura e não entraram no contexto nem na imagem Docker.
 
-O workflow separado do site pode continuar ativo porque consome apenas arquivos versionados e não
-tem acesso à cópia local do jogo.
+O site já publicado permanece disponível, mas não recebe deploy automático enquanto essa política
+estiver vigente.

@@ -75,7 +75,8 @@ em Markdown. Alternativa de menor esforço: Docusaurus.
 ## Entregáveis desta iniciativa
 1. Repo no GitHub com push inicial e README/LICENSE/disclaimer.
 2. Projeto do site (Astro/Docusaurus) em `site/` dentro do mesmo repo.
-3. CI (GitHub Actions) build+deploy automático a cada push.
+3. Deploy automático com GitHub Actions está suspenso por decisão do mantenedor em 2026-10-07;
+   o GitHub é usado somente para versionar o código nesta fase.
 4. Devlog com as sessões 001–00X já publicadas retroativamente.
 5. Galeria inicial (LOADING screen, atlas de textura, traçado JT3).
 
