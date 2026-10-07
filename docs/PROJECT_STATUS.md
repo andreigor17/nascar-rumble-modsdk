@@ -10,13 +10,20 @@
 - **Etapa 2 — Esqueleto reproduzível e split integral: CONCLUÍDA em 2026-10-06**
 - **Etapa 3 — Loop produtivo por função: CONCLUÍDA em 2026-10-06**
 - **Etapa 4 — Métricas, validação local e governança: CONCLUÍDA em 2026-10-07**.
-- **Etapa 5 — Primeira fatia vertical: grid de campeonato: PRÓXIMA**.
+- **Etapa 5 — Boot original visível: EM ANDAMENTO**.
 - Decisão do mantenedor em 2026-10-07: não armazenar a cópia do jogo na nuvem e não usar GitHub
   Actions neste momento. O código continua versionado no Git; antes de cada envio, os gates rodam
   localmente com a cópia legal existente no Mac.
-- Trilha B (port nativo): `NascarRumbleNative` agora abre no macOS ARM, executa o boot até localizar
-  `CW/OPENING/LEGAL.LSC` e aguarda correção do fluxo assíncrono de CD após `ReadN`; intro e menu
-  ainda não aparecem.
+- Prioridade do mantenedor em 2026-10-07: jogo original jogável primeiro. Mods, melhorias gráficas
+  e novas resoluções ficam depois de menu e corrida original estáveis; o carregador de mods do host
+  nativo permanece desligado por padrão.
+- Trilha nativa: `NascarRumbleNative` abre no macOS ARM, entra no `main`, inicializa os subsistemas
+  e localiza `CW/OPENING/LEGAL.LSC`. O bloqueio atual é o fluxo assíncrono do CD após `ReadN`;
+  nenhum quadro da tela legal, intro ou menu é exibido ainda.
+- Os avisos “NascarRumbleNative encerrou inesperadamente” vistos no Mac vieram das execuções de
+  diagnóstico de 2026-10-07: os relatórios indicam `SIGABRT` após exceção .NET não tratada, com o
+  processo de desenvolvimento como pai. Não existe LaunchAgent ou processo relançando o host. O
+  host agora captura falhas gerenciadas, encerra o runtime e retorna código de erro controlado.
 
 ## Registro
 
@@ -198,6 +205,21 @@ ASM serem byte-idênticos não significa que estejam compreendidos ou tipados.
 Política vigente: `make ci-public` e `make ci-full` rodam no Mac antes de cada push. Nenhum BIN,
 CUE, EXE ou bundle do jogo é enviado ao GitHub. Os workflows do GitHub Actions foram removidos;
 por enquanto o GitHub é usado somente para preservar e compartilhar o código.
+
+### Etapa 5 — Boot original visível
+
+Status: **EM ANDAMENTO — bloqueio no primeiro `ReadN` assíncrono**
+
+Estado observado no macOS ARM:
+
+- executável nativo abre uma janela OpenGL 1280×748;
+- entra no `main` recompilado e inicializa heap, interrupções, memory cards, controles, GPU, SPU e CD;
+- localiza `CW/OPENING/LEGAL.LSC` no LBA 97407, com 35.136 bytes;
+- envia `Setmode`, `Setloc` e `ReadN`, mas não progride até a entrega assíncrona dos setores;
+- por isso ainda não há tela legal, intro, menu ou jogo controlável.
+
+Próximo gate: corrigir comandos/respostas/eventos/IRQs do CD até o menu aceitar input. A decomp
+matching permanece disponível para esclarecer funções necessárias; trabalho de mods está suspenso.
 
 ## Protocolo para finalizar uma etapa
 

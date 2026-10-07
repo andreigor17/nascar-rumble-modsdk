@@ -12,6 +12,32 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-012-janela-nativa-e-boot-original',
+    date: '2026-10-07',
+    session: '012',
+    tag: 'Port nativo',
+    pt: {
+      title: 'A janela nativa abre e o boot original já começou',
+      summary:
+        'O executável macOS ARM agora abre uma janela própria, entra no jogo e avança até a primeira leitura da abertura — ainda sem imagem ou menu.',
+      points: [
+        'A recompilação estática abre uma janela OpenGL de 1280×748 no macOS, entra no main e inicializa memória, controles, GPU, áudio e CD.',
+        'O jogo encontra CW/OPENING/LEGAL.LSC no disco original. O bloqueio atual está no fluxo assíncrono ReadN do CD, antes do primeiro quadro visível.',
+        'A prioridade agora é reproduzir o jogo original até menu e corrida completa. Mods e melhorias ficam desligados por padrão até essa base estar estável.',
+      ],
+    },
+    en: {
+      title: 'The native window opens and the original boot has begun',
+      summary:
+        'The macOS ARM executable now opens its own window, enters the game and reaches the first opening read — still without a visible image or menu.',
+      points: [
+        'The static recompile opens a 1280×748 OpenGL window on macOS, enters main, and initializes memory, input, GPU, audio, and CD.',
+        'The game finds CW/OPENING/LEGAL.LSC on the original disc. The current blocker is the asynchronous CD ReadN flow, before the first visible frame.',
+        'The priority is now original-game parity through the menu and a complete race. Mods and enhancements stay off by default until that base is stable.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-011-port-nativo',
     date: '2026-07-22',
     session: '011',
@@ -23,7 +49,7 @@ export const DEVLOG: DevlogEntry[] = [
       points: [
         'O nosso mapa de 1855 funções (do Ghidra) alimentou o RecompOne, que traduziu o MIPS do jogo em C# — main.cs com 188.902 linhas.',
         'O build nativo compilou com 0 erros. A ponte "engenharia reversa → executável sem emulador" funciona de ponta a ponta.',
-        'O boot ainda trava na criação da janela gráfica no macOS (GLFW) — problema do runtime, não da recompilação. Próximo teste: Windows.',
+        'Naquele momento o boot ainda travava na criação da janela gráfica no macOS; esse bloqueio foi superado na sessão 012.',
       ],
     },
     en: {
@@ -33,7 +59,7 @@ export const DEVLOG: DevlogEntry[] = [
       points: [
         'Our 1855-function map (from Ghidra) fed RecompOne, which translated the game’s MIPS into C# — a 188,902-line main.cs.',
         'The native build compiled with 0 errors. The "reverse engineering → run without emulator" bridge works end to end.',
-        'Boot still crashes on graphics window creation on macOS (GLFW) — a runtime issue, not the recompilation. Next test: Windows.',
+        'At that point boot still crashed during graphics window creation on macOS; session 012 has since cleared that blocker.',
       ],
     },
   },

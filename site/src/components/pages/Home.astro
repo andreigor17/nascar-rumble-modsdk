@@ -9,8 +9,8 @@ const latest = DEVLOG.slice(0, 3);
 const base = import.meta.env.BASE_URL;
 
 const heroSub = lang === 'pt'
-  ? 'A jornada aberta para redescobrir o NASCAR Rumble por dentro — e chegar, passo a passo, a algo que os fãs possam explorar, editar e um dia jogar sem emulador.'
-  : 'The open journey to rediscover NASCAR Rumble from the inside — and reach, step by step, something fans can explore, edit and one day play without an emulator.';
+  ? 'Primeiro, o NASCAR Rumble original jogável como aplicativo nativo. Depois, melhorias gráficas, novas resoluções e mods sobre uma base fiel e estável.'
+  : 'First, the original NASCAR Rumble playable as a native app. Then, graphics enhancements, new resolutions, and mods on a faithful, stable foundation.';
 
 const gameBody = lang === 'pt'
   ? 'Lançado pela EA em 2000 para PlayStation e Nintendo 64, o NASCAR Rumble pegou a corrida de stock cars e jogou o realismo pela janela: power-ups, atalhos loucos, tempestades e uma garagem de carros absurdos para desbloquear. Um kart racer disfarçado de NASCAR — puro caos divertido de fim de semana.'
@@ -22,14 +22,14 @@ const funFact = lang === 'pt'
 
 const pillars = lang === 'pt'
   ? [
-      { i: '🔧', h: 'Engenharia reversa', p: 'Análise do executável no Ghidra: física, IA, renderização, formatos.' },
-      { i: '🧰', h: 'SDK de modding', p: 'Ferramentas para extrair e editar texturas, pistas, carros e saves.' },
-      { i: '📚', h: 'Base de conhecimento', p: 'Cada descoberta documentada, reproduzível e aberta à comunidade.' },
+      { i: '🏁', h: 'Jogo original primeiro', p: 'Intro, menu e corrida completa antes de ativar qualquer modificação.' },
+      { i: '💻', h: 'Port nativo', p: 'Aplicativos para macOS, Windows e Linux usando a cópia legal do jogador.' },
+      { i: '🔧', h: 'Melhorias depois', p: 'Resolução, gráficos e mods virão sobre uma base original validada.' },
     ]
   : [
-      { i: '🔧', h: 'Reverse engineering', p: 'Executable analysis in Ghidra: physics, AI, rendering, formats.' },
-      { i: '🧰', h: 'Modding SDK', p: 'Tools to extract and edit textures, tracks, cars and saves.' },
-      { i: '📚', h: 'Knowledge base', p: 'Every discovery documented, reproducible and open to the community.' },
+      { i: '🏁', h: 'Original game first', p: 'Intro, menu, and a complete race before enabling any modification.' },
+      { i: '💻', h: 'Native port', p: 'Apps for macOS, Windows, and Linux using the player’s legal copy.' },
+      { i: '🔧', h: 'Enhancements later', p: 'Resolution, graphics, and mods will follow on a validated original base.' },
     ];
 ---
 <section class="hero">

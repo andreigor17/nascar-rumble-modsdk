@@ -6,6 +6,10 @@ agora abre com o patch OpenGL 4.1, o jogo entra no `main`, inicializa os subsist
 `CW/OPENING/LEGAL.LSC`. Ainda trava no primeiro `ReadN` do CD, antes de mostrar a tela legal,
 intro ou menu (ver `docs/ANALISE_RECOMPONE.md`).
 
+O objetivo desta trilha é executar primeiro o jogo **original**. O carregador de mods fica
+desligado, a menos que `RUMBLE_ENABLE_MODS=1` seja definido explicitamente; esse modo não faz parte
+do gate atual. O usuário fornece seu próprio CUE/BIN legal, que nunca é incorporado ao executável.
+
 ## Arquivos versionados
 - `nascar_funcmap.json` — 1855 funções do EXE (gerado de `ghidra_out/functions.csv`).
 - `nascar.json` — config do RecompOne (disco + funcMap + `main=800a5440`, sem overlays).

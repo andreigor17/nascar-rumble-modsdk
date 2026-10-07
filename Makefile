@@ -10,7 +10,8 @@ ASFLAGS := -no-pad-sections -march=r3000 -mabi=32 -I include
 
 .PHONY: setup setup-ci setup-ci-deps setup-tools extract build check test test-public diff objdiff context progress \
 	progress-write progress-check backlog lint-config format-check ci-public ci-full \
-	docker-public docker-matching native-build native-run native-trace clean-generated
+	docker-public docker-matching native-build native-run native-trace clean-generated \
+	site-build site-deploy
 
 setup-ci-deps:
 	$(PYTHON) -m venv .venv
@@ -124,6 +125,12 @@ native-run: native-build
 native-trace: native-build
 	RUMBLE_NATIVE_TRACE=1 recompone/host/bin/Release/net10.0/NascarRumbleNative \
 		"$(CURDIR)/NASCAR Rumble (USA)/NASCAR Rumble (USA).cue"
+
+site-build:
+	cd site && npm ci && npm run build
+
+site-deploy:
+	$(PYTHON) scripts/deploy_site.py
 
 clean-generated:
 	@echo "Remove build/, asm/, assets/ and generated linker outputs manually if a fresh split is required."

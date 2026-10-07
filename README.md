@@ -1,17 +1,17 @@
 # NASCAR Rumble — ModSDK & Reverse Engineering
 
-🌐 **Site / Devlog:** https://andreigor17.github.io/nascar-rumble-modsdk/
+🌐 **Site / Devlog:** https://rumble.irontech.dev.br/
 
 [![Code matched](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fandreigor17%2Fnascar-rumble-modsdk%2Fmain%2Fprogress.json&query=%24.code.percent&suffix=%25&label=code%20matched)](progress.json)
 [![Functions matched](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fandreigor17%2Fnascar-rumble-modsdk%2Fmain%2Fprogress.json&query=%24.functions.matched&label=functions%20matched)](progress.json)
 
-> **PT-BR** · Projeto de engenharia reversa e SDK de modding open source do jogo **NASCAR Rumble**
-> (PlayStation 1, EA, 2000). Objetivo: compreender profundamente o jogo, documentar seus formatos
-> e construir ferramentas de extração/edição — nos moldes do CTR-ModSDK. Projeto de longo prazo.
+> **PT-BR** · Projeto de engenharia reversa do **NASCAR Rumble** (PlayStation 1, EA, 2000).
+> Objetivo atual: tornar o jogo original jogável como aplicativo nativo; melhorias gráficas e mods
+> virão depois, sobre uma base fiel e estável.
 >
-> **EN** · Reverse-engineering and open-source modding SDK for **NASCAR Rumble** (PlayStation 1,
-> EA, 2000). Goal: deeply understand the game, document its file formats, and build extraction/
-> editing tools — in the spirit of CTR-ModSDK. A long-term project.
+> **EN** · Reverse engineering of **NASCAR Rumble** (PlayStation 1, EA, 2000). The current goal is
+> to make the original game playable as a native app; graphics enhancements and mods will follow
+> on a faithful, stable foundation.
 
 ## Status (2026-10)
 
@@ -24,6 +24,7 @@
 - ✅ Loop por função com asm-differ, objdiff, contexto local, backlog e primeiro C matching.
 - 🟡 Port nativo macOS abre a janela e chega à leitura de `OPENING/LEGAL.LSC`; ainda não exibe
   intro/menu porque o fluxo assíncrono de CD do RecompOne precisa ser corrigido.
+- 🔒 O host nativo não carrega mods por padrão: a prioridade é intro, menu e corrida original.
 
 Veja o progresso detalhado em [`docs/`](docs/) e nas notas de sessão em [`notes/`](notes/).
 As métricas de decompilação vêm exclusivamente de [`progress.json`](progress.json), gerado a partir

@@ -47,6 +47,15 @@ class NativeBuildTests(unittest.TestCase):
         text = patch.read_text(encoding="utf-8")
         self.assertIn("new APIVersion(4, 1)", text)
         self.assertIn("WaitForValidDisc(cuePath)", text)
+        self.assertIn("RUMBLE_ENABLE_MODS", text)
+
+    def test_native_host_handles_managed_failures(self):
+        host = (ROOT / "recompone" / "host" / "Program.cs").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("catch (Exception error)", host)
+        self.assertIn("Environment.ExitCode = 1", host)
+        self.assertIn("Runtime.Shutdown()", host)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 # Plano de Execução — NASCAR Rumble Decompilation & ModSDK
 
-> Revisão rigorosa: 2026-10-06. Alvo primário: `SLUS_010.68` (NTSC-U).
-> O plano de 2026-07-19 foi substituído: várias fases exploratórias já terminaram, mas a
-> infraestrutura essencial de uma *matching decomp* ainda não existe.
+> Revisão: 2026-10-07. Alvo primário: `SLUS_010.68` (NTSC-U).
+> Decisão do mantenedor: entregar primeiro o jogo original jogável como aplicativo nativo.
+> Melhorias gráficas, novas resoluções e mods permanecem posteriores à paridade funcional.
 
 ## 1. Estado real
 
@@ -13,7 +13,8 @@
 - PsyQ 4.6 identificado; 2.008 funções detectadas no Ghidra e 1.855 exportadas ao RecompOne.
 - Container EA, `.LSC`, `Cpag` e `Ctrk` possuem entendimento útil.
 - RAM, velocidade, roster de 168 carros, recursos e grid possuem pontos confirmados.
-- RecompOne gera e compila C#, mas o primeiro boot ainda trava no host GLFW/macOS.
+- RecompOne gera e compila C#; no macOS ARM a janela abre, o jogo entra no `main`, inicializa os
+  subsistemas e localiza `CW/OPENING/LEGAL.LSC`.
 - Toolchain PsyQ identificada por matching: GNU C 2.7.2.SN32.3.7, `-O2 -G0 -g0` na baseline,
   ASPSX 2.56 e PSYLINK 2.73.
 - Splat e build híbrido reproduzem `SLUS_010.68` byte a byte a partir de ASM/dados.
@@ -27,12 +28,13 @@
 - conversão gradual do ASM em C matching;
 - ciclo por função com `asm-differ`/`objdiff`/decomp.me;
 - métricas de bytes/funções matched, dados e ASM restante;
-- CI para build, checksums, testes, formato e regressão de progresso;
+- gates locais para build, checksums, testes, formato e regressão de progresso;
 - testes dos parsers e experimentos dinâmicos;
 - estrutura e convenções que permitam colaboração paralela.
 
-**Diagnóstico:** a base de *matching decomp* agora existe. O maior acelerador passa a ser um loop
-por função no qual o ASM possa ser convertido em C e verificado sem preparação manual repetitiva.
+**Diagnóstico:** a base de *matching decomp* e o primeiro host nativo existem. O bloqueio mais
+próximo de algo visível é o fluxo assíncrono de CD após o primeiro `ReadN`. A prioridade passa a
+ser intro → menu → corrida original; a decompilação continua como apoio técnico ao port.
 
 ## 2. O que os projetos de referência ensinam
 
@@ -46,12 +48,16 @@ por função no qual o ASM possa ser convertido em C e verificado sem preparaç�
 Não copiar código/layouts de outras engines, complexidade de overlays nem a camada nativa antes da
 hora. RecompOne continua útil como laboratório paralelo, mas não mede progresso da decomp.
 
-## 3. Estratégia corrigida
+## 3. Estratégia vigente
 
-1. **Matching decomp (caminho crítico):** binário → split → build híbrido ASM/C → diff → match.
-2. **RE e mods (alimentadora):** Ghidra + PCSX-Redux produzem símbolos, tipos, testes e código C.
-3. **Port (paralela e limitada):** RecompOne busca boot/jogabilidade; `ctr-native` orienta a
-   arquitetura futura. Limitar esta trilha a ~20% do esforço até o build matching funcionar.
+1. **Port original (caminho crítico):** RecompOne → primeiro quadro → intro/menu → corrida →
+   paridade → pacotes macOS/Windows/Linux.
+2. **Matching decomp (trilha de sustentação):** binário → split → build híbrido ASM/C → diff →
+   match, priorizando funções que destravem o runtime nativo.
+3. **RE e formatos (alimentadora):** Ghidra e experimentos locais esclarecem CD, GPU, SPU, input,
+   saves e demais subsistemas necessários à paridade.
+4. **Mods e melhorias (congelados):** nenhuma modificação é carregada por padrão. Resolução,
+   gráficos e APIs de mod começam somente após uma corrida original completa e estável.
 
 ## 4. Ordem obrigatória
 
@@ -149,67 +155,51 @@ gates locais público/full, guia de contribuição e template de PR foram implem
 decisão do mantenedor, os testes da decompilação ficam locais e nenhum asset do jogo é enviado ao
 GitHub. Ver `docs/PROGRESS_AND_CI.md`.
 
-### Etapa 5 — Primeira fatia vertical: grid de campeonato
+### Etapa 5 — Boot original visível — 🟡 EM ANDAMENTO
 
-1. Decompilar e dar match em `rng_next`, `grid_build`, helpers e `grid_spawn`.
-2. Definir structs do descritor de grid, modo e configuração do campeonato.
-3. Criar variante **matching** e variante **dev/mod** que injeta IDs escolhidos.
-4. Smoke test no PCSX-Redux: carregar estado, iniciar Championship, capturar tabela e validar
-   IDs/contagem antes do spawn.
-5. Empacotar o primeiro mod reproduzível sem conteúdo do jogo.
+1. Corrigir a máquina assíncrona de comandos, eventos e interrupções do CD após `Setloc`/`ReadN`.
+2. Exibir `OPENING/LEGAL.LSC`, logos, intro e menu sem alterar conteúdo ou comportamento do jogo.
+3. Manter carregamento de mods desligado por padrão e tratar erros do host sem gerar falhas do macOS.
+4. Registrar traces locais reproduzíveis para cada novo bloqueio, sem enviar CUE/BIN ao GitHub.
 
-**Gate:** a lógica está matched em C, documentada, testada e usada por um mod.
+**Gate:** o executável macOS ARM chega ao menu, aceita controle e pode ser fechado normalmente.
 
-### Etapa 6 — Escalar por subsistemas
+### Etapa 6 — Primeira corrida original completa
 
-Ordem sugerida:
+1. Validar input, GPU/MDEC, SPU/música, streaming de CD, física, IA, HUD e transições.
+2. Entrar numa corrida a partir do menu, completar voltas e retornar ao frontend.
+3. Comparar estados e comportamento observável com a execução de referência, corrigindo o runtime
+   em vez de alterar regras ou dados do jogo.
 
-1. runtime/libc/PsyQ e matemática;
-2. alocação, listas e recursos (`res_find`, `res_register`);
-3. CD/filesystem e container EA;
-4. frontend, estado global e menus;
-5. configuração de corrida, entidades e input;
-6. física, colisão e IA;
-7. GPU/render/HUD;
-8. SPU, música e streaming EA;
-9. save/memory card, FMV e periféricos.
+**Gate:** uma corrida completa pode ser jogada do início ao fim sem emulador e sem mods.
 
-Para cada subsistema: símbolos → tipos → funções pequenas → orquestradoras → testes → docs.
+### Etapa 7 — Paridade, estabilidade e pacotes
 
-**Gate:** API/structs documentadas, funções classificadas, match medido, smoke test e nenhuma
-dependência escondida apenas no projeto Ghidra.
+1. Cobrir modos, pistas, carros, power-ups, saves/memory cards e sequências FMV.
+2. Eliminar travamentos e dependências de caminhos fixos; permitir selecionar a cópia legal local.
+3. Produzir aplicativo macOS e builds Windows/Linux reproduzíveis, sem incluir assets proprietários.
+4. Documentar requisitos, controles, logs e diagnóstico por plataforma.
 
-### Etapa 7 — Formatos e SDK com round-trip
+**Gate:** pacotes das plataformas suportadas inicializam a mesma cópia válida e passam pelo menu,
+corrida e save com comportamento original estável.
 
-1. Transformar scripts em pacote Python instalável e CLI estável.
-2. Fixtures mínimas próprias/sintéticas e testes unitários por parser.
-3. Exigir `decode → encode → bytes idênticos` antes de habilitar escrita.
-4. Validar limites, endian, offsets, alinhamento e dados malformados.
-5. Integrar `dumpsxiso/mkpsxiso`, preservando LBA quando necessário.
+### Etapa 8 — Melhorias e mods após a base original
 
-**Gate:** rebuild sem alteração mantém hashes e todo editor possui teste de ida e volta.
+1. Criar uma chave explícita entre modo original e modo aprimorado/modificado.
+2. Implementar resolução, proporção de tela, filtragem e outras melhorias gráficas sem quebrar saves.
+3. Retomar editores, SDK de escrita, grid de campeonato e APIs de mods com fixtures e round-trip.
+4. Nunca distribuir a imagem ou os assets do jogo; o usuário fornece sua própria cópia legal.
 
-### Etapa 8 — Port após massa crítica
-
-1. Corrigir RecompOne quando o defeito revelar conhecimento reutilizável; catalogar patches.
-2. Definir fronteira `game/` × `platform/` inspirada no `ctr-native`.
-3. Auditar licença e pressupostos de ponteiros, GPU, áudio, CD e streaming antes de reutilizar código.
-4. Iniciar port C dedicado somente com tipos centrais estáveis e parcela substancial de C decompilado.
-
-**Gate:** menu e corrida completa passam por testes/replays determinísticos no host e PS1.
+**Gate:** o modo original permanece reproduzível e as melhorias podem ser ativadas separadamente.
 
 ## 5. Sprint imediata
 
-Não abrir outra frente de formato/gameplay antes de:
-
-1. congelar hashes e toolchain;
-2. criar `config/`, `src/`, `asm/`, `include/`, `linker/`, `tests/`;
-3. produzir o split integral do `SLUS_010.68`;
-4. relinkar build 100% ASM idêntico;
-5. confirmar compilador/flags com funções pequenas;
-6. substituir a primeira função ASM por C matched;
-7. instalar diff, métricas e CI;
-8. converter `grid_build` em fatia vertical decomp + mod + teste.
+1. Impedir exceções não tratadas e manter mods desligados no host padrão.
+2. Instrumentar estados, comandos, respostas e IRQs do CD em torno do primeiro `ReadN`.
+3. Corrigir o avanço assíncrono até o primeiro quadro da tela legal.
+4. Repetir o ciclo para logos/intro até chegar ao menu com input.
+5. Somente então atacar a primeira corrida e os subsistemas exigidos por ela.
+6. Preservar cada avanço no Git após gates locais; não usar GitHub Actions neste momento.
 
 ## 6. Indicadores corretos
 
@@ -218,6 +208,8 @@ Não abrir outra frente de formato/gameplay antes de:
 - funções nomeadas por confiança e structs com offsets verificados;
 - testes, smoke tests e taxa de sucesso;
 - último build com checksum idêntico;
+- marcos nativos observáveis: janela, primeiro quadro, intro, menu, corrida e save;
+- plataformas empacotadas e estáveis, separadas de protótipos apenas compiláveis;
 - bloqueios de toolchain, linker e plataforma.
 
 Não usar como progresso principal: páginas de docs, funções apenas detectadas no Ghidra, arquivos
@@ -231,8 +223,9 @@ extraídos ou C# gerado automaticamente pelo RecompOne.
 | Segmentos incorretos | build ASM integral e linker antes de C em massa |
 | Pesquisa dispersa | backlog por subsistema; descoberta deve virar símbolo/tipo/teste |
 | Dependência do Ghidra local | mapas/headers versionados e sync automatizado |
-| Port consumir o projeto | limite de esforço; matching é caminho crítico |
-| Regressões silenciosas | checksum, diff por objeto, CI e baseline |
+| Port mascarar comportamento original | mods desligados; comparar com referência; corrigir runtime |
+| Um host funcionar só no Mac do mantenedor | remover caminhos fixos; testar e empacotar por plataforma |
+| Regressões silenciosas | checksum, diff por objeto, gates locais e baseline |
 | Colaboração difícil | setup de um comando, fila de funções e guia |
 | Questões legais | nenhuma ROM/asset; somente hashes, configs, código e fixtures próprias |
 
@@ -244,8 +237,8 @@ O primeiro objetivo não é 100%. É obter o mesmo **sistema de produção**:
 - fonte híbrida C/ASM sempre executável;
 - diff e status por função;
 - progresso automático por bytes/funções;
-- CI e convenções para colaboração;
-- variante modificável testável rapidamente;
+- gates locais e convenções para colaboração;
+- port original observável até menu, corrida e save;
 - matching, mods e port claramente separados.
 
 Depois disso o avanço passa a ser acumulativo. Como o jogo não possui overlays conhecidos e o EXE

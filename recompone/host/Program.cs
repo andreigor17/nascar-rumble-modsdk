@@ -14,4 +14,24 @@ if (Environment.GetEnvironmentVariable("RUMBLE_NATIVE_TRACE") == "1")
     RecompOne.Runtime.Log.SpuOn = true;
 }
 Console.WriteLine("[host] iniciando NASCAR Rumble nativo...");
-Recompiled.Entry.Run(mem, cue);
+try
+{
+    Recompiled.Entry.Run(mem, cue);
+}
+catch (Exception error)
+{
+    Console.Error.WriteLine("[host] o port nativo encontrou um erro e foi encerrado com segurança.");
+    Console.Error.WriteLine(error);
+    Environment.ExitCode = 1;
+}
+finally
+{
+    try
+    {
+        RecompOne.Runtime.Runtime.Shutdown();
+    }
+    catch (Exception error)
+    {
+        Console.Error.WriteLine($"[host] aviso ao fechar o runtime: {error.Message}");
+    }
+}

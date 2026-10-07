@@ -68,5 +68,6 @@ Validação local de 2026-10-07: `make docker-matching` passou em um perfil Coli
 `e90e3c7e4cf286a7a0a5e827b3a404bfe8407b15f8b2fd54536d426682b20f75`. As referências foram
 montadas como somente leitura e não entraram no contexto nem na imagem Docker.
 
-O site já publicado permanece disponível, mas não recebe deploy automático enquanto essa política
-estiver vigente.
+O site não recebe deploy automático. Depois do build local, ele pode ser publicado manualmente na
+branch `gh-pages` com `make site-deploy`; o GitHub Pages deve usar “Deploy from a branch”,
+`gh-pages` e `/ (root)`. Isso não executa testes nem GitHub Actions.

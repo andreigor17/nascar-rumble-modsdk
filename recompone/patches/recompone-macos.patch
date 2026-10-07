@@ -4,6 +4,10 @@ diff --git a/RecompOne.Recompiler/CodeGen/EntryWriter.cs b/RecompOne.Recompiler/
 @@ -24 +24 @@
 -        entry.AppendLine("        RecompOne.Runtime.Runtime.WaitForValidDisc();");
 +        entry.AppendLine("        RecompOne.Runtime.Runtime.WaitForValidDisc(cuePath);");
+@@ -30 +30,2 @@
+-        entry.AppendLine("        RecompOne.Runtime.Modding.ModLoader.LoadAll();");
++        entry.AppendLine("        if (Environment.GetEnvironmentVariable(\"RUMBLE_ENABLE_MODS\") == \"1\")");
++        entry.AppendLine("            RecompOne.Runtime.Modding.ModLoader.LoadAll();");
 diff --git a/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs b/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
 --- a/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
 +++ b/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs

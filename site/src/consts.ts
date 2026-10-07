@@ -2,8 +2,8 @@ import progress from '../../progress.json';
 
 export const SITE = {
   title: 'NASCAR Rumble ModSDK',
-  tagline_pt: 'Engenharia reversa & SDK de modding open source',
-  tagline_en: 'Reverse engineering & open-source modding SDK',
+  tagline_pt: 'Port nativo & engenharia reversa open source',
+  tagline_en: 'Native port & open-source reverse engineering',
   github: 'https://github.com/andreigor17/nascar-rumble-modsdk',
   reference: 'https://www.online-ctr.com/',
 };
