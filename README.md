@@ -22,6 +22,8 @@
 - ✅ Toolchain PsyQ identificada e validada por funções *matching*.
 - ✅ Split Splat integral e build híbrido ASM/dados do `SLUS_010.68`, idêntico byte a byte.
 - ✅ Loop por função com asm-differ, objdiff, contexto local, backlog e primeiro C matching.
+- 🟡 Port nativo macOS abre a janela e chega à leitura de `OPENING/LEGAL.LSC`; ainda não exibe
+  intro/menu porque o fluxo assíncrono de CD do RecompOne precisa ser corrigido.
 
 Veja o progresso detalhado em [`docs/`](docs/) e nas notas de sessão em [`notes/`](notes/).
 As métricas de decompilação vêm exclusivamente de [`progress.json`](progress.json), gerado a partir

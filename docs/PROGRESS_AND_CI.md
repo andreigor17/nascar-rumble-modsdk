@@ -1,4 +1,4 @@
-# Métricas, CI e governança
+# Métricas, validação local e governança
 
 `progress.json` é a fonte canônica de progresso da decompilação. Ele é gerado de forma
 determinística por `scripts/progress.py` a partir de `config/function_backlog.csv`, dos objetos C
@@ -31,24 +31,26 @@ make progress-check    # detecta manifesto obsoleto e regressão
 cair. Uma mudança de fronteiras pode alterar denominadores, mas precisa de justificativa explícita
 e de um rebuild byte a byte antes de atualizar a baseline.
 
-## Gates de CI
+## Gates locais antes do Git
 
-O workflow `decomp-ci.yml` oferece três resultados:
+Por decisão do mantenedor, a cópia legal do jogo permanece somente no Mac. Não há workflow remoto
+de testes da decompilação nem bundle privado. O GitHub é usado para versionar o código e publicar o
+site, sem receber BIN, CUE ou EXE.
 
-1. **Config, métricas, testes e formato:** sempre executado em Docker, sem arquivos do jogo.
-2. **Site:** prova que o Astro consegue consumir o `progress.json` atual.
-3. **Byte-identical matching build:** baixa um bundle privado, confere os hashes, refaz split/build
-   e executa todos os gates. É habilitado por `MATCHING_CI_ENABLED=true` e usa o secret
-   `REFERENCE_ARCHIVE_URL`.
+Antes de cada push:
 
-O tarball privado deve extrair exatamente estes caminhos, nunca deve ser anexado a logs/artefatos e
-é descartado com o runner efêmero:
-
-```text
-NASCAR Rumble (USA)/NASCAR Rumble (USA).bin
-NASCAR Rumble (USA)/NASCAR Rumble (USA).cue
-extracted/SLUS_010.68
+```sh
+make ci-public
 ```
+
+Quando a alteração tocar no split, linker, ASM ou C matching:
+
+```sh
+make ci-full
+```
+
+O segundo comando verifica a referência local, refaz o split e exige que o executável reconstruído
+tenha SHA-256 `e90e3c7e4cf286a7a0a5e827b3a404bfe8407b15f8b2fd54536d426682b20f75`.
 
 A imagem `matching-ci` compila binutils 2.47 do tarball upstream cujo SHA-256 está fixado. Python
 3.14.0 e Rust 1.74.1 também usam imagens fixadas por digest; Rust existe apenas no estágio que
@@ -61,12 +63,10 @@ versionado e reproduzir a arquitetura do runner hospedado pelo GitHub. Com Colim
 Silicon, use um perfil de VM completo `--arch x86_64 --vm-type qemu`: Rosetta não executa o
 compilador Windows de 32 bits dentro do Wibo, e QEMU/binfmt também não é estável nessa combinação.
 
-Validação local de 2026-10-07: `make docker-matching` passou em um perfil Colima x86-64/QEMU,
-executou 23 testes e reconstruiu `SLUS_010.68` com SHA-256
+Validação local de 2026-10-07: `make docker-matching` passou em um perfil Colima x86-64/QEMU e
+`make ci-full` reconstruiu `SLUS_010.68` com SHA-256
 `e90e3c7e4cf286a7a0a5e827b3a404bfe8407b15f8b2fd54536d426682b20f75`. As referências foram
 montadas como somente leitura e não entraram no contexto nem na imagem Docker.
 
-No GitHub, `MATCHING_CI_ENABLED=false` mantém o job completo pulado até existir um
-`REFERENCE_ARCHIVE_URL` privado e legal. Os gates públicos e o delta continuam funcionando. A
-execução do PR #1 confirmou os jobs públicos de config/métricas/testes/formato e site. A Etapa 4
-só pode ser marcada concluída depois que o job byte-identical passar em um PR real.
+O workflow separado do site pode continuar ativo porque consome apenas arquivos versionados e não
+tem acesso à cópia local do jogo.

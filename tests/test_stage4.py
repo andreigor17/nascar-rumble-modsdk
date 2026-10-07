@@ -72,6 +72,5 @@ class Stage4Tests(unittest.TestCase):
         self.assertTrue(check_format.is_excluded(vendor_header))
         self.assertFalse(check_format.is_excluded(project_source))
 
-
 if __name__ == "__main__":
     unittest.main()

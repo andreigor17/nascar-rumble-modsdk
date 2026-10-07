@@ -31,7 +31,7 @@ colima start rumble-amd64 --arch x86_64 --vm-type qemu \
 make docker-matching
 ```
 
-Para reproduzir o CI público, que não precisa de arquivos do jogo:
+Para executar os gates públicos localmente, sem arquivos do jogo:
 
 ```sh
 make docker-public
@@ -51,7 +51,7 @@ make docker-matching
 3. Coloque o C em `src/<subsistema>/`, registre o objeto e o subsistema em `config/`.
 4. Use `make diff FUNC=...` e `make objdiff FUNC=...` até obter 100%.
 5. Rode `make ci-full`, depois `make backlog` e `make progress-write`.
-6. Envie o delta apresentado pelo CI no PR.
+6. Revise o delta local de progresso e descreva-o no commit ou PR.
 
 Preserve nomes baseados em endereço até existir evidência para um nome semântico. Tipos e offsets
 devem citar uma análise, acesso observado ou teste; não promova uma hipótese silenciosamente.

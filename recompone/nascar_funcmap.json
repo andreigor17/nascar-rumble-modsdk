@@ -756,6 +756,16 @@
    "size": 356
   },
   {
+   "address": "8001b714",
+   "name": "FUN_8001b714",
+   "size": 32
+  },
+  {
+   "address": "8001b734",
+   "name": "FUN_8001b734",
+   "size": 32
+  },
+  {
    "address": "8001b754",
    "name": "FUN_8001b754",
    "size": 68
@@ -6211,9 +6221,24 @@
    "size": 148
   },
   {
+   "address": "8009937c",
+   "name": "RECOMP_LABEL_8009937C",
+   "size": 124
+  },
+  {
+   "address": "800993cc",
+   "name": "RECOMP_LABEL_800993CC",
+   "size": 44
+  },
+  {
    "address": "800993f8",
    "name": "PDCMD2_OBJ_138",
    "size": 52
+  },
+  {
+   "address": "8009941c",
+   "name": "RECOMP_LABEL_8009941C",
+   "size": 16
   },
   {
    "address": "80099430",
@@ -6306,6 +6331,11 @@
    "size": 116
   },
   {
+   "address": "80099a28",
+   "name": "RECOMP_LABEL_80099A28",
+   "size": 68
+  },
+  {
    "address": "80099a6c",
    "name": "PDDIRRES_OBJ_1CC",
    "size": 92
@@ -6331,6 +6361,11 @@
    "size": 12
   },
   {
+   "address": "80099b6c",
+   "name": "RECOMP_LABEL_80099B6C",
+   "size": 32
+  },
+  {
    "address": "80099b8c",
    "name": "PDDIRRES_OBJ_2EC",
    "size": 36
@@ -6346,14 +6381,34 @@
    "size": 212
   },
   {
+   "address": "80099c24",
+   "name": "RECOMP_LABEL_80099C24",
+   "size": 104
+  },
+  {
    "address": "80099c8c",
    "name": "PDDIRRES_OBJ_3EC",
    "size": 76
   },
   {
+   "address": "80099ccc",
+   "name": "RECOMP_LABEL_80099CCC",
+   "size": 12
+  },
+  {
    "address": "80099cd8",
    "name": "PDDIRRES_OBJ_438",
    "size": 88
+  },
+  {
+   "address": "80099d14",
+   "name": "RECOMP_LABEL_80099D14",
+   "size": 28
+  },
+  {
+   "address": "80099d30",
+   "name": "RECOMP_LABEL_80099D30",
+   "size": 244
   },
   {
    "address": "80099e24",
@@ -6394,6 +6449,11 @@
    "address": "8009a174",
    "name": "PDDIRRES_OBJ_8D4",
    "size": 12
+  },
+  {
+   "address": "8009a180",
+   "name": "RECOMP_LABEL_8009A180",
+   "size": 8
   },
   {
    "address": "8009a188",
@@ -6591,6 +6651,11 @@
    "size": 20
   },
   {
+   "address": "8009c2a0",
+   "name": "MALLOC3_ALIGN_LOOP",
+   "size": 44
+  },
+  {
    "address": "8009c2a4",
    "name": "MALLOC3_OBJ_14",
    "size": 40
@@ -6606,6 +6671,16 @@
    "size": 16
   },
   {
+   "address": "8009c314",
+   "name": "MALLOC3_OBJ_84",
+   "size": 36
+  },
+  {
+   "address": "8009c334",
+   "name": "MALLOC3_RETURN_NULL",
+   "size": 4
+  },
+  {
    "address": "8009c338",
    "name": "MALLOC3_OBJ_A8",
    "size": 8
@@ -6616,9 +6691,19 @@
    "size": 68
   },
   {
+   "address": "8009c358",
+   "name": "RECOMP_LABEL_8009C358",
+   "size": 44
+  },
+  {
    "address": "8009c384",
    "name": "FREE3_OBJ_44",
    "size": 188
+  },
+  {
+   "address": "8009c3a0",
+   "name": "RECOMP_LABEL_8009C3A0",
+   "size": 160
   },
   {
    "address": "8009c440",
@@ -6629,6 +6714,11 @@
    "address": "8009c478",
    "name": "FREE3_OBJ_138",
    "size": 16
+  },
+  {
+   "address": "8009c480",
+   "name": "RECOMP_LABEL_8009C480",
+   "size": 8
   },
   {
    "address": "8009c490",
@@ -6676,6 +6766,11 @@
    "size": 148
   },
   {
+   "address": "8009c578",
+   "name": "RECOMP_LABEL_8009C578",
+   "size": 44
+  },
+  {
    "address": "8009c5a4",
    "name": "SPRINTF_OBJ_94",
    "size": 300
@@ -6689,6 +6784,11 @@
    "address": "8009c76c",
    "name": "SPRINTF_OBJ_25C",
    "size": 68
+  },
+  {
+   "address": "8009c78c",
+   "name": "RECOMP_LABEL_8009C78C",
+   "size": 36
   },
   {
    "address": "8009c7b0",
@@ -6776,6 +6876,11 @@
    "size": 24
   },
   {
+   "address": "8009cca4",
+   "name": "RECOMP_LABEL_8009CCA4",
+   "size": 12
+  },
+  {
    "address": "8009ccb0",
    "name": "SPRINTF_OBJ_7A0",
    "size": 140
@@ -6784,6 +6889,11 @@
    "address": "8009cd3c",
    "name": "SPRINTF_OBJ_82C",
    "size": 88
+  },
+  {
+   "address": "8009cd5c",
+   "name": "RECOMP_LABEL_8009CD5C",
+   "size": 56
   },
   {
    "address": "8009cda0",
@@ -7036,6 +7146,11 @@
    "size": 12
   },
   {
+   "address": "8009db0c",
+   "name": "RECOMP_LABEL_8009DB0C",
+   "size": 4
+  },
+  {
    "address": "8009db10",
    "name": "ISO9660_OBJ_2B0",
    "size": 40
@@ -7071,6 +7186,11 @@
    "size": 372
   },
   {
+   "address": "8009dfa4",
+   "name": "RECOMP_LABEL_8009DFA4",
+   "size": 144
+  },
+  {
    "address": "8009e034",
    "name": "ISO9660_OBJ_7D4",
    "size": 28
@@ -7079,6 +7199,16 @@
    "address": "8009e050",
    "name": "ISO9660_OBJ_7F0",
    "size": 228
+  },
+  {
+   "address": "8009e0e0",
+   "name": "RECOMP_LABEL_8009E0E0",
+   "size": 84
+  },
+  {
+   "address": "8009e130",
+   "name": "RECOMP_LABEL_8009E130",
+   "size": 4
   },
   {
    "address": "8009e134",
@@ -7106,6 +7236,11 @@
    "size": 100
   },
   {
+   "address": "8009e244",
+   "name": "RECOMP_LABEL_8009E244",
+   "size": 16
+  },
+  {
    "address": "8009e254",
    "name": "BIOS_1_OBJ_64",
    "size": 512
@@ -7119,6 +7254,11 @@
    "address": "8009e554",
    "name": "BIOS_1_OBJ_364",
    "size": 76
+  },
+  {
+   "address": "8009e598",
+   "name": "RECOMP_LABEL_8009E598",
+   "size": 8
   },
   {
    "address": "8009e5a0",
@@ -7136,6 +7276,16 @@
    "size": 128
   },
   {
+   "address": "8009e720",
+   "name": "RECOMP_LABEL_8009E720",
+   "size": 32
+  },
+  {
+   "address": "8009e73c",
+   "name": "RECOMP_LABEL_8009E73C",
+   "size": 4
+  },
+  {
    "address": "8009e740",
    "name": "BIOS_1_OBJ_550",
    "size": 20
@@ -7144,6 +7294,11 @@
    "address": "8009e754",
    "name": "CD_sync",
    "size": 312
+  },
+  {
+   "address": "8009e7d4",
+   "name": "RECOMP_LABEL_8009E7D4",
+   "size": 184
   },
   {
    "address": "8009e88c",
@@ -7156,6 +7311,11 @@
    "size": 232
   },
   {
+   "address": "8009e944",
+   "name": "RECOMP_LABEL_8009E944",
+   "size": 96
+  },
+  {
    "address": "8009e9a4",
    "name": "BIOS_1_OBJ_7B4",
    "size": 48
@@ -7164,6 +7324,11 @@
    "address": "8009e9d4",
    "name": "CD_ready",
    "size": 312
+  },
+  {
+   "address": "8009ea54",
+   "name": "RECOMP_LABEL_8009EA54",
+   "size": 184
   },
   {
    "address": "8009eb0c",
@@ -7176,6 +7341,11 @@
    "size": 304
   },
   {
+   "address": "8009ebc4",
+   "name": "RECOMP_LABEL_8009EBC4",
+   "size": 168
+  },
+  {
    "address": "8009ec6c",
    "name": "BIOS_1_OBJ_A7C",
    "size": 48
@@ -7186,6 +7356,11 @@
    "size": 716
   },
   {
+   "address": "8009eeb0",
+   "name": "RECOMP_LABEL_8009EEB0",
+   "size": 184
+  },
+  {
    "address": "8009ef68",
    "name": "BIOS_1_OBJ_D78",
    "size": 48
@@ -7194,6 +7369,16 @@
    "address": "8009ef98",
    "name": "BIOS_1_OBJ_DA8",
    "size": 232
+  },
+  {
+   "address": "8009f020",
+   "name": "RECOMP_LABEL_8009F020",
+   "size": 96
+  },
+  {
+   "address": "8009f030",
+   "name": "RECOMP_LABEL_8009F030",
+   "size": 80
   },
   {
    "address": "8009f080",
@@ -7234,6 +7419,11 @@
    "address": "8009f520",
    "name": "CD_datasync",
    "size": 280
+  },
+  {
+   "address": "8009f588",
+   "name": "RECOMP_LABEL_8009F588",
+   "size": 176
   },
   {
    "address": "8009f638",
@@ -7341,6 +7531,16 @@
    "size": 196
   },
   {
+   "address": "8009ff7c",
+   "name": "RECOMP_LABEL_8009FF7C",
+   "size": 140
+  },
+  {
+   "address": "800a0008",
+   "name": "RECOMP_LABEL_800A0008",
+   "size": 4
+  },
+  {
    "address": "800a000c",
    "name": "CDR_1_OBJ_19C",
    "size": 268
@@ -7366,6 +7566,16 @@
    "size": 212
   },
   {
+   "address": "800a041c",
+   "name": "RECOMP_LABEL_800A041C",
+   "size": 136
+  },
+  {
+   "address": "800a043c",
+   "name": "RECOMP_LABEL_800A043C",
+   "size": 104
+  },
+  {
    "address": "800a04a4",
    "name": "CDR_1_OBJ_634",
    "size": 184
@@ -7386,6 +7596,21 @@
    "size": 72
   },
   {
+   "address": "800a0634",
+   "name": "RECOMP_LABEL_800A0634",
+   "size": 32
+  },
+  {
+   "address": "800a063c",
+   "name": "RECOMP_LABEL_800A063C",
+   "size": 24
+  },
+  {
+   "address": "800a0648",
+   "name": "RECOMP_LABEL_800A0648",
+   "size": 12
+  },
+  {
    "address": "800a0654",
    "name": "CDR_1_OBJ_7E4",
    "size": 12
@@ -7399,6 +7624,11 @@
    "address": "800a070c",
    "name": "CdReadSync",
    "size": 152
+  },
+  {
+   "address": "800a073c",
+   "name": "RECOMP_LABEL_800A073C",
+   "size": 104
   },
   {
    "address": "800a07a4",
@@ -7539,6 +7769,16 @@
    "address": "800a108c",
    "name": "INTR_OBJ_4EC",
    "size": 152
+  },
+  {
+   "address": "800a1100",
+   "name": "INTR_RETURN_VALUE",
+   "size": 36
+  },
+  {
+   "address": "800a1104",
+   "name": "INTR_EPILOGUE",
+   "size": 32
   },
   {
    "address": "800a1124",
@@ -7781,6 +8021,11 @@
    "size": 28
   },
   {
+   "address": "800a2630",
+   "name": "RECOMP_LABEL_800A2630",
+   "size": 116
+  },
+  {
    "address": "800a26a4",
    "name": "SYS_OBJ_FF4",
    "size": 24
@@ -7789,6 +8034,16 @@
    "address": "800a26bc",
    "name": "SYS_OBJ_100C",
    "size": 152
+  },
+  {
+   "address": "800a26c8",
+   "name": "RECOMP_LABEL_800A26C8",
+   "size": 140
+  },
+  {
+   "address": "800a2724",
+   "name": "RECOMP_LABEL_800A2724",
+   "size": 48
   },
   {
    "address": "800a2754",
@@ -7821,6 +8076,11 @@
    "size": 156
   },
   {
+   "address": "800a2a54",
+   "name": "RECOMP_LABEL_800A2A54",
+   "size": 28
+  },
+  {
    "address": "800a2a70",
    "name": "SYS_OBJ_13C0",
    "size": 348
@@ -7851,6 +8111,11 @@
    "size": 28
   },
   {
+   "address": "800a2d80",
+   "name": "RECOMP_LABEL_800A2D80",
+   "size": 24
+  },
+  {
    "address": "800a2d98",
    "name": "SYS_OBJ_16E8",
    "size": 124
@@ -7859,6 +8124,11 @@
    "address": "800a2e14",
    "name": "SYS_OBJ_1764",
    "size": 28
+  },
+  {
+   "address": "800a2e18",
+   "name": "RECOMP_LABEL_800A2E18",
+   "size": 24
   },
   {
    "address": "800a2e30",
@@ -7921,6 +8191,11 @@
    "size": 372
   },
   {
+   "address": "800a329c",
+   "name": "RECOMP_LABEL_800A329C",
+   "size": 368
+  },
+  {
    "address": "800a340c",
    "name": "SYS_OBJ_1D5C",
    "size": 36
@@ -7939,6 +8214,11 @@
    "address": "800a34cc",
    "name": "SYS_OBJ_1E1C",
    "size": 452
+  },
+  {
+   "address": "800a34d0",
+   "name": "RECOMP_LABEL_800A34D0",
+   "size": 448
   },
   {
    "address": "800a3690",
@@ -7981,6 +8261,11 @@
    "size": 76
   },
   {
+   "address": "800a37dc",
+   "name": "RECOMP_LABEL_800A37DC",
+   "size": 24
+  },
+  {
    "address": "800a37f4",
    "name": "SYS_OBJ_2144",
    "size": 256
@@ -7989,6 +8274,11 @@
    "address": "800a38f4",
    "name": "SYS_OBJ_2244",
    "size": 148
+  },
+  {
+   "address": "800a3988",
+   "name": "RECOMP_LABEL_800A3988",
+   "size": 36
   },
   {
    "address": "800a39ac",
@@ -8031,6 +8321,11 @@
    "size": 124
   },
   {
+   "address": "800a3ea8",
+   "name": "RECOMP_LABEL_800A3EA8",
+   "size": 120
+  },
+  {
    "address": "800a3f20",
    "name": "SYS_OBJ_2870",
    "size": 16
@@ -8066,9 +8361,19 @@
    "size": 124
   },
   {
+   "address": "800a41a0",
+   "name": "RECOMP_LABEL_800A41A0",
+   "size": 36
+  },
+  {
    "address": "800a41c4",
    "name": "SYS_OBJ_2B14",
    "size": 112
+  },
+  {
+   "address": "800a4220",
+   "name": "RECOMP_LABEL_800A4220",
+   "size": 20
   },
   {
    "address": "800a4234",
@@ -8076,14 +8381,29 @@
    "size": 124
   },
   {
+   "address": "800a428c",
+   "name": "RECOMP_LABEL_800A428C",
+   "size": 36
+  },
+  {
    "address": "800a42b0",
    "name": "SYS_OBJ_2C00",
    "size": 112
   },
   {
+   "address": "800a430c",
+   "name": "RECOMP_LABEL_800A430C",
+   "size": 20
+  },
+  {
    "address": "800a4320",
    "name": "MoveImage2",
    "size": 132
+  },
+  {
+   "address": "800a4380",
+   "name": "RECOMP_LABEL_800A4380",
+   "size": 36
   },
   {
    "address": "800a43a4",
@@ -8101,9 +8421,19 @@
    "size": 144
   },
   {
+   "address": "800a44d0",
+   "name": "RECOMP_LABEL_800A44D0",
+   "size": 36
+  },
+  {
    "address": "800a44f4",
    "name": "SYS_OBJ_2E44",
    "size": 108
+  },
+  {
+   "address": "800a4550",
+   "name": "RECOMP_LABEL_800A4550",
+   "size": 16
   },
   {
    "address": "800a4560",
@@ -8146,6 +8476,11 @@
    "size": 88
   },
   {
+   "address": "800a47c0",
+   "name": "RECOMP_LABEL_800A47C0",
+   "size": 20
+  },
+  {
    "address": "800a47e0",
    "name": "SetDefDrawEnv",
    "size": 120
@@ -8174,6 +8509,11 @@
    "address": "800a49d0",
    "name": "SquareRoot12",
    "size": 140
+  },
+  {
+   "address": "800a4a5c",
+   "name": "RECOMP_LABEL_800A4A5C",
+   "size": 20
   },
   {
    "address": "800a4a70",
@@ -8211,6 +8551,11 @@
    "size": 20
   },
   {
+   "address": "800a4be8",
+   "name": "RECOMP_LABEL_800A4BE8",
+   "size": 116
+  },
+  {
    "address": "800a4c5c",
    "name": "RATAN_OBJ_13C",
    "size": 20
@@ -8219,6 +8564,11 @@
    "address": "800a4c70",
    "name": "RATAN_OBJ_150",
    "size": 36
+  },
+  {
+   "address": "800a4c8c",
+   "name": "RECOMP_LABEL_800A4C8C",
+   "size": 8
   },
   {
    "address": "800a4ca0",
@@ -8396,6 +8746,11 @@
    "size": 272
   },
   {
+   "address": "800a57d8",
+   "name": "RECOMP_LABEL_800A57D8",
+   "size": 88
+  },
+  {
    "address": "800a5830",
    "name": "_UDIVMOD_OBJ_1C8",
    "size": 284
@@ -8411,6 +8766,11 @@
    "size": 16
   },
   {
+   "address": "800a5a2c",
+   "name": "RECOMP_LABEL_800A5A2C",
+   "size": 88
+  },
+  {
    "address": "800a5a84",
    "name": "_UDIVMOD_OBJ_41C",
    "size": 96
@@ -8421,9 +8781,19 @@
    "size": 20
   },
   {
+   "address": "800a5af8",
+   "name": "RECOMP_LABEL_800A5AF8",
+   "size": 340
+  },
+  {
    "address": "800a5c4c",
    "name": "_UDIVMOD_OBJ_5E4",
    "size": 44
+  },
+  {
+   "address": "800a5c54",
+   "name": "RECOMP_LABEL_800A5C54",
+   "size": 36
   },
   {
    "address": "800a5c78",
@@ -8451,9 +8821,19 @@
    "size": 272
   },
   {
+   "address": "800a60a0",
+   "name": "RECOMP_LABEL_800A60A0",
+   "size": 200
+  },
+  {
    "address": "800a6168",
    "name": "SPU_OBJ_390",
    "size": 148
+  },
+  {
+   "address": "800a6180",
+   "name": "RECOMP_LABEL_800A6180",
+   "size": 124
   },
   {
    "address": "800a61fc",
@@ -8561,6 +8941,11 @@
    "size": 64
   },
   {
+   "address": "800a68c4",
+   "name": "RECOMP_LABEL_800A68C4",
+   "size": 44
+  },
+  {
    "address": "800a68f0",
    "name": "SPU_OBJ_B18",
    "size": 28
@@ -8616,14 +9001,29 @@
    "size": 84
   },
   {
+   "address": "800a6d50",
+   "name": "RECOMP_LABEL_800A6D50",
+   "size": 28
+  },
+  {
    "address": "800a6d6c",
    "name": "S_M_INT_OBJ_54",
    "size": 112
   },
   {
+   "address": "800a6dd4",
+   "name": "RECOMP_LABEL_800A6DD4",
+   "size": 8
+  },
+  {
    "address": "800a6ddc",
    "name": "S_M_INT_OBJ_C4",
    "size": 428
+  },
+  {
+   "address": "800a6df4",
+   "name": "RECOMP_LABEL_800A6DF4",
+   "size": 404
   },
   {
    "address": "800a6f88",
@@ -8641,9 +9041,24 @@
    "size": 220
   },
   {
+   "address": "800a70f4",
+   "name": "RECOMP_LABEL_800A70F4",
+   "size": 100
+  },
+  {
+   "address": "800a70fc",
+   "name": "RECOMP_LABEL_800A70FC",
+   "size": 92
+  },
+  {
    "address": "800a7158",
    "name": "S_M_WSA_OBJ_140",
    "size": 168
+  },
+  {
+   "address": "800a715c",
+   "name": "RECOMP_LABEL_800A715C",
+   "size": 164
   },
   {
    "address": "800a7200",
@@ -8746,6 +9161,16 @@
    "size": 228
   },
   {
+   "address": "800a7938",
+   "name": "RECOMP_LABEL_800A7938",
+   "size": 224
+  },
+  {
+   "address": "800a7974",
+   "name": "RECOMP_LABEL_800A7974",
+   "size": 164
+  },
+  {
    "address": "800a7a18",
    "name": "S_SRMP_OBJ_400",
    "size": 36
@@ -8796,9 +9221,19 @@
    "size": 16
   },
   {
+   "address": "800a8208",
+   "name": "RECOMP_LABEL_800A8208",
+   "size": 192
+  },
+  {
    "address": "800a82c8",
    "name": "S_SAV_OBJ_200",
    "size": 20
+  },
+  {
+   "address": "800a82dc",
+   "name": "RECOMP_LABEL_800A82DC",
+   "size": 144
   },
   {
    "address": "800a836c",
@@ -8841,9 +9276,24 @@
    "size": 244
   },
   {
+   "address": "800a8610",
+   "name": "RECOMP_LABEL_800A8610",
+   "size": 28
+  },
+  {
    "address": "800a862c",
    "name": "S_SI_OBJ_F4",
    "size": 16
+  },
+  {
+   "address": "800a863c",
+   "name": "RECOMP_LABEL_800A863C",
+   "size": 40
+  },
+  {
+   "address": "800a8660",
+   "name": "RECOMP_LABEL_800A8660",
+   "size": 4
   },
   {
    "address": "800a8664",
@@ -8931,6 +9381,11 @@
    "size": 316
   },
   {
+   "address": "800a8ae0",
+   "name": "RECOMP_LABEL_800A8AE0",
+   "size": 260
+  },
+  {
    "address": "800a8be4",
    "name": "S_SVA_OBJ_13C",
    "size": 8
@@ -8974,6 +9429,11 @@
    "address": "800a8c48",
    "name": "S_SVA_OBJ_1A0",
    "size": 124
+  },
+  {
+   "address": "800a8c60",
+   "name": "RECOMP_LABEL_800A8C60",
+   "size": 100
   },
   {
    "address": "800a8cc4",
@@ -9021,9 +9481,29 @@
    "size": 512
   },
   {
+   "address": "800a8d40",
+   "name": "RECOMP_LABEL_800A8D40",
+   "size": 488
+  },
+  {
    "address": "800a8f28",
    "name": "S_SVA_OBJ_480",
    "size": 320
+  },
+  {
+   "address": "800a8f54",
+   "name": "RECOMP_LABEL_800A8F54",
+   "size": 276
+  },
+  {
+   "address": "800a901c",
+   "name": "RECOMP_LABEL_800A901C",
+   "size": 76
+  },
+  {
+   "address": "800a903c",
+   "name": "RECOMP_LABEL_800A903C",
+   "size": 44
   },
   {
    "address": "800a9068",
@@ -9106,6 +9586,11 @@
    "size": 124
   },
   {
+   "address": "800a9450",
+   "name": "RECOMP_LABEL_800A9450",
+   "size": 100
+  },
+  {
    "address": "800a94b4",
    "name": "SN_SVA_OBJ_20C",
    "size": 8
@@ -9151,9 +9636,24 @@
    "size": 512
   },
   {
+   "address": "800a9530",
+   "name": "RECOMP_LABEL_800A9530",
+   "size": 488
+  },
+  {
    "address": "800a9718",
    "name": "SN_SVA_OBJ_470",
    "size": 304
+  },
+  {
+   "address": "800a9744",
+   "name": "RECOMP_LABEL_800A9744",
+   "size": 260
+  },
+  {
+   "address": "800a981c",
+   "name": "RECOMP_LABEL_800A981C",
+   "size": 44
   },
   {
    "address": "800a9848",
@@ -9211,6 +9711,11 @@
    "size": 128
   },
   {
+   "address": "800a994c",
+   "name": "RECOMP_LABEL_800A994C",
+   "size": 68
+  },
+  {
    "address": "800a9990",
    "name": "S_SCA_OBJ_118",
    "size": 8
@@ -9256,9 +9761,19 @@
    "size": 284
   },
   {
+   "address": "800a9a0c",
+   "name": "RECOMP_LABEL_800A9A0C",
+   "size": 224
+  },
+  {
    "address": "800a9aec",
    "name": "S_SCA_OBJ_274",
    "size": 84
+  },
+  {
+   "address": "800a9af0",
+   "name": "RECOMP_LABEL_800A9AF0",
+   "size": 80
   },
   {
    "address": "800a9b40",
@@ -9266,14 +9781,29 @@
    "size": 84
   },
   {
+   "address": "800a9b44",
+   "name": "RECOMP_LABEL_800A9B44",
+   "size": 80
+  },
+  {
    "address": "800a9b94",
    "name": "S_SCA_OBJ_31C",
    "size": 84
   },
   {
+   "address": "800a9b98",
+   "name": "RECOMP_LABEL_800A9B98",
+   "size": 80
+  },
+  {
    "address": "800a9be8",
    "name": "S_SCA_OBJ_370",
    "size": 12
+  },
+  {
+   "address": "800a9bec",
+   "name": "RECOMP_LABEL_800A9BEC",
+   "size": 8
   }
  ],
  "labels": []

@@ -182,3 +182,26 @@ export PATH="$HOME/.dotnet:$PATH"; export DOTNET_ROOT="$HOME/.dotnet"
 dotnet tools/RecompOne/RecompOne.Recompiler/bin/Release/net10.0/recompone.dll recompone/nascar.json
 cd recompone/host && dotnet build -c Release && bin/Release/net10.0/NascarRumbleNative
 ```
+
+## Retomada do boot nativo (2026-10-07) — janela corrigida, jogo chega à primeira leitura
+
+O bloqueio antigo de janela foi corrigido localmente e preservado em
+`recompone/patches/recompone-macos.patch`:
+
+- o contexto solicitado no macOS passou de OpenGL 4.5 para 4.1;
+- `glTextureBarrier`, ausente no macOS, ganhou fallback conservador com `glFinish`;
+- o caminho `.cue` passado ao executável deixa de ser ignorado pelo seletor de disco;
+- 106 alvos internos de dispatch ausentes foram adicionados ao funcMap exclusivo do RecompOne,
+  incluindo dois callbacks reais não detectados no export original do Ghidra.
+
+Resultado observado com `make native-trace`:
+
+1. abre uma janela nativa macOS ARM de 1280×720;
+2. carrega `SLUS_010.68` e entra no `main` recompilado;
+3. inicializa heap, interrupções, memory card, controles, GPU, SPU e CD;
+4. encontra `\\CW\\OPENING\\LEGAL.LSC;1` no LBA 97407;
+5. fica em loop após o comando `ReadN`, antes de renderizar a tela legal.
+
+Portanto existe um executável nativo real e ele já executa parte significativa do boot, mas ainda
+**não chega à intro nem ao menu**. O próximo defeito está no avanço assíncrono/interrupt do CD no
+runtime do RecompOne, não na janela nem na localização do arquivo do jogo.

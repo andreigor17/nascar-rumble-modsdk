@@ -9,11 +9,14 @@
 - **Etapa 1 — Identificar compilador, assembler, linker e flags: CONCLUÍDA em 2026-10-06**
 - **Etapa 2 — Esqueleto reproduzível e split integral: CONCLUÍDA em 2026-10-06**
 - **Etapa 3 — Loop produtivo por função: CONCLUÍDA em 2026-10-06**
-- **Etapa 4 — Métricas, CI e governança: EM VALIDAÇÃO em 2026-10-07**.
-- Ponto exato de retomada: os jobs públicos do PR #1 passaram. O GitHub CLI está autenticado e
-  `MATCHING_CI_ENABLED=false` está configurado de propósito; obter uma URL privada e legal para
-  `REFERENCE_ARCHIVE_URL`, habilitar o job e confirmar o gate remoto byte-identical. Não iniciar a
-  Etapa 5 antes desse resultado.
+- **Etapa 4 — Métricas, validação local e governança: CONCLUÍDA em 2026-10-07**.
+- **Etapa 5 — Primeira fatia vertical: grid de campeonato: PRÓXIMA**.
+- Decisão do mantenedor em 2026-10-07: não armazenar a cópia do jogo na nuvem e não executar
+  testes de decompilação no GitHub Actions. O código continua versionado no Git; antes de cada
+  envio, os gates rodam localmente com a cópia legal existente no Mac.
+- Trilha B (port nativo): `NascarRumbleNative` agora abre no macOS ARM, executa o boot até localizar
+  `CW/OPENING/LEGAL.LSC` e aguarda correção do fluxo assíncrono de CD após `ReadN`; intro e menu
+  ainda não aparecem.
 
 ## Registro
 
@@ -156,9 +159,9 @@ make objdiff FUNC=FUN_80078c24
 
 Detalhes de uso e política em `docs/DECOMP_WORKFLOW.md`.
 
-### Etapa 4 — Métricas, CI e governança
+### Etapa 4 — Métricas, validação local e governança
 
-Status: **EM VALIDAÇÃO — implementação e gates locais aprovados em 2026-10-07**
+Status: **CONCLUÍDA — gate local aprovado e política definida em 2026-10-07**
 
 Entregas:
 
@@ -166,8 +169,6 @@ Entregas:
   ASM de funções restante, símbolos e cobertura explicitamente classificada por subsistema;
 - `config/progress_baseline.json` e testes rejeitam regressões de match;
 - README e site consomem o manifesto, sem percentuais matching duplicados manualmente;
-- `decomp-ci.yml` produz delta por PR, executa testes/config/formato em Docker e oferece um job
-  completo com referência privada; o deploy do site reage a mudanças no manifesto;
 - `CONTRIBUTING.md`, template de PR e `docs/PROGRESS_AND_CI.md` fixam setup, convenções, política
   non-matching e separação legal dos assets;
 - binutils 2.47, toolchain de decomp, Wibo e dependências permanecem fixados por versão/commit e
@@ -184,7 +185,7 @@ make ci-full
   e90e3c7e4cf286a7a0a5e827b3a404bfe8407b15f8b2fd54536d426682b20f75
 
 make docker-matching
-  PASS — VM Colima x86-64/QEMU, imagem linux/amd64, 23 testes e o mesmo SHA-256 byte a byte
+  PASS — VM Colima x86-64/QEMU, imagem linux/amd64 e o mesmo SHA-256 byte a byte
 
 cd site && npm run build
   PASS — 36 páginas
@@ -194,12 +195,9 @@ Métricas publicadas: 36/596.188 bytes de funções C matched; 1/1.855 funções
 bytes de dados reconstruídos; 596.152 bytes de funções ainda em ASM; 1.855 símbolos. Os dados em
 ASM serem byte-idênticos não significa que estejam compreendidos ou tipados.
 
-Estado remoto: o `gh` está autenticado como `andreigor17` e a variável
-`MATCHING_CI_ENABLED=false` foi criada no repositório público. Não há runner privado nem secret com
-assets do jogo, por escolha legal e de segurança. No PR #1, `Config, metrics, tests, and format` e
-`Site consumes progress.json` passaram; o job privado foi corretamente pulado. A etapa permanece
-em validação até existir um bundle privado autorizado e o job `Byte-identical matching build`
-passar em um PR.
+Política vigente: `make ci-public` e `make ci-full` rodam no Mac antes de cada push. Nenhum BIN,
+CUE, EXE ou bundle do jogo é enviado ao GitHub. O workflow de testes remoto foi removido; o
+workflow separado de publicação do site permanece sem acesso aos arquivos do jogo.
 
 ## Protocolo para finalizar uma etapa
 

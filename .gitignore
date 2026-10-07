@@ -94,3 +94,5 @@ recompone/host/obj/
 recompone/boot.log
 recompone/host/settings.json
 recompone/*.sav
+settings.json
+interface.ini

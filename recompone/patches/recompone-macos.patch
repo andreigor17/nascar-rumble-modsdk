@@ -1,0 +1,46 @@
+diff --git a/RecompOne.Recompiler/CodeGen/EntryWriter.cs b/RecompOne.Recompiler/CodeGen/EntryWriter.cs
+--- a/RecompOne.Recompiler/CodeGen/EntryWriter.cs
++++ b/RecompOne.Recompiler/CodeGen/EntryWriter.cs
+@@ -24 +24 @@
+-        entry.AppendLine("        RecompOne.Runtime.Runtime.WaitForValidDisc();");
++        entry.AppendLine("        RecompOne.Runtime.Runtime.WaitForValidDisc(cuePath);");
+diff --git a/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs b/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
+--- a/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
++++ b/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
+@@ -58 +58,11 @@
+-    public void Barrier() => _gl.TextureBarrier();
++    public void Barrier()
++    {
++        if (OperatingSystem.IsMacOS())
++        {
++            // macOS stops at OpenGL 4.1 and does not expose glTextureBarrier (4.5).
++            // Finish is conservative, but keeps the first native boot path functional.
++            _gl.Finish();
++            return;
++        }
++        _gl.TextureBarrier();
++    }
+diff --git a/RecompOne.Runtime/Host/Window/HostWindow.cs b/RecompOne.Runtime/Host/Window/HostWindow.cs
+--- a/RecompOne.Runtime/Host/Window/HostWindow.cs
++++ b/RecompOne.Runtime/Host/Window/HostWindow.cs
+@@ -44,0 +45,3 @@
++            var apiVersion = OperatingSystem.IsMacOS()
++                ? new APIVersion(4, 1)
++                : new APIVersion(4, 5);
+@@ -53 +56,5 @@
+-                API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(4, 5)),
++                API = new GraphicsAPI(
++                    ContextAPI.OpenGL,
++                    ContextProfile.Core,
++                    ContextFlags.Default,
++                    apiVersion),
+diff --git a/RecompOne.Runtime/Runtime.cs b/RecompOne.Runtime/Runtime.cs
+--- a/RecompOne.Runtime/Runtime.cs
++++ b/RecompOne.Runtime/Runtime.cs
+@@ -42 +42,5 @@
+-    public static void WaitForValidDisc() => HostWindow.WaitForValidDisc();
++    public static void WaitForValidDisc(string? cuePath = null)
++    {
++        if (!string.IsNullOrWhiteSpace(cuePath) && File.Exists(cuePath)) return;
++        HostWindow.WaitForValidDisc();
++    }

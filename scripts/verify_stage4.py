@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Stage 4 metrics, CI, and collaboration-governance artifacts."""
+"""Validate Stage 4 metrics, local gates, and collaboration-governance artifacts."""
 
 from __future__ import annotations
 
@@ -31,11 +31,10 @@ def main() -> int:
         "CONTRIBUTING.md",
         "Dockerfile",
         ".github/pull_request_template.md",
-        ".github/workflows/decomp-ci.yml",
     ):
         require((ROOT / relative).is_file(), f"missing governance artifact {relative}")
     json.loads((ROOT / "progress.json").read_text(encoding="utf-8"))
-    print("PASS — canonical metrics, anti-regression baseline, CI, and governance are present")
+    print("PASS — canonical metrics, local gates, anti-regression, and governance are present")
     return 0
 
 

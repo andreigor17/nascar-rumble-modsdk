@@ -130,26 +130,24 @@ de 1.855 funções com grafo de chamadas, strings e campos de colaboração; pri
 instruções como próxima fila; uma tentativa de 31 instruções semanticamente correta não foi
 integrada porque não atingiu match. Ver `docs/DECOMP_WORKFLOW.md`.
 
-### Etapa 4 — Métricas, CI e governança — 🟡 EM VALIDAÇÃO
+### Etapa 4 — Métricas, validação local e governança — ✅ CONCLUÍDA (2026-10-07)
 
 1. Medir separadamente bytes de código matched, funções matched, dados matched, ASM restante,
    símbolos e cobertura por subsistema. “Funções detectadas” não conta como decompilação.
-2. CI: config/split lint, build matching, checksum, testes Python, formatação C/Python e proteção
-   contra regressão de progresso.
+2. Gates locais: config/split lint, build matching, checksum, testes Python, formatação C/Python e
+   proteção contra regressão de progresso.
 3. Publicar `progress.json`; README e site consomem este arquivo, sem percentuais manuais.
 4. Criar `CONTRIBUTING.md`, setup, convenções, template de PR e política non-matching.
 5. Fixar dependências por commit/checksum; Docker para CI/Linux e Wibo/Wine para macOS.
 
-**Gate:** cada PR recebe resultado de match, delta de progresso e testes automaticamente.
+**Gate:** antes de cada push, `make ci-public` passa; alterações de split/C também exigem
+`make ci-full` e o checksum byte-idêntico usando a cópia legal local.
 
-**Estado local/remoto (2026-10-07):** `progress.json`, baseline anti-regressão, métricas por
-subsistema, Docker Linux, CI público/full, guia de contribuição e template de PR foram
-implementados. `make docker-matching` passou numa VM x86-64/QEMU com 23 testes e rebuild SHA-256
-idêntico; o build do site também passou. O `gh` está autenticado e a variável remota
-`MATCHING_CI_ENABLED=false` impede que assets proprietários sejam buscados sem autorização. Resta
-quando houver um `REFERENCE_ARCHIVE_URL` privado e legal, habilitar/validar o job matching remoto;
-os dois jobs públicos já passaram no PR #1. Até o gate byte-identical remoto passar, a etapa não
-recebe `CONCLUÍDA`. Ver `docs/PROGRESS_AND_CI.md`.
+**Resultado:** `progress.json`, baseline anti-regressão, métricas por subsistema, Docker Linux,
+gates locais público/full, guia de contribuição e template de PR foram implementados.
+`make docker-matching` e `make ci-full` reconstruíram o executável com SHA-256 idêntico. Por
+decisão do mantenedor, os testes da decompilação ficam locais e nenhum asset do jogo é enviado ao
+GitHub. Ver `docs/PROGRESS_AND_CI.md`.
 
 ### Etapa 5 — Primeira fatia vertical: grid de campeonato
 
