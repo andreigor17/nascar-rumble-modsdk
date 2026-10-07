@@ -14,12 +14,16 @@
 - Decisão do mantenedor em 2026-10-07: não armazenar a cópia do jogo na nuvem e não usar GitHub
   Actions neste momento. O código continua versionado no Git; antes de cada envio, os gates rodam
   localmente com a cópia legal existente no Mac.
+- Autorização permanente do mantenedor em 2026-10-07: sempre que um marco real for concluído e
+  validado localmente, publicar manualmente a atualização do site. Isso não autoriza GitHub Actions
+  nem testes remotos; a publicação usa a branch `gh-pages` conforme `docs/SITE_DEPLOY.md`.
 - Prioridade do mantenedor em 2026-10-07: jogo original jogável primeiro. Mods, melhorias gráficas
   e novas resoluções ficam depois de menu e corrida original estáveis; o carregador de mods do host
   nativo permanece desligado por padrão.
-- Trilha nativa: `NascarRumbleNative` abre no macOS ARM, entra no `main`, inicializa os subsistemas
-  e localiza `CW/OPENING/LEGAL.LSC`. O bloqueio atual é o fluxo assíncrono do CD após `ReadN`;
-  nenhum quadro da tela legal, intro ou menu é exibido ainda.
+- Trilha nativa: `NascarRumbleNative` abre no macOS ARM, lê por completo
+  `CW/OPENING/LEGAL.LSC`, decodifica suas duas imagens MDEC e as transfere para a GPU. O bloqueio
+  atual está no agendamento assíncrono de VBlank/memory card antes do loop normal de quadros;
+  intro e menu ainda não foram alcançados visualmente.
 - Os avisos “NascarRumbleNative encerrou inesperadamente” vistos no Mac vieram das execuções de
   diagnóstico de 2026-10-07: os relatórios indicam `SIGABRT` após exceção .NET não tratada, com o
   processo de desenvolvimento como pai. Não existe LaunchAgent ou processo relançando o host. O
@@ -208,18 +212,22 @@ por enquanto o GitHub é usado somente para preservar e compartilhar o código.
 
 ### Etapa 5 — Boot original visível
 
-Status: **EM ANDAMENTO — bloqueio no primeiro `ReadN` assíncrono**
+Status: **EM ANDAMENTO — CD/MDEC vencidos; bloqueio no agendamento de VBlank/memory card**
 
 Estado observado no macOS ARM:
 
 - executável nativo abre uma janela OpenGL 1280×748;
 - entra no `main` recompilado e inicializa heap, interrupções, memory cards, controles, GPU, SPU e CD;
-- localiza `CW/OPENING/LEGAL.LSC` no LBA 97407, com 35.136 bytes;
-- envia `Setmode`, `Setloc` e `ReadN`, mas não progride até a entrega assíncrona dos setores;
-- por isso ainda não há tela legal, intro, menu ou jogo controlável.
+- localiza `CW/OPENING/LEGAL.LSC` no LBA 97407, com 35.136 bytes, e entrega seus 18 setores;
+- decodifica as duas imagens da tela legal via MDEC (160 macroblocos e 30.720 palavras cada) e
+  executa as transferências para a GPU com fallbacks OpenGL compatíveis com macOS;
+- inicializa os eventos do memory card sem encerrar inesperadamente, mas para antes do loop normal
+  porque callbacks de VBlank e cartão ainda precisam de um agendador cooperativo;
+- por isso intro, menu e jogo controlável ainda não foram alcançados visualmente.
 
-Próximo gate: corrigir comandos/respostas/eventos/IRQs do CD até o menu aceitar input. A decomp
-matching permanece disponível para esclarecer funções necessárias; trabalho de mods está suspenso.
+Próximo gate: implementar o agendamento cooperativo de VBlank/memory card, confirmar a primeira
+tela visível e seguir até o menu aceitar input. A decomp matching permanece disponível para
+esclarecer funções necessárias; trabalho de mods está suspenso.
 
 ## Protocolo para finalizar uma etapa
 

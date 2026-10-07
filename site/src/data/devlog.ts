@@ -12,6 +12,32 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-013-cd-mdec-e-tela-legal',
+    date: '2026-10-07',
+    session: '013',
+    tag: 'Port nativo',
+    pt: {
+      title: 'O boot nativo já lê e decodifica a tela legal',
+      summary:
+        'O bloqueio do CD foi vencido: o executável entrega todos os setores da abertura e decodifica as duas imagens originais da tela legal.',
+      points: [
+        'LEGAL.LSC é lido por completo em 18 setores, com callbacks de CD e DMA funcionando sem recursão ou estouro de pilha.',
+        'As duas imagens passam pelo MDEC: 160 macroblocos e 30.720 palavras de saída em cada quadro, seguidos da transferência para a GPU.',
+        'O próximo bloqueio está isolado no agendamento cooperativo de VBlank e memory card antes do loop normal; intro e menu ainda não foram confirmados visualmente.',
+      ],
+    },
+    en: {
+      title: 'Native boot now reads and decodes the legal screen',
+      summary:
+        'The CD blocker is cleared: the executable delivers every opening sector and decodes both original legal-screen images.',
+      points: [
+        'LEGAL.LSC is fully read across 18 sectors, with CD callbacks and DMA working without recursion or stack overflow.',
+        'Both images pass through MDEC: 160 macroblocks and 30,720 output words per frame, followed by a GPU transfer.',
+        'The next blocker is isolated to cooperative VBlank and memory-card scheduling before the normal frame loop; intro and menu are not visually confirmed yet.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-012-janela-nativa-e-boot-original',
     date: '2026-10-07',
     session: '012',

@@ -8,9 +8,187 @@ diff --git a/RecompOne.Recompiler/CodeGen/EntryWriter.cs b/RecompOne.Recompiler/
 -        entry.AppendLine("        RecompOne.Runtime.Modding.ModLoader.LoadAll();");
 +        entry.AppendLine("        if (Environment.GetEnvironmentVariable(\"RUMBLE_ENABLE_MODS\") == \"1\")");
 +        entry.AppendLine("            RecompOne.Runtime.Modding.ModLoader.LoadAll();");
+diff --git a/RecompOne.Runtime/Bios/BiosA.cs b/RecompOne.Runtime/Bios/BiosA.cs
+--- a/RecompOne.Runtime/Bios/BiosA.cs
++++ b/RecompOne.Runtime/Bios/BiosA.cs
+@@ -418,2 +418,2 @@
+-            case 0xAB: BiosB.CardComplete(c, m, c.A0); c.V0 = 1u; break;
+-            case 0xAC: BiosB.CardComplete(c, m, c.A0); c.V0 = 1u; break;
++            case 0xAB: BiosB.CardInfo(c, m, c.A0); c.V0 = 1u; break;
++            case 0xAC: BiosB.CardLoad(c, m, c.A0); c.V0 = 1u; break;
+diff --git a/RecompOne.Runtime/Bios/BiosB.cs b/RecompOne.Runtime/Bios/BiosB.cs
+--- a/RecompOne.Runtime/Bios/BiosB.cs
++++ b/RecompOne.Runtime/Bios/BiosB.cs
+@@ -21,0 +22,5 @@
++    readonly record struct CardCompletion(uint Port, uint? Spec, bool Immediate);
++    static readonly Queue<CardCompletion> _pendingCardCompletions = new();
++    static readonly bool[] _cardKnown = new bool[2];
++    static readonly bool[] _cardInitialized = new bool[2];
++    static bool _deliveringCardCompletion;
+@@ -48,4 +54,4 @@
+-    public static void CardComplete(CpuContext c, IMemory m, uint port)
++    static void DeliverCardCompletion(CpuContext c, IMemory m, CardCompletion completion)
+     {
+-        var card = (port & 0x10u) != 0 ? Runtime.CardB : Runtime.CardA;
+-        uint spec = card.Enabled ? 0x0004u : 0x0100u;
++        var card = (completion.Port & 0x10u) != 0 ? Runtime.CardB : Runtime.CardA;
++        uint spec = completion.Spec ?? (card.Enabled ? 0x0004u : 0x0100u);
+@@ -56,0 +63,36 @@
++    public static void CardComplete(CpuContext c, IMemory m, uint port, uint? requestedSpec = null, bool immediate = true)
++    {
++        _pendingCardCompletions.Enqueue(new CardCompletion(port, requestedSpec, immediate));
++        if (!immediate || _deliveringCardCompletion) return;
++
++        _deliveringCardCompletion = true;
++        try
++        {
++            int guard = 0;
++            while (_pendingCardCompletions.Count != 0 && _pendingCardCompletions.Peek().Immediate && guard++ < 128)
++                DeliverCardCompletion(c, m, _pendingCardCompletions.Dequeue());
++        }
++        finally
++        {
++            _deliveringCardCompletion = false;
++        }
++    }
++
++    public static void TickCard(IMemory m)
++    {
++        var c = Runtime.Cpu;
++        if (c == null || _pendingCardCompletions.Count == 0) return;
++        DeliverCardCompletion(c, m, _pendingCardCompletions.Dequeue());
++    }
++
++    public static void CardInfo(CpuContext c, IMemory m, uint port)
++    {
++        int slot = (port & 0x10u) != 0 ? 1 : 0;
++        var card = slot == 1 ? Runtime.CardB : Runtime.CardA;
++        uint spec = !card.Enabled ? 0x0100u : _cardKnown[slot] ? 0x0004u : 0x2000u;
++        _cardKnown[slot] = card.Enabled;
++        CardComplete(c, m, port, spec, immediate: !_cardInitialized[slot]);
++    }
++
++    public static void CardLoad(CpuContext c, IMemory m, uint port) => CardComplete(c, m, port);
++
+@@ -60 +103,2 @@
+-        var card = (c.A0 & 0x10u) != 0 ? Runtime.CardB : Runtime.CardA;
++        int slot = (c.A0 & 0x10u) != 0 ? 1 : 0;
++        var card = slot == 1 ? Runtime.CardB : Runtime.CardA;
+@@ -67,0 +111 @@
++        _cardInitialized[slot] = true;
+@@ -74 +120,2 @@
+-        var card = (c.A0 & 0x10u) != 0 ? Runtime.CardB : Runtime.CardA;
++        int slot = (c.A0 & 0x10u) != 0 ? 1 : 0;
++        var card = slot == 1 ? Runtime.CardB : Runtime.CardA;
+diff --git a/RecompOne.Runtime/Memory/Dma.cs b/RecompOne.Runtime/Memory/Dma.cs
+--- a/RecompOne.Runtime/Memory/Dma.cs
++++ b/RecompOne.Runtime/Memory/Dma.cs
+@@ -114,0 +115 @@
++        Sdk.LibCd.NotifySectorConsumed();
+diff --git a/RecompOne.Runtime/Cdrom/CdController.cs b/RecompOne.Runtime/Cdrom/CdController.cs
+--- a/RecompOne.Runtime/Cdrom/CdController.cs
++++ b/RecompOne.Runtime/Cdrom/CdController.cs
+@@ -189 +189 @@
+-                    if ((val & 0x80) != 0) { _dataFifoPos = 0; _dataReady = true; }
++                    if ((val & 0x80) != 0) _dataReady = true;
+diff --git a/RecompOne.Runtime/sdk/LibCd.cs b/RecompOne.Runtime/sdk/LibCd.cs
+--- a/RecompOne.Runtime/sdk/LibCd.cs
++++ b/RecompOne.Runtime/sdk/LibCd.cs
+@@ -42,0 +43,3 @@
++    static bool _sectorConsumed;
++    static bool _pumpingRead;
++    static int _readGeneration;
+@@ -123 +126 @@
+-        if (!_readActive || _cbData == 0) return;
++        if (!_readActive || (_cbReady == 0 && _cbData == 0)) return;
+@@ -127,11 +130 @@
+-
+-        var snap = c.Snapshot();
+-        while (_cbData != 0)
+-        {
+-            _lastIntr = DataReady;
+-            if (_cbReady != 0) { c.A0 = DataReady; c.A1 = 0; Dispatcher.Call(c, m, _cbReady); }
+-            AdvancePos(1);
+-            Dispatcher.LoadByLba(CurrentLba);
+-            if (_cbData != 0) { c.A0 = DataReady; c.A1 = 0; Dispatcher.Call(c, m, _cbData); }
+-        }
+-        c.Restore(snap);
++        PumpReadCallbacks(m, 1);
+@@ -201,0 +195 @@
++        _sectorConsumed = true;
+@@ -204,0 +199,2 @@
++    internal static void NotifySectorConsumed() => _sectorConsumed = true;
++
+@@ -242,0 +239,12 @@
++    static void DispatchCallback(uint callback, int interrupt, IMemory m)
++    {
++        var c = Runtime.Cpu;
++        if (callback == 0 || c == null) return;
++        var snap = c.Snapshot();
++        Log.Sdk($"Cd callback 0x{callback:X8} intr={interrupt}");
++        c.A0 = (uint)interrupt;
++        c.A1 = 0;
++        Dispatcher.Call(c, m, callback);
++        c.Restore(snap);
++    }
++
+@@ -256,0 +265,2 @@
++        _pumpingRead = false;
++        _readGeneration = 0;
+@@ -274 +284 @@
+-            ExecCommand(m, Setloc, param, 0);
++            ExecCommand(m, Setloc, param, 0, false);
+@@ -278 +288 @@
+-    static int ExecCommand(IMemory m, byte com, uint param, uint result)
++    static int ExecCommand(IMemory m, byte com, uint param, uint result, bool notifySync = true)
+@@ -298,0 +309 @@
++                _readGeneration++;
+@@ -320,0 +332 @@
++                if (notifySync) DispatchCallback(_cbSync, Complete, m);
+@@ -337,0 +350,2 @@
++        if (notifySync) DispatchCallback(_cbSync, Complete, m);
++        if (com == ReadN && (_mode & 0x40) == 0) PumpReadCallbacks(m, 4096);
+@@ -340,0 +355,34 @@
++    static void PumpReadCallbacks(IMemory m, int limit)
++    {
++        if (_pumpingRead) return;
++        _pumpingRead = true;
++        try
++        {
++            for (int i = 0; i < limit && _readActive; i++)
++            {
++                uint ready = _cbReady;
++                uint data = _cbData;
++                if (ready == 0 && data == 0) return;
++
++                int generation = _readGeneration;
++                int lba = CurrentLba;
++                lock (DiscLock)
++                    Runtime.Cd!.LoadSectorToFifo(Runtime.Cd.ReadSectorData(lba, 2340));
++                Dispatcher.LoadByLba(lba);
++
++                _lastIntr = DataReady;
++                _sectorConsumed = false;
++                DispatchCallback(ready, DataReady, m);
++                DispatchCallback(data, DataReady, m);
++                if (_readGeneration != generation) continue;
++                if (!_sectorConsumed) return;
++
++                AdvancePos(1);
++            }
++        }
++        finally
++        {
++            _pumpingRead = false;
++        }
++    }
++
 diff --git a/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs b/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
 --- a/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
 +++ b/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
+@@ -14 +14 @@
+-    uint _scratchTex;
++    uint _scratchTex, _scratchFbo;
 @@ -58 +58,11 @@
 -    public void Barrier() => _gl.TextureBarrier();
 +    public void Barrier()
@@ -24,6 +202,41 @@ diff --git a/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs b/RecompOne.Runtime/Gpu/Hle/
 +        }
 +        _gl.TextureBarrier();
 +    }
+@@ -92,0 +103,5 @@
++        if (OperatingSystem.IsMacOS())
++        {
++            CopyRectWithFramebuffer(sx * Scale, sy * Scale, dx * Scale, dy * Scale, sw, sh, overlap);
++            return;
++        }
+@@ -124,0 +140,26 @@
++        _scratchFbo = CreateFbo(_scratchTex);
++    }
++
++    void CopyRectWithFramebuffer(int sx, int sy, int dx, int dy, int w, int h, bool overlap)
++    {
++        _gl.Disable(EnableCap.ScissorTest);
++        if (overlap)
++        {
++            EnsureScratch();
++            _gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _fbo);
++            _gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _scratchFbo);
++            _gl.BlitFramebuffer(sx, sy, sx + w, sy + h, 0, 0, w, h,
++                ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
++            _gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _scratchFbo);
++            _gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _fbo);
++            _gl.BlitFramebuffer(0, 0, w, h, dx, dy, dx + w, dy + h,
++                ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
++        }
++        else
++        {
++            _gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _fbo);
++            _gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _fbo);
++            _gl.BlitFramebuffer(sx, sy, sx + w, sy + h, dx, dy, dx + w, dy + h,
++                ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
++        }
++        _gl.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
+@@ -130,0 +172 @@
++        if (_scratchFbo != 0) _gl.DeleteFramebuffer(_scratchFbo);
 diff --git a/RecompOne.Runtime/Host/Window/HostWindow.cs b/RecompOne.Runtime/Host/Window/HostWindow.cs
 --- a/RecompOne.Runtime/Host/Window/HostWindow.cs
 +++ b/RecompOne.Runtime/Host/Window/HostWindow.cs
@@ -48,3 +261,5 @@ diff --git a/RecompOne.Runtime/Runtime.cs b/RecompOne.Runtime/Runtime.cs
 +        if (!string.IsNullOrWhiteSpace(cuePath) && File.Exists(cuePath)) return;
 +        HostWindow.WaitForValidDisc();
 +    }
+@@ -58,0 +63 @@
++        if (Mem != null) Bios.BiosB.TickCard(Mem);

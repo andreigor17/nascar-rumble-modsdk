@@ -57,6 +57,22 @@ class NativeBuildTests(unittest.TestCase):
         self.assertIn("Environment.ExitCode = 1", host)
         self.assertIn("Runtime.Shutdown()", host)
 
+    def test_cd_callbacks_are_mapped_for_the_native_runtime(self):
+        function_map = json.loads(
+            (ROOT / "recompone" / "nascar_funcmap.json").read_text(encoding="utf-8")
+        )
+        functions = {
+            entry["address"]: entry["name"] for entry in function_map["functions"]
+        }
+        self.assertEqual("cd_read_sync_callback", functions["8001af58"])
+        self.assertEqual("cd_read_ready_callback", functions["8001b14c"])
+        self.assertEqual("cd_file_completion_callback", functions["8001c934"])
+        self.assertEqual("mdec_output_callback", functions["80094dd0"])
+        self.assertEqual("memory_card_event_callback_4", functions["8001e864"])
+        self.assertEqual("memory_card_event_callback_8", functions["8001edd0"])
+        self.assertEqual("CdSyncCallback", functions["8009f900"])
+        self.assertEqual("CdReadyCallback", functions["8009f920"])
+
 
 if __name__ == "__main__":
     unittest.main()

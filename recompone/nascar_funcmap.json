@@ -741,6 +741,16 @@
    "size": 132
   },
   {
+   "address": "8001af50",
+   "name": "cd_read_default_callback",
+   "size": 8
+  },
+  {
+   "address": "8001af58",
+   "name": "cd_read_sync_callback",
+   "size": 108
+  },
+  {
    "address": "8001afc4",
    "name": "FUN_8001afc4",
    "size": 152
@@ -749,6 +759,11 @@
    "address": "8001b05c",
    "name": "FUN_8001b05c",
    "size": 240
+  },
+  {
+   "address": "8001b14c",
+   "name": "cd_read_ready_callback",
+   "size": 1124
   },
   {
    "address": "8001b5b0",
@@ -824,6 +839,11 @@
    "address": "8001c58c",
    "name": "FUN_8001c58c",
    "size": 936
+  },
+  {
+   "address": "8001c934",
+   "name": "cd_file_completion_callback",
+   "size": 20
   },
   {
    "address": "8001c948",
@@ -1019,6 +1039,51 @@
    "address": "8001e128",
    "name": "FUN_8001e128",
    "size": 24
+  },
+  {
+   "address": "8001e140",
+   "name": "memory_card_event_callback_0",
+   "size": 1008
+  },
+  {
+   "address": "8001e530",
+   "name": "memory_card_event_callback_1",
+   "size": 148
+  },
+  {
+   "address": "8001e5c4",
+   "name": "memory_card_event_callback_2",
+   "size": 336
+  },
+  {
+   "address": "8001e714",
+   "name": "memory_card_event_callback_3",
+   "size": 336
+  },
+  {
+   "address": "8001e864",
+   "name": "memory_card_event_callback_4",
+   "size": 624
+  },
+  {
+   "address": "8001ead4",
+   "name": "memory_card_event_callback_5",
+   "size": 280
+  },
+  {
+   "address": "8001ebec",
+   "name": "memory_card_event_callback_6",
+   "size": 260
+  },
+  {
+   "address": "8001ecf0",
+   "name": "memory_card_event_callback_7",
+   "size": 224
+  },
+  {
+   "address": "8001edd0",
+   "name": "memory_card_event_callback_8",
+   "size": 132
   },
   {
    "address": "8001ee54",
@@ -5901,6 +5966,11 @@
    "size": 2240
   },
   {
+   "address": "80094dd0",
+   "name": "mdec_output_callback",
+   "size": 544
+  },
+  {
    "address": "80094ff0",
    "name": "FUN_80094ff0",
    "size": 728
@@ -7472,12 +7542,12 @@
   },
   {
    "address": "8009f900",
-   "name": "FUN_8009f900",
+   "name": "CdSyncCallback",
    "size": 20
   },
   {
    "address": "8009f920",
-   "name": "FUN_8009f920",
+   "name": "CdReadyCallback",
    "size": 20
   },
   {
