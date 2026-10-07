@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-22",
+  "game_mode": "Championship",
+  "cup": "Gold Rush",
+  "player": "Jeff Gordon",
+  "class": "Rookie",
+  "grid_address": "0x800b0e40",
+  "entry_size": 8,
+  "raw_hex": "06ff23000500660100ff1e0004015a0200ff1a0003014e0300ff01000200030400ff20000101600501000e0000002a00",
+  "expected": [
+    {"index": 0, "kind": "AI", "model_id": 35, "position": 5, "name": "Rookie 16 Ron Hornaday"},
+    {"index": 1, "kind": "AI", "model_id": 30, "position": 4, "name": "Rookie 94 Bill Elliot"},
+    {"index": 2, "kind": "AI", "model_id": 26, "position": 3, "name": "Rookie 55 Kenny Wallace"},
+    {"index": 3, "kind": "AI", "model_id": 1, "position": 2, "name": "Rookie 2 Rusty Wallace"},
+    {"index": 4, "kind": "AI", "model_id": 32, "position": 1, "name": "Rookie 99 Jeff Burton"},
+    {"index": 5, "kind": "PLAYER", "model_id": 14, "position": 0, "name": "Rookie 24 Jeff Gordon"}
+  ]
+}

@@ -46,6 +46,29 @@ __pycache__/
 venv/
 *.egg-info/
 
+# Etapa 2: ferramentas e saídas reproduzíveis, geradas localmente
+tools/splat/
+tools/psyq_sdk/
+tools/psyq-sdk/
+!requirements-splat.lock
+!requirements-decomp.lock
+tools/asm-differ/
+tools/maspsx/
+tools/objdiff/
+tools/wibo/
+build/
+asm/
+assets/
+scratch/
+.splache
+config/undefined_funcs_auto.txt
+config/undefined_syms_auto.txt
+include/gte_macros.inc
+include/include_asm.h
+include/labels.inc
+include/macro.inc
+linker/*.d
+
 # Sistema
 .DS_Store
 Thumbs.db
@@ -61,6 +84,7 @@ experiments/ram/
 
 # clone do RecompOne (build)
 tools/RecompOne/
+tools/compiler_probe/build/
 
 # RecompOne: código gerado e build do host
 recompone/Recompiled/

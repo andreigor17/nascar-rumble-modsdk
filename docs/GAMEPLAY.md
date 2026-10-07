@@ -18,6 +18,37 @@ Na seleção de carro dá para escolher a **classe** do carro (`Rookie` / `Pro` 
   `*(u16*)(*(0x800b6188)+0xCC)`, batendo com o HUD).
 - 🟡 Pro (170/171) e Elite (180/181) informados pelo usuário — a verificar com o mesmo leitor.
 
+## Fluxo de menus e seleção de oponentes — ✅ (verificado ao vivo)
+
+Estrutura (confirmada navegando o jogo):
+- **Menu superior:** 1 Player · 2 Players · **Racing Class** (Rookie/Pro/Elite, global) ·
+  **Power-Ups** (Some/...) · Hall of Champs · Game Options · Showcase.
+- **1 Player →** Single Race · Championship · Time Trial · Showdown · Race Options.
+- Em *Game Options* há **"Select Opponents"** (on/off).
+
+**Diferença crucial (base para o mod "campeonato com qualquer carro"):**
+
+| Modo | Após escolher SEU carro |
+|---|---|
+| **Single Race** (Select Opponents = on) | vai para a **seleção de oponentes** (escolhe "Opponent 1", 2… ou "Skip Rest" p/ randomizar o resto) |
+| **Championship** | pula direto para a **seleção de cup/pista** (ex.: copa *Metropolis*: Night Flight/Urban Decay/Ship Shape). **Não deixa escolher oponentes** — o grid é montado pelo jogo. |
+
+→ **Mod alvo:** injetar/hookar o preenchimento do grid de oponentes no Championship (usar o
+mecanismo de seleção que JÁ existe no Single Race, ou escrever os IDs de carro direto no grid).
+Temos a tabela de carros (`0x800b6188`) e o catálogo (168), então sabemos *quais* valores injetar.
+
+### ✅ Grid builder LOCALIZADO (sessão 010, 2026-07-22) — provado ao vivo
+
+A **função que monta o grid** é **`grid_build` = `FUN_8008927c` (0x8008927c)**: define a contagem
+(`DAT_800b0e40`) conforme o modo (`DAT_800b7115`) e seleciona os oponentes via **RNG customizado**
+`FUN_800181ac` (0x800181ac, lagged-Fibonacci — não o rand PsyQ). O grid vive na tabela
+**`0x800b0e40`** (contagem no +0; entradas de 8 bytes; **+2 = MODEL ID**, +4 = ordem de largada,
++1 = `0xff` IA / `0x00` jogador). `FUN_8003132c` **lê** essa tabela e instancia os carros.
+
+**Confirmado numa corrida real** (Jeff Gordon #24 Rookie, Gold Rush): os 6 IDs em +2 = `14`(jogador
+Jeff Gordon), `35,30,26,1,32` (Hornaday/Elliott/K.Wallace/R.Wallace/Burton) — todos Rookie, batendo
+com `cars_wiki.csv`. **Mod = sobrescrever o +2 (ou hookar `grid_build`).** Detalhes: `docs/FUNCTION_MAP.md`.
+
 ## Power-up de velocidade
 
 - **+20** de velocidade ao pegar o power-up de velocidade (temporário).

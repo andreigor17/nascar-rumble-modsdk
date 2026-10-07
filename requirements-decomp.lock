@@ -1,0 +1,11 @@
+# Runtime dependencies for the pinned asm-differ snapshot.
+cxxfilt==0.3.0 \
+    --hash=sha256:774e85a8d0157775ed43276d89397d924b104135762d86b3a95f81f203094e07
+levenshtein==0.27.5 \
+    --hash=sha256:1d945c3ce7c74fb1cff7aaf1207a8622877a184fac11720ae0a120d9ac9388bf \
+    --hash=sha256:22021caf5867a46fae5ab927bbdcb430599d7e5ee3898449cbbe430ff07b7d08
+rapidfuzz==3.14.6 \
+    --hash=sha256:8fa7d45388dec34a86038f2a38380f4922b74b5dd8991247f629a531178db10f \
+    --hash=sha256:e13a8160d017b499ec7a2fa9d0ce1ae2e7377080815785819f966fb235d4eb60
+watchdog==6.0.0 \
+    --hash=sha256:9ddf7c82fda3ae8e24decda1338ede66e1c99883db93711d8fb941eaa2d8c282

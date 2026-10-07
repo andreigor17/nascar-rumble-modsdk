@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "target": "SLUS_010.68",
+  "code": {
+    "matched_bytes": 36,
+    "total_function_bytes": 596188,
+    "percent": 0.006038,
+    "envelope_bytes": 629700,
+    "unclassified_envelope_bytes": 33512
+  },
+  "functions": {
+    "matched": 1,
+    "total": 1855,
+    "percent": 0.053908
+  },
+  "data": {
+    "matched_bytes": 22852,
+    "total_bytes": 22852,
+    "percent": 100.0,
+    "sections": [
+      {
+        "name": ".rodata",
+        "total_bytes": 21744,
+        "matched_bytes": 21744,
+        "percent": 100.0
+      },
+      {
+        "name": ".sdata",
+        "total_bytes": 1084,
+        "matched_bytes": 1084,
+        "percent": 100.0
+      },
+      {
+        "name": ".data",
+        "total_bytes": 24,
+        "matched_bytes": 24,
+        "percent": 100.0
+      }
+    ]
+  },
+  "assembly": {
+    "function_bytes_remaining": 596152,
+    "functions_remaining": 1854
+  },
+  "symbols": {
+    "total": 1855,
+    "descriptive": 568,
+    "auto_address": 1287
+  },
+  "subsystems": {
+    "championship_grid": {
+      "label": "Championship grid",
+      "functions_matched": 0,
+      "functions_total": 2,
+      "code_matched_bytes": 0,
+      "code_total_bytes": 5924,
+      "percent": 0.0
+    },
+    "unclassified": {
+      "label": "Unclassified",
+      "functions_matched": 1,
+      "functions_total": 1853,
+      "code_matched_bytes": 36,
+      "code_total_bytes": 590264,
+      "percent": 0.006099
+    }
+  },
+  "build": {
+    "status": "matching",
+    "sha256": "e90e3c7e4cf286a7a0a5e827b3a404bfe8407b15f8b2fd54536d426682b20f75"
+  }
+}

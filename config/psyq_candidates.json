@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "source": "https://github.com/FoxdieTeam/psyq_sdk",
+  "source_commit": "fec561c5771a981a6090c315cbe338f7967137cd",
+  "runner": {
+    "name": "wibo-macos",
+    "version": "1.2.0",
+    "sha256": "2b3000ef6a7a490c24ccd71967735ae0005e218922e51806cca1b8d77fd3cf7c"
+  },
+  "candidates": [
+    {
+      "sdk": "PsyQ 4.3",
+      "compiler": "GNU C 2.7.2.SN32.3.7 Build 0001",
+      "cc1psx_sha256": "5594a2241d1ddaa26a61a68597d529faf9a843f89b7c288671bb325b8bc72f90",
+      "aspsx": "2.56",
+      "aspsx_sha256": "7f928fa89e143facd75737822b08bb63fb41a06415ba943393db727aa398efc8",
+      "flags_under_test": "-O2 -G0 -g0"
+    },
+    {
+      "sdk": "PsyQ 4.4",
+      "compiler": "cc1psx from PsyQ 4.4",
+      "cc1psx_sha256": "26eb8259fa3e077d1980eb1e0c942006752135953dd03173200bf99ef6f5b6c9",
+      "aspsx": "2.81",
+      "aspsx_sha256": "0e98d9561a3fa6452545fd038ea29f43c26b82d7f29722a8531525f0429bd4b8",
+      "flags_under_test": "-O2 -G0 -g0"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+    org $80010000
+
+    include "tools\compiler_probe\build\4.4\probe.obj"
+
+text group
+    section .rdata, text
+    section .text, text
+    section .ctors, text
+    section .dtors, text
+    section .data, text
+    section .sdata, text
+
+bss group bss
+    section .sbss, bss
+    section .bss, bss

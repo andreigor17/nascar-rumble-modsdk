@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "game": "NASCAR Rumble (USA)",
+  "serial": "SLUS-01068",
+  "artifacts": [
+    {
+      "path": "NASCAR Rumble (USA)/NASCAR Rumble (USA).bin",
+      "size": 261248400,
+      "sha1": "3e43fedad31a67400808e816ed28a52fb6ec0381",
+      "sha256": "ea2491cc7f4ef8f40e5959f9052899c09d2aa9aedbefb8bff23f9efc8556130f"
+    },
+    {
+      "path": "NASCAR Rumble (USA)/NASCAR Rumble (USA).cue",
+      "size": 85,
+      "sha1": "629f3c52e7633b3c510ac10622246a268eba6563",
+      "sha256": "6364acf552c78b948f09de2e79702718772b9a15ed58a7b9a00954a1050f28cd"
+    },
+    {
+      "path": "extracted/SLUS_010.68",
+      "size": 655360,
+      "sha1": "2726ac3e6f3d756f78982f7c66e507fc3aaf7aff",
+      "sha256": "e90e3c7e4cf286a7a0a5e827b3a404bfe8407b15f8b2fd54536d426682b20f75",
+      "psx_exe": {
+        "pc0": "0x800a5440",
+        "gp0": "0x00000000",
+        "text_address": "0x80010000",
+        "text_size": "0x0009f800",
+        "stack_address": "0x801ffff0"
+      }
+    }
+  ]
+}

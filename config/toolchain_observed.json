@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06",
+  "purpose": "Baseline do ambiente antes da identificação e fixação da toolchain original na Etapa 1.",
+  "available": {
+    "python": "3.14.8",
+    "git": "2.53.0",
+    "dotnet_sdk": "8.0.416"
+  },
+  "not_found_on_path": [
+    "splat",
+    "mipsel-none-elf-gcc",
+    "mips-linux-gnu-as",
+    "wine",
+    "wibo"
+  ],
+  "note": "Este arquivo registra o ambiente observado; não define ainda a toolchain matching. A Etapa 1 deve identificar versões/flags e criar um lock verificável por checksum."
+}

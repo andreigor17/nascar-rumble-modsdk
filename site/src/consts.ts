@@ -1,3 +1,5 @@
+import progress from '../../progress.json';
+
 export const SITE = {
   title: 'NASCAR Rumble ModSDK',
   tagline_pt: 'Engenharia reversa & SDK de modding open source',
@@ -16,10 +18,14 @@ export function href(path: string, lang: Lang = 'pt'): string {
   return `${base}${prefix}${clean}` || '/';
 }
 
-/** Estatísticas exibidas no hero — atualizar quando avançarmos. */
+/** Métricas matching vêm do manifesto canônico gerado na raiz do repositório. */
 export const STATS = [
-  { value: '2008', label_pt: 'funções mapeadas', label_en: 'functions mapped' },
+  { value: `${progress.code.percent.toFixed(3)}%`, label_pt: 'código matching', label_en: 'matching code' },
+  {
+    value: `${progress.functions.matched}/${progress.functions.total}`,
+    label_pt: 'funções matching',
+    label_en: 'matching functions',
+  },
   { value: '5', label_pt: 'formatos decodificados', label_en: 'formats decoded' },
   { value: '168', label_pt: 'carros catalogados', label_en: 'cars catalogued' },
-  { value: '188k', label_pt: 'linhas de C# nativo', label_en: 'lines of native C#' },
 ];

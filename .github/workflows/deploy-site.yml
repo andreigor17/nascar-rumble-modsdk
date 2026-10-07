@@ -8,7 +8,7 @@ name: Deploy site to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['site/**', '.github/workflows/deploy-site.yml']
+    paths: ['site/**', 'progress.json', '.github/workflows/deploy-site.yml']
   workflow_dispatch:
 
 permissions:

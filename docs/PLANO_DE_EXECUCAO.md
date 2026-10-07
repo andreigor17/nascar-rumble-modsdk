@@ -1,181 +1,255 @@
-# Plano de Execução — NASCAR Rumble Reverse Engineering & ModSDK
+# Plano de Execução — NASCAR Rumble Decompilation & ModSDK
 
-> Documento derivado do [PRD](PRD_NASCAR_RUMBLE_REVERSE_ENGINEERING.md).
-> Data: 2026-07-19. Status das descobertas: ✅ Confirmado · 🟡 Provável · 🔵 Hipótese · ❓ Desconhecido
+> Revisão rigorosa: 2026-10-06. Alvo primário: `SLUS_010.68` (NTSC-U).
+> O plano de 2026-07-19 foi substituído: várias fases exploratórias já terminaram, mas a
+> infraestrutura essencial de uma *matching decomp* ainda não existe.
 
-## 0. O que já sabemos (análise inicial da ISO — 2026-07-19)
+## 1. Estado real
 
-Análise feita diretamente sobre o dump `NASCAR Rumble (USA).bin/.cue` (sem modificá-lo):
+### Já concluído ou comprovado
 
-| Fato | Status |
+- ISO mapeada (108 arquivos); PS-X EXE extraído e identificado.
+- Executável único, sem overlays conhecidos: carga `0x80010000`, entrada `0x800A5440`.
+- PsyQ 4.6 identificado; 2.008 funções detectadas no Ghidra e 1.855 exportadas ao RecompOne.
+- Container EA, `.LSC`, `Cpag` e `Ctrk` possuem entendimento útil.
+- RAM, velocidade, roster de 168 carros, recursos e grid possuem pontos confirmados.
+- RecompOne gera e compila C#, mas o primeiro boot ainda trava no host GLFW/macOS.
+- Toolchain PsyQ identificada por matching: GNU C 2.7.2.SN32.3.7, `-O2 -G0 -g0` na baseline,
+  ASPSX 2.56 e PSYLINK 2.73.
+- Splat e build híbrido reproduzem `SLUS_010.68` byte a byte a partir de ASM/dados.
+- O último commit (`9fef458`) documentou corretamente Single Race × Championship. A pesquisa
+  posterior já localizou `grid_build` (`0x8008927c`), tabela `0x800b0e40` e `grid_spawn`
+  (`0x8003132c`); portanto, o “próximo passo” daquele commit já foi superado no worktree.
+
+### Lacunas restantes para uma decomp produtiva
+
+- fronteiras finas de objetos e ilhas de dados ainda provisórias;
+- conversão gradual do ASM em C matching;
+- ciclo por função com `asm-differ`/`objdiff`/decomp.me;
+- métricas de bytes/funções matched, dados e ASM restante;
+- CI para build, checksums, testes, formato e regressão de progresso;
+- testes dos parsers e experimentos dinâmicos;
+- estrutura e convenções que permitam colaboração paralela.
+
+**Diagnóstico:** a base de *matching decomp* agora existe. O maior acelerador passa a ser um loop
+por função no qual o ASM possa ser convertido em C e verificado sem preparação manual repetitiva.
+
+## 2. O que os projetos de referência ensinam
+
+| Projeto | Prática que acelera | Aplicação aqui |
+|---|---|---|
+| [sotn-decomp](https://github.com/Xeeynamo/sotn-decomp) | Splat, configs versionadas, toolchain fixada, diff, permuter, hashes, progresso e CI | Modelo principal do pipeline |
+| [silent-hill-decomp](https://github.com/shdecompilations/silent-hill-decomp) | Docker, compiladores/flags por segmento, `include_asm`, objdiff, checksums e convenções | Modelo para identificar toolchain e começar híbrido |
+| [mgs_reversing](https://github.com/FoxdieTeam/mgs_reversing) | PsyQ real, Ninja, hash final, métricas por byte/função, variante `dev` e relançamento no PCSX-Redux | Referência mais próxima para build e iteração |
+| [ctr-native](https://github.com/CTR-tools/ctr-native) | Separação `game/` × `platform/`, CMake/CTest e replay de bugs | Referência para o port, após uma base C estável |
+
+Não copiar código/layouts de outras engines, complexidade de overlays nem a camada nativa antes da
+hora. RecompOne continua útil como laboratório paralelo, mas não mede progresso da decomp.
+
+## 3. Estratégia corrigida
+
+1. **Matching decomp (caminho crítico):** binário → split → build híbrido ASM/C → diff → match.
+2. **RE e mods (alimentadora):** Ghidra + PCSX-Redux produzem símbolos, tipos, testes e código C.
+3. **Port (paralela e limitada):** RecompOne busca boot/jogabilidade; `ctr-native` orienta a
+   arquitetura futura. Limitar esta trilha a ~20% do esforço até o build matching funcionar.
+
+## 4. Ordem obrigatória
+
+### Etapa 0 — Congelar referência e evidências — ✅ CONCLUÍDA (2026-10-06)
+
+1. Registrar SHA-256/SHA-1 do BIN, CUE e `SLUS_010.68`; validar serial/região em todo build.
+2. Gerar manifesto de Python, Splat, binutils, PsyQ, MASPSX e Wibo/Wine.
+3. Converter a descoberta do grid em experimento reproduzível: script, ações, valores esperados e log.
+4. Fazer documentação e site consumirem uma fonte de dados comum sempre que possível.
+
+**Gate:** outro colaborador com a imagem correta obtém os mesmos hashes e artefatos gerados.
+
+**Resultado:** gate aprovado por `scripts/verify_reference.py`, `scripts/verify_grid_capture.py` e
+6 testes automatizados em `tests/test_stage0.py`. Evidências em `config/` e `experiments/grid/`.
+
+### Etapa 1 — Identificar compilador, assembler, linker e flags — ✅ CONCLUÍDA (2026-10-06)
+
+1. Separar código próprio, bibliotecas PsyQ e dados por assinaturas e padrões.
+2. Criar corpus de 15–30 funções pequenas: leaf/non-leaf, switch, structs, signedness, `-G0/-G8`.
+3. Testar versões/flags plausíveis de PsyQ/SN `cc1`; registrar diffs, não apenas suposições.
+4. Determinar alinhamentos, small data, ordem de objetos e bibliotecas.
+5. Fixar toolchain por checksum e documentar sua proveniência legal.
+
+**Gate:** cinco funções próprias compilam exatamente e um módulo relinka previsivelmente. A versão
+do SDK não prova, sozinha, a versão e as flags do compilador C.
+
+**Resultado:** corpus de 24 funções; 10 funções pequenas matched; probe de 36 bytes com chamada e
+stack distinguiu PsyQ 4.3 de 4.4 e confirmou `-O2 -G0 -g0`; módulo mínimo relinkado duas vezes pelo
+PSYLINK 2.73 com CPE idêntico. `-G` varia por objeto e será classificado no split. Ver
+`docs/TOOLCHAIN.md` e `docs/PROJECT_STATUS.md`.
+
+### Etapa 2 — Esqueleto reproduzível — ✅ CONCLUÍDA (2026-10-06)
+
+```text
+config/       splat.yaml, símbolos, checksums
+src/          C decompilado por subsistema
+asm/          código ainda não convertido
+include/      tipos PS1/PsyQ, structs e declarações
+linker/       script e ordem de objetos
+expected/     referência local, nunca assets no Git
+tools/        split, build, diff e progresso
+tests/        parsers e comportamento
+```
+
+1. Escrever config Splat e mapa inicial de `.text/.rodata/.data/.sdata/.bss`.
+2. Importar símbolos confirmados do Ghidra; desconhecidos permanecem nomeados por endereço.
+3. Gerar ASM para 100% do código ainda não convertido.
+4. Relinkar com `include_asm`/objetos ASM antes de exigir código C.
+5. Comparar cada segmento e o executável final com a referência.
+
+**Gate:** `make setup && make extract && make build && make check` (ou equivalentes) reconstrói o
+EXE byte a byte. Este marco transforma o repositório em uma decomp.
+
+**Resultado:** Splat 0.50.0 e dependências fixados por versão/hash; 1.855 símbolos Ghidra
+importados; inventário conservador de 503 funções com acesso relativo a `$gp`; ASM/dados cobrem
+todo o payload; build de 655.360 bytes igual à referência, SHA-256
+`e90e3c7e4cf286a7a0a5e827b3a404bfe8407b15f8b2fd54536d426682b20f75`. Ver
+`docs/SPLIT_BUILD.md`.
+
+### Etapa 3 — Loop produtivo por função — ✅ CONCLUÍDA (2026-10-06)
+
+1. `asm-differ` para feedback local; contexto de decomp.me em um comando.
+2. `objdiff` para comparação estrutural; permuter somente após o C estar correto.
+3. Comandos únicos: `make diff FUNC=...`, `make context FUNC=...`, `make progress`.
+4. Backlog com endereço, tamanho, callers/callees, strings, status, responsável e scratch.
+5. Começar por funções de 20–150 instruções, folhas e utilitários; adiar `main`, GPU, física e
+   grandes máquinas de estado.
+6. Integrar somente com build válido, tipos razoáveis e sem regressão de match.
+
+**Gate:** um colaborador produz um match sem reconstruir manualmente o contexto básico no Ghidra.
+
+**Resultado:** asm-differ, objdiff, MASPSX, PsyQ e Wibo fixados por versão/commit e checksum;
+`make diff`, `make objdiff`, `make context`, `make backlog` e `make progress` operacionais; backlog
+de 1.855 funções com grafo de chamadas, strings e campos de colaboração; primeiro C integrado em
+`FUN_80078c24`, com 100% no objdiff e EXE final idêntico. O progresso já oferece folhas de 20–150
+instruções como próxima fila; uma tentativa de 31 instruções semanticamente correta não foi
+integrada porque não atingiu match. Ver `docs/DECOMP_WORKFLOW.md`.
+
+### Etapa 4 — Métricas, CI e governança — 🟡 EM VALIDAÇÃO
+
+1. Medir separadamente bytes de código matched, funções matched, dados matched, ASM restante,
+   símbolos e cobertura por subsistema. “Funções detectadas” não conta como decompilação.
+2. CI: config/split lint, build matching, checksum, testes Python, formatação C/Python e proteção
+   contra regressão de progresso.
+3. Publicar `progress.json`; README e site consomem este arquivo, sem percentuais manuais.
+4. Criar `CONTRIBUTING.md`, setup, convenções, template de PR e política non-matching.
+5. Fixar dependências por commit/checksum; Docker para CI/Linux e Wibo/Wine para macOS.
+
+**Gate:** cada PR recebe resultado de match, delta de progresso e testes automaticamente.
+
+**Estado local/remoto (2026-10-07):** `progress.json`, baseline anti-regressão, métricas por
+subsistema, Docker Linux, CI público/full, guia de contribuição e template de PR foram
+implementados. `make docker-matching` passou numa VM x86-64/QEMU com 23 testes e rebuild SHA-256
+idêntico; o build do site também passou. O `gh` está autenticado e a variável remota
+`MATCHING_CI_ENABLED=false` impede que assets proprietários sejam buscados sem autorização. Resta
+quando houver um `REFERENCE_ARCHIVE_URL` privado e legal, habilitar/validar o job matching remoto;
+os dois jobs públicos já passaram no PR #1. Até o gate byte-identical remoto passar, a etapa não
+recebe `CONCLUÍDA`. Ver `docs/PROGRESS_AND_CI.md`.
+
+### Etapa 5 — Primeira fatia vertical: grid de campeonato
+
+1. Decompilar e dar match em `rng_next`, `grid_build`, helpers e `grid_spawn`.
+2. Definir structs do descritor de grid, modo e configuração do campeonato.
+3. Criar variante **matching** e variante **dev/mod** que injeta IDs escolhidos.
+4. Smoke test no PCSX-Redux: carregar estado, iniciar Championship, capturar tabela e validar
+   IDs/contagem antes do spawn.
+5. Empacotar o primeiro mod reproduzível sem conteúdo do jogo.
+
+**Gate:** a lógica está matched em C, documentada, testada e usada por um mod.
+
+### Etapa 6 — Escalar por subsistemas
+
+Ordem sugerida:
+
+1. runtime/libc/PsyQ e matemática;
+2. alocação, listas e recursos (`res_find`, `res_register`);
+3. CD/filesystem e container EA;
+4. frontend, estado global e menus;
+5. configuração de corrida, entidades e input;
+6. física, colisão e IA;
+7. GPU/render/HUD;
+8. SPU, música e streaming EA;
+9. save/memory card, FMV e periféricos.
+
+Para cada subsistema: símbolos → tipos → funções pequenas → orquestradoras → testes → docs.
+
+**Gate:** API/structs documentadas, funções classificadas, match medido, smoke test e nenhuma
+dependência escondida apenas no projeto Ghidra.
+
+### Etapa 7 — Formatos e SDK com round-trip
+
+1. Transformar scripts em pacote Python instalável e CLI estável.
+2. Fixtures mínimas próprias/sintéticas e testes unitários por parser.
+3. Exigir `decode → encode → bytes idênticos` antes de habilitar escrita.
+4. Validar limites, endian, offsets, alinhamento e dados malformados.
+5. Integrar `dumpsxiso/mkpsxiso`, preservando LBA quando necessário.
+
+**Gate:** rebuild sem alteração mantém hashes e todo editor possui teste de ida e volta.
+
+### Etapa 8 — Port após massa crítica
+
+1. Corrigir RecompOne quando o defeito revelar conhecimento reutilizável; catalogar patches.
+2. Definir fronteira `game/` × `platform/` inspirada no `ctr-native`.
+3. Auditar licença e pressupostos de ponteiros, GPU, áudio, CD e streaming antes de reutilizar código.
+4. Iniciar port C dedicado somente com tipos centrais estáveis e parcela substancial de C decompilado.
+
+**Gate:** menu e corrida completa passam por testes/replays determinísticos no host e PS1.
+
+## 5. Sprint imediata
+
+Não abrir outra frente de formato/gameplay antes de:
+
+1. congelar hashes e toolchain;
+2. criar `config/`, `src/`, `asm/`, `include/`, `linker/`, `tests/`;
+3. produzir o split integral do `SLUS_010.68`;
+4. relinkar build 100% ASM idêntico;
+5. confirmar compilador/flags com funções pequenas;
+6. substituir a primeira função ASM por C matched;
+7. instalar diff, métricas e CI;
+8. converter `grid_build` em fatia vertical decomp + mod + teste.
+
+## 6. Indicadores corretos
+
+- `% bytes .text matched` e `funções matched / total`;
+- `% dados matched` por seção e bytes ASM restantes;
+- funções nomeadas por confiança e structs com offsets verificados;
+- testes, smoke tests e taxa de sucesso;
+- último build com checksum idêntico;
+- bloqueios de toolchain, linker e plataforma.
+
+Não usar como progresso principal: páginas de docs, funções apenas detectadas no Ghidra, arquivos
+extraídos ou C# gerado automaticamente pelo RecompOne.
+
+## 7. Riscos
+
+| Risco | Mitigação |
 |---|---|
-| Disco MODE2/2352, volume "RUMBLE", 111.075 setores (~261 MB) | ✅ |
-| Boot: `SLUS_010.68` (serial SLUS-01068), executável PS-X EXE | ✅ |
-| PS-X EXE: load address `0x80010000`, entry point `0x800A5440`, ~638 KB de código/dados | ✅ |
-| `GLBLDATA.PSX` (12,8 MB) e os `.TRK` usam o MESMO container: chunks com 4CC invertido — `LRTC`→`CTRL`, `COHS`→`SHOC`, `RDHS`→`SHDR` | ✅ |
-| `.AV` = container EA **SWVR** (`RVWS`) com chunks `FILE` (`ELIF`) e nomes embutidos (ex.: `...ssive__2.stream`) — formato já documentado pela comunidade (MultimediaWiki, usado em Future Cop: LAPD) | ✅ |
-| `.WVE` = vídeos EA (chunk `VLC0` — família TGV/WVE da EA) | 🟡 |
-| `.LSC` = "Loading SCreen"; header começa com dois u32 próximos (provável tamanho comprimido/descomprimido) → imagem comprimida | 🔵 |
-| `DUMMY.DAT` (27 MB) = padding para posicionamento de setores | 🟡 |
-| 8 "locations" em `CW/`: FEND (frontend), BB, BL, GR, JT, MC, MG, SE — cada uma com `XX.AV` (áudio/stream), `XXn.TRK` (pista) e `XXnA/B/C.LSC` (3 telas de load por pista) | ✅ |
+| Compilador/flags errados | corpus diferencial; non-matching separado |
+| Segmentos incorretos | build ASM integral e linker antes de C em massa |
+| Pesquisa dispersa | backlog por subsistema; descoberta deve virar símbolo/tipo/teste |
+| Dependência do Ghidra local | mapas/headers versionados e sync automatizado |
+| Port consumir o projeto | limite de esforço; matching é caminho crítico |
+| Regressões silenciosas | checksum, diff por objeto, CI e baseline |
+| Colaboração difícil | setup de um comando, fila de funções e guia |
+| Questões legais | nenhuma ROM/asset; somente hashes, configs, código e fixtures próprias |
 
-**Consequência importante:** por ser um jogo EA de 1999/2000, boa parte dos formatos (SWVR, WVE, áudio EA) já tem documentação/ferramentas da comunidade. Não vamos partir do zero.
+## 8. Definição de “chegar ao estágio dos outros”
 
-### Árvore da ISO (resumo)
+O primeiro objetivo não é 100%. É obter o mesmo **sistema de produção**:
 
-```
-/SYSTEM.CNF          ← boot config
-/SLUS_010.68         ← executável principal (PS-X EXE)
-/GLBLDATA.PSX        ← 12,8 MB, container CTRL/SHOC (dados globais: carros? fontes? HUD?)
-/DUMMY.DAT           ← 27 MB de padding
-/CW/
-  ABOUTEA/  *.WVE    ← vídeos (créditos, produtoras)
-  OPENING/  INTRO.WVE, LEGAL.LSC
-  FEND/     FE.TRK (21 MB! frontend), FELD.LSC
-  HELPSCRN/ HELP*.LSC, TIPS*.LSC
-  LOCBB|BL|GR|JT|MC|MG|SE/   ← 7 localidades × (1 .AV + 3 .TRK + 9 .LSC)
-```
+- build reproduzível verificado por hash;
+- fonte híbrida C/ASM sempre executável;
+- diff e status por função;
+- progresso automático por bytes/funções;
+- CI e convenções para colaboração;
+- variante modificável testável rapidamente;
+- matching, mods e port claramente separados.
 
----
-
-## Fase 1 — Preparação do ambiente (1ª sessão)
-
-**Objetivo:** ambiente reproduzível de análise e emulação.
-
-### Tutorial de setup (macOS)
-
-1. **Git + estrutura do repositório**
-   ```bash
-   cd /opt/Projetos/rumble
-   git init
-   mkdir -p docs ghidra tools extracted scripts emulator experiments saves notes
-   ```
-   Adicionar `.gitignore` para `*.bin`, `extracted/`, savestates (nunca versionar a ISO).
-2. **Emuladores**
-   - **DuckStation** (`brew install --cask duckstation`) — jogar, savestates, debugger básico.
-   - **PCSX-Redux** — melhor debugger da atualidade para PS1: breakpoints, memória, **scripting em Lua**, GPU logging. Essencial para a Frente A.
-   - **no$psx** é Windows-only; no macOS, PCSX-Redux cobre o mesmo papel.
-3. **Ghidra**
-   - `brew install --cask ghidra` (requer JDK 17+).
-   - Instalar a extensão **ghidra_psx_ldr** (lab313/ghidra_psx_ldr no GitHub): carrega PS-X EXE, aplica mapa de memória do PS1 e assinaturas das bibliotecas PsyQ (fundamental — o jogo foi compilado com o SDK PsyQ da Sony, e reconhecer as funções da libc/libgpu/libspu elimina 50% do trabalho).
-4. **Python 3 + ferramentas de análise**
-   - `pip install kaitaistruct` — especificação formal dos formatos.
-   - **ImHex** (`brew install --cask imhex`) — hex editor gratuito com pattern language (alternativa moderna ao 010 Editor).
-   - **jpsxdec** — extração de vídeo/áudio padrão PS1 (útil para comparação).
-5. **Ferramentas de ISO**
-   - **dumpsxiso / mkpsxiso** (Lameguy64) — extrair e **reconstruir** ISOs de PS1 preservando LBAs. É a base do futuro Patch Builder.
-
-**Critério de conclusão:** jogo rodando no DuckStation e no PCSX-Redux a partir do `.cue`; Ghidra abre o `SLUS_010.68` com memória mapeada; repositório Git inicializado.
-
----
-
-## Fase 2 — Pesquisa da ISO → `ISO_TREE.md`
-
-**Objetivo:** documentar todos os arquivos com LBA, tamanho, hash e hipótese de função.
-
-1. Formalizar o script de parsing ISO9660/Mode2 já prototipado em `scripts/iso_tree.py`.
-2. Gerar `docs/ISO_TREE.md` com: caminho, LBA, tamanho, SHA-1, magic bytes, classificação (✅🟡🔵❓).
-3. Extrair todos os arquivos para `extracted/` (via script próprio ou `dumpsxiso`).
-4. Confirmar a hipótese do `DUMMY.DAT` e mapear se há dados fora do filesystem (setores órfãos — comum em jogos EA que leem por LBA direto).
-
-**Experimento-chave:** rodar o jogo no PCSX-Redux com log de leituras de CD e correlacionar *quando* cada arquivo é lido (menu → FE.TRK; corrida → XXn.TRK + XX.AV).
-
----
-
-## Fase 3 — ISO Explorer (primeira ferramenta do SDK)
-
-**Objetivo:** ferramenta CLI Python `tools/iso_explorer/` que:
-- lista a árvore (`list`), extrai arquivos (`extract`), mostra hexdump/magic (`info`);
-- entende Mode2/2352 nativamente (sem converter a ISO);
-- serve de fundação para os parsers de formato (plugins por extensão).
-
-Testes automatizados com hashes conhecidos. A partir daqui, todo formato novo vira um plugin.
-
----
-
-## Fase 4 — Análise do executável → `FUNCTION_MAP.md`
-
-**Objetivo:** mapear as funções do `SLUS_010.68`.
-
-1. Importar no Ghidra com ghidra_psx_ldr; aplicar assinaturas PsyQ (identificar versão do SDK pelas strings — provável PsyQ 4.x).
-2. Procurar strings: nomes de arquivos (`.TRK`, `.LSC`), mensagens de debug, printf's — cada string referenciada revela uma função de alto nível.
-3. Identificar: `main`, loop principal, loader de arquivos (quem lê `GLBLDATA.PSX`?), parser dos chunks `CTRL`/`SHOC`/`SHDR` (essa função é a pedra de roseta dos formatos!).
-4. Exportar o projeto Ghidra versionável em `ghidra/` (formato GZF) + gerar `docs/FUNCTION_MAP.md`.
-
-**Atalho estratégico:** achar no executável o código que parseia os chunks nos dá a especificação exata do container, sem adivinhação.
-
----
-
-## Fase 5 — Mapeamento da RAM → `RAM_MAP.md`
-
-**Objetivo:** localizar as estruturas vivas do jogo.
-
-Técnica principal: **memory diffing** no PCSX-Redux/DuckStation (cheat search):
-- posição/velocidade do carro (mudar de posição → diff);
-- power-up atual, contador de voltas, timer, dinheiro/pontos;
-- estrutura do carro do jogador → array de carros da IA (mesmo layout, offsets consecutivos).
-
-Cada endereço confirmado entra em `docs/RAM_MAP.md` com evidência (savestate + experimento). Esses endereços viram a base do **Memory Inspector** e do futuro Save Editor.
-
----
-
-## Fase 6 — Formatos de arquivo (Kaitai + docs)
-
-Ordem de ataque (do mais fácil/documentado para o mais difícil):
-
-1. **Container CTRL/SHOC/SHDR** (`GLBLDATA.PSX`, `.TRK`) — estrutura de chunks primeiro, conteúdo depois. É o formato mais importante do jogo.
-2. **`.LSC`** — provável imagem comprimida; alvo pequeno e com feedback visual imediato (quando decodificar, a tela de load aparece). Ótimo primeiro parser completo.
-3. **`.AV` (SWVR)** — partir da documentação existente do MultimediaWiki/ScummVM (Future Cop usa o mesmo container).
-4. **`.WVE`** — vídeos; baixa prioridade (não afeta gameplay).
-5. **Save de Memory Card** — formato .mcd do emulador facilita: fazer save, diff, mapear.
-
-Cada formato ganha: spec Kaitai (`docs/formats/*.ksy`), doc Markdown e parser Python no SDK.
-
----
-
-## Fase 7 — Visualizadores (SDK read-only)
-
-- **Texture Viewer**: texturas PS1 são TIM-like (4/8bpp + CLUT) dentro dos chunks — visualizador que varre um arquivo e tenta interpretar janelas de bytes como imagem ("texture ripping" assistido).
-- **Track Viewer**: plotar geometria dos `.TRK` (mesh 3D → export glTF/OBJ).
-- **Model Viewer**: modelos dos carros (provavelmente em `GLBLDATA.PSX`).
-- **Memory Inspector**: leitura de RAM do emulador ao vivo (PCSX-Redux Lua bridge ou leitura de processo).
-
-## Fase 8 — Gameplay research
-
-Com RAM_MAP + FUNCTION_MAP: física (aceleração, grip), IA (rubber-banding), power-ups (tabela de efeitos), HUD. Experimentos via cheats/patches de RAM no emulador, sempre documentados em `experiments/`.
-
-## Fase 9 — SDK de escrita + Patch Builder
-
-- Editores (texture/car/track/save) = visualizadores + serialização inversa.
-- **Patch Builder**: `mkpsxiso` para reconstruir a ISO com arquivos modificados preservando LBAs; distribuir mods como xdelta/PPF (nunca a ISO).
-- Validação: ISO reconstruída sem mods deve ser **byte-idêntica** à original (teste de ouro do pipeline).
-
-## Fase 10 — Port (duas trilhas)
-
-O objetivo "rodar sem emulador" tem duas rotas complementares (ver [ANALISE_RECOMPONE.md](ANALISE_RECOMPONE.md) e [ANALISE_REFERENCIAS.md](ANALISE_REFERENCIAS.md)):
-
-- **Trilha B — Port rápido via RecompOne** (recompilação estática MIPS→C#): pode dar um primeiro
-  boot nativo em semanas-meses após a Fase 4, consumindo nosso map de funções. Não gera
-  entendimento (saída ilegível), mas atende a meta do executável nativo. Pré-requisito: FUNCTION_MAP.
-- **Trilha A/decomp matching** (o ideal a longo prazo): reescrita humana em C, batendo byte-a-byte.
-  Referências: CTR-ModSDK, decomp.me, compilador PsyQ. Gera entendimento máximo e mods fiéis.
-
-As trilhas se retroalimentam: o Ghidra alimenta o RecompOne; o RecompOne dá um ambiente vivo p/ testar.
-
----
-
-## Próximos passos imediatos (proposta para a próxima sessão)
-
-1. `git init` + `.gitignore` + commit do PRD e deste plano.
-2. Instalar DuckStation, PCSX-Redux, Ghidra + ghidra_psx_ldr.
-3. Escrever `scripts/iso_tree.py` (formalizando o protótipo) e gerar `docs/ISO_TREE.md`.
-4. Primeira sessão de Ghidra: importar `SLUS_010.68`, aplicar assinaturas, catalogar strings.
-
-## Referências externas
-
-- MultimediaWiki — Electronic Arts Formats: https://wiki.multimedia.cx/index.php/Electronic_Arts_Formats
-- ghidra_psx_ldr: https://github.com/lab313ru/ghidra_psx_ldr
-- PCSX-Redux: https://pcsx-redux.consoledev.net/
-- mkpsxiso/dumpsxiso: https://github.com/Lameguy64/mkpsxiso
-- CTR-ModSDK (projeto de referência): https://github.com/CTR-tools/CTR-ModSDK
-- psx-spx (documentação de hardware PS1, por Martin Korth/nocash): https://psx-spx.consoledev.net/
+Depois disso o avanço passa a ser acumulativo. Como o jogo não possui overlays conhecidos e o EXE
+(~638 KiB) é comparável aos executáveis principais já concluídos pelo MGS reversing, a meta é
+plausível — mas depende primeiro das Etapas 0–4.

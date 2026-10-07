@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "target": "SLUS_010.68",
+  "code_envelope": {
+    "start": 2096,
+    "end": 631796,
+    "note": "Envelope inicial de .text; inclui ilhas ainda não classificadas como código ou dados."
+  },
+  "data_sections": [
+    {"name": ".rodata", "start": 631796, "end": 653540, "status": "matched"},
+    {"name": ".sdata", "start": 653540, "end": 654624, "status": "matched"},
+    {"name": ".data", "start": 654624, "end": 654648, "status": "matched"}
+  ],
+  "subsystems": {
+    "championship_grid": {
+      "label": "Championship grid",
+      "functions": ["FUN_8003132c", "FUN_8008927c"]
+    }
+  },
+  "last_verified_build": {
+    "status": "matching",
+    "sha256": "e90e3c7e4cf286a7a0a5e827b3a404bfe8407b15f8b2fd54536d426682b20f75"
+  }
+}

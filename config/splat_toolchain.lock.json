@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "validated_host": "macOS arm64 and Linux x86_64, Python 3.14",
+  "splat": {
+    "version": "0.50.0",
+    "repository": "https://github.com/ethteck/splat",
+    "commit": "1d09139b886f0bece632bd8f367ccc1d3318ca2a",
+    "wheel_sha256": "fc9b70d67d63b57e8e6318340a4ccf6bd95617ffb2e72803cd86a676aeeca6a9"
+  },
+  "disassembler": {
+    "spimdisasm": "1.42.4",
+    "rabbitizer": "1.16.2"
+  },
+  "binutils": {
+    "formula": "mipsel-linux-gnu-binutils",
+    "version": "2.47",
+    "source_archive": "binutils-2.47.tar.bz2",
+    "source_url": "https://sourceware.org/pub/binutils/releases/binutils-2.47.tar.bz2",
+    "upstream_source_sha256": "3068128c75cda9f898ccb4211d360246e8e195ffcc9dfb655b23ae23a54800e8",
+    "homebrew_arm64_tahoe_bottle_sha256": "94b594f3b82445d2508a7bbbf23c82b7a0de3d61cf9e657a2e9d23913ae2e533"
+  },
+  "containers": {
+    "python_image": "python:3.14.0-slim-bookworm",
+    "python_image_digest": "sha256:d13fa0424035d290decef3d575cea23d1b7d5952cdf429df8f5542c71e961576",
+    "rust_image": "rust:1.74.1-slim-bookworm",
+    "rust_image_digest": "sha256:53596c66027523b2289c6e7c96bff119416be22d2cf52734b4962e13371c54cf"
+  },
+  "python_lock": "requirements-splat.lock"
+}

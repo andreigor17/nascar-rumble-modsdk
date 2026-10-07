@@ -1,0 +1,2 @@
+// Entrypoint relocations are already represented by the original instruction words.
+// Add explicit relocations here only after their symbol/addend pair is confirmed.
