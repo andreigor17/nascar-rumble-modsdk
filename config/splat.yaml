@@ -1,0 +1,80 @@
+name: NASCAR Rumble (USA) - SLUS_010.68
+sha1: 2726ac3e6f3d756f78982f7c66e507fc3aaf7aff
+
+options:
+  basename: SLUS_010.68
+  base_path: ..
+  target_path: extracted/SLUS_010.68
+  elf_path: build/SLUS_010.68.elf
+  platform: psx
+  compiler: PSYQ
+  endianness: little
+
+  asm_path: asm
+  src_path: src
+  build_path: build
+  asset_path: assets
+  cache_path: .splache
+  ld_script_path: linker/SLUS_010.68.ld
+  ld_dependencies: true
+  create_asm_dependencies: true
+  ld_align_section_vram_end: false
+  ld_align_segment_vram_end: false
+
+  find_file_boundaries: false
+  disassemble_all: true
+  make_full_disasm_for_code: true
+  gp_value: 0x800AF0E4
+  o_as_suffix: true
+  use_legacy_include_asm: false
+  section_order: [".text", ".rodata", ".sdata", ".data", ".bss"]
+  check_consecutive_segment_types: false
+  subalign: 4
+
+  symbol_addrs_path:
+    - config/symbol_addrs.txt
+  undefined_funcs_auto_path: config/undefined_funcs_auto.txt
+  undefined_syms_auto_path: config/undefined_syms_auto.txt
+  reloc_addrs_path: config/reloc_addrs.txt
+
+  string_encoding: ASCII
+  data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+
+segments:
+  - name: header
+    type: header
+    start: 0x0
+
+  # Loader padding plus the 0xFFFFFFFF sentinel preceding the first Ghidra function.
+  - [0x800, bin, payload_prefix]
+
+  - name: main
+    type: code
+    start: 0x830
+    vram: 0x80010030
+    align: 4
+    bss_size: 0xD9B0
+    subsegments:
+      # Full code envelope. Confirmed functions are imported from Ghidra; data islands
+      # inside this range remain losslessly represented until object boundaries are known.
+      - [0x830, asm, main_0]
+      # Primeiro match C do loop produtivo (PsyQ 4.3, -O2 -G0 -g0).
+      - [0x69424, c, game/FUN_80078c24]
+      - [0x69448, asm, main_1]
+      # End of the final confirmed function (S_SCA_OBJ_370).
+      - [0x9A3F4, rodata, main]
+      # Runtime startup initializes gp to the VRAM corresponding to this offset.
+      - [0x9F8E4, sdata, main]
+      # Last initialized word before the startup-cleared BSS.
+      - [0x9FD20, data, main]
+      - { start: 0x9FD38, type: bss, vram: 0x800AF538, name: main }
+
+  # The PS-X EXE payload is padded to an 0x800-byte boundary after initialized data.
+  - name: payload_padding
+    type: bin
+    start: 0x9FD38
+    vram: 0x800AF538
+
+  - [0xA0000]

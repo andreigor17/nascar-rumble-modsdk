@@ -81,6 +81,45 @@ Pipeline PyGhidra (`scripts/ghidra/export_analysis.py`) analisou o EXE e exporto
 | `lap %ld/%ld` · `Best Lap` · `Race Results for %s` · `Team %ld` | HUD/lógica de corrida |
 | `Engine Volume:` · `Hand Brake/Horn` · `Brake/Reverse` | áudio de motor / input |
 
+## Grid de oponentes — ✅ CONFIRMADO (estático + dinâmico, sessão 010, 2026-07-22)
+
+Alvo do mod "campeonato com qualquer carro" **localizado e provado ao vivo** (PCSX-Redux, corrida de
+Championship real: Jeff Gordon #24 Rookie, copa Gold Rush).
+
+| Endereço | Nome | Papel |
+|---|---|---|
+| `0x8008927c` | **`grid_build` (FUN_8008927c)** | **Montador do grid / setup de corrida.** `switch(DAT_800b7115)` (modo) → define a contagem `DAT_800b0e40`, embaralha posições e **seleciona os model IDs dos oponentes** do pool da classe via RNG. Chamado dos 4 modos (Single/Champ/Time/Showdown). É **o único que escreve** as entradas de identidade do grid. **Hook alvo do mod.** |
+| `0x800181ac` | **`rng_next` (FUN_800181ac)** | **RNG customizado** (lagged-Fibonacci, NÃO o rand PsyQ). Estado: tabela de 20 u32 em `DAT_800afa40`, índice `DAT_800af5a0` (decrementa; `tbl[i] += tbl[i+2 wrap]`). Confirmado em uso (índice=5, tabela com estado vivo). |
+| `0x8003132c` | **`grid_spawn` (FUN_8003132c)** | **Lê** a tabela do grid e **instancia** cada carro posicionado na largada (fixed-point). Consome `puVar9=&DAT_800b0e40` (stride 8). Chamado de 0x16402 (setup da corrida). |
+
+### Tabela de descritores do grid — `0x800b0e40` (✅ layout medido ao vivo)
+
+`DAT_800b0e40` (byte) = **nº de carros** (=6 nesta corrida). Seguem **N entradas de 8 bytes**
+(o byte de contagem coincide com o +0 da entrada 0). Layout por entrada:
+
+| Off | Campo | Evidência (6 carros, todos Rookie) |
+|---|---|---|
+| +0 | flag (00 oponente / 01 jogador) | jogador tinha 01 |
+| +1 | tipo: `0xff`=IA · `0x00`=jogador | 5×0xff + 1×0x00 |
+| **+2** | **MODEL ID** (0–55 Rookie / +56 Pro / +112 Elite) | 35,30,26,1,32,**14** |
+| +4 | ordem de grid (posição) | 05,04,03,02,01,00 |
+| +5 | flag (classe/variante?) | 00/01 |
+| +6,+7 | índice/ordenação interna | +7 = 01..05,00 |
+
+**Cruzamento (`cars_wiki.csv`) — todos resolvem p/ pilotos Rookie válidos, e o +2 do jogador = o carro escolhido:**
+`14`=Jeff Gordon(jogador) · `35`=Ron Hornaday · `30`=Bill Elliott · `26`=Kenny Wallace · `1`=Rusty Wallace · `32`=Jeff Burton.
+
+### Como injetar qualquer carro (mod)
+
+Escrever o **byte +2** de cada entrada de oponente na tabela `0x800b0e40` (ou +112 para Elite etc.),
+**depois** de `grid_build` rodar e **antes** de `grid_spawn` instanciar. Para patch de ISO/RecompOne:
+hookar `grid_build` (0x8008927c) forçando os IDs desejados no lugar da seleção por RNG. Pool/estado
+auxiliar: `0x800b7068` (stride 0x18, handles por slot) e `0x800b7080` (stride 6, flags "usado").
+Config do campeonato em `0x800b7168+`; modo em `0x800b7115` (=0x02 no Championship).
+
+> ⚠️ Breakpoints do PCSX-Redux **só disparam no interpretador** — com `isDynarec:true` não firam.
+> A confirmação aqui foi por **leitura de RAM ao vivo** (independe do dynarec) + xref estático.
+
 ## Próximos passos (no Ghidra)
 
 1. Importar `SLUS_010.68`, rodar auto-análise.

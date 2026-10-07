@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "minimum": {
+    "code_matched_bytes": 36,
+    "functions_matched": 1,
+    "data_matched_bytes": 22852,
+    "symbols_total": 1855
+  },
+  "maximum": {
+    "asm_function_bytes_remaining": 596152
+  },
+  "note": "Atualize a baseline somente junto com progress.json e após o build matching passar."
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "validated-baseline",
+  "source": {
+    "repository": "https://github.com/FoxdieTeam/psyq_sdk",
+    "commit": "fec561c5771a981a6090c315cbe338f7967137cd"
+  },
+  "runner": {
+    "name": "wibo-macos",
+    "version": "1.2.0",
+    "sha256": "2b3000ef6a7a490c24ccd71967735ae0005e218922e51806cca1b8d77fd3cf7c"
+  },
+  "compiler": {
+    "sdk_distribution": "PsyQ 4.3",
+    "identity": "GNU C 2.7.2.SN32.3.7 Build 0001",
+    "path": "psyq_4.3/bin/cc1psx.exe",
+    "sha256": "5594a2241d1ddaa26a61a68597d529faf9a843f89b7c288671bb325b8bc72f90",
+    "validated_flags": ["-O2", "-G0", "-g0"],
+    "note": "-G é propriedade do módulo. Há código do jogo com acesso via gp, portanto a Etapa 2 deve classificar módulos G0/G8 individualmente."
+  },
+  "assembler": {
+    "identity": "Psy-Q ASPSX 2.56",
+    "path": "aspsx/2.56/aspsx.exe",
+    "sha256": "7f928fa89e143facd75737822b08bb63fb41a06415ba943393db727aa398efc8"
+  },
+  "linker": {
+    "identity": "PSYLINK 2.73",
+    "path": "psyq_4.4/bin/psylink.exe",
+    "sha256": "0ee365fa3d31da71ba7086ccecd3d0df2fa39d4ad429e6a983fd9e4037272c6b",
+    "validated_options": ["/c", "/n 100", "/q", "/gp .sdata", "/m"],
+    "deterministic_probe_cpe_sha256": "3617f0369cb3469593d9dc375979eb21d8d3d2138faaf60e54ccf58ef54bce21"
+  }
+}

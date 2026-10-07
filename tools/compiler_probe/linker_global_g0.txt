@@ -1,0 +1,13 @@
+    org $80020DA0
+
+    include "tools\compiler_probe\build\4.3\global_g0.obj"
+
+text group
+    section .rdata, text
+    section .text, text
+    section .data, text
+    section .sdata, text
+
+bss group bss
+    section .sbss, bss
+    section .bss, bss

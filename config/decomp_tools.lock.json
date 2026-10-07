@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "asm_differ": {
+    "repository": "https://github.com/simonlindholm/asm-differ",
+    "commit": "0dd09af8f8008f1f880327cf0aca3b26d2562ea2",
+    "archive_url": "https://github.com/simonlindholm/asm-differ/archive/0dd09af8f8008f1f880327cf0aca3b26d2562ea2.tar.gz",
+    "archive_sha256": "fc6b2d7d800d4d9ff479bc6de4d89279ad35ac83e6ce94e6956993f2eb7458cd"
+  },
+  "maspsx": {
+    "repository": "https://github.com/mkst/maspsx",
+    "commit": "e85ecb373828aabea96d7e6400974d4f91ce8c74",
+    "archive_url": "https://github.com/mkst/maspsx/archive/e85ecb373828aabea96d7e6400974d4f91ce8c74.tar.gz",
+    "archive_sha256": "9f8ea9827b785ae41437befa8ebdceb8c00f3b1e8f3a90c506948e2df1079bde"
+  },
+  "psyq_sdk": {
+    "repository": "https://github.com/FoxdieTeam/psyq_sdk",
+    "commit": "fec561c5771a981a6090c315cbe338f7967137cd",
+    "archive_url": "https://github.com/FoxdieTeam/psyq_sdk/archive/fec561c5771a981a6090c315cbe338f7967137cd.tar.gz",
+    "archive_sha256": "483f1ec38e2300bb0856117236de8ce9bcd87985f447bb4c7abaec5684944501"
+  },
+  "wibo": {
+    "version": "1.2.0",
+    "assets": {
+      "darwin-arm64": {
+        "name": "wibo-macos",
+        "sha256": "2b3000ef6a7a490c24ccd71967735ae0005e218922e51806cca1b8d77fd3cf7c"
+      },
+      "darwin-x86_64": {
+        "name": "wibo-macos",
+        "sha256": "2b3000ef6a7a490c24ccd71967735ae0005e218922e51806cca1b8d77fd3cf7c"
+      },
+      "linux-x86_64": {
+        "name": "wibo-x86_64",
+        "sha256": "13f86a2d618f0dbe67179d349625345eabf9b46450295cb4c904e49f6aff85af"
+      },
+      "linux-i686": {
+        "name": "wibo-i686",
+        "sha256": "2575d3b0a2f408b2c2b0850db56f1af5d005a138394a6774eba77b6708ecc304"
+      }
+    },
+    "url_template": "https://github.com/decompals/wibo/releases/download/1.2.0/{name}"
+  },
+  "objdiff": {
+    "version": "3.8.2",
+    "url_template": "https://github.com/encounter/objdiff/releases/download/v3.8.2/{name}",
+    "assets": {
+      "linux-aarch64": ["objdiff-cli-linux-aarch64", "087516e73e1b3223b39974f00bc2810fea5c3dc2c93a8e1f06442ec68acaacb4"],
+      "linux-i686": ["objdiff-cli-linux-i686", "95430defe6e4a8b12553d823f88b34fa451e504cfb1a2f25d28ace0d464aeabc"],
+      "linux-x86_64": ["objdiff-cli-linux-x86_64", "e5445089a6f707e30cb5e02992451b604619cedfd2660ee2373a86bfefd9e718"],
+      "darwin-arm64": ["objdiff-cli-macos-arm64", "767c67e13b7b5e6ca545e7d2235e47c7bceac07d47a52776f74a52914cb4085a"],
+      "darwin-x86_64": ["objdiff-cli-macos-x86_64", "2cfe0f46fc84cef7d96813f100a0f01fbf99ac7e423b7fda1d314aada4d5ff72"]
+    }
+  }
+}

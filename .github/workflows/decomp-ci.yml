@@ -1,0 +1,72 @@
+name: Decomp CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-gates:
+    name: Config, metrics, tests, and format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build pinned Linux CI image
+        run: docker build --target public-ci --tag rumble-decomp-ci .
+      - name: Run public gates without game assets
+        run: docker run --rm rumble-decomp-ci
+      - name: Report progress delta
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ -n "$BASE_REF" ] && git show "origin/$BASE_REF:progress.json" > /tmp/base-progress.json 2>/dev/null; then
+            python3 scripts/progress.py compare /tmp/base-progress.json --github-summary
+          else
+            python3 scripts/progress.py compare config/progress_baseline.json >/dev/null 2>&1 || true
+            python3 scripts/progress.py summary >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  site:
+    name: Site consumes progress.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+        working-directory: site
+      - run: npm run build
+        working-directory: site
+
+  matching-build:
+    name: Byte-identical matching build
+    if: ${{ vars.MATCHING_CI_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download private legal reference bundle
+        env:
+          REFERENCE_ARCHIVE_URL: ${{ secrets.REFERENCE_ARCHIVE_URL }}
+        run: |
+          test -n "$REFERENCE_ARCHIVE_URL"
+          curl --fail --location --silent --show-error "$REFERENCE_ARCHIVE_URL" --output /tmp/rumble-reference.tar.gz
+          tar --extract --gzip --file /tmp/rumble-reference.tar.gz
+      - name: Build Linux CI image
+        run: >-
+          docker buildx build --platform linux/amd64 --target matching-ci
+          --tag rumble-decomp-ci:matching --load .
+      - name: Run split, matching build, checksums, and all tests
+        run: |
+          docker run --rm --platform linux/amd64 \
+            --mount type=bind,source="$PWD/extracted",target=/workspace/extracted,readonly \
+            --mount type=bind,source="$PWD/NASCAR Rumble (USA)",target="/workspace/NASCAR Rumble (USA)",readonly \
+            rumble-decomp-ci:matching make ci-full

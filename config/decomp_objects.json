@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "objects": {
+    "game/FUN_80078c24": {
+      "address": "0x80078C24",
+      "size": 36,
+      "compiler": "psyq_4.3",
+      "optimization": "O2",
+      "g_size": 0,
+      "status": "matched",
+      "source": "src/game/FUN_80078c24.c"
+    }
+  }
+}

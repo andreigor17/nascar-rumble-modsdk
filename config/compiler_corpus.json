@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "target": "SLUS_010.68",
+  "selection_rule": "Código próprio provável, distribuído pelo EXE e com padrões variados; símbolos PsyQ nomeados foram excluídos.",
+  "functions": [
+    {"address": "0x8001930c", "size": 8, "pattern": "empty", "probe": "probe_empty", "status": "matched"},
+    {"address": "0x8001adb4", "size": 8, "pattern": "store-zero-delay-slot", "probe": "probe_store_zero", "status": "matched"},
+    {"address": "0x8001f3bc", "size": 8, "pattern": "return-constant", "probe": "probe_return_7096", "status": "matched"},
+    {"address": "0x80022878", "size": 8, "pattern": "return-one", "probe": "probe_return_one", "status": "matched"},
+    {"address": "0x800401cc", "size": 8, "pattern": "store-byte-delay-slot", "probe": "probe_clear_byte_1", "status": "matched"},
+    {"address": "0x80059a48", "size": 8, "pattern": "store-byte-large-offset", "probe": "probe_clear_byte_1012", "status": "matched"},
+    {"address": "0x80072dc8", "size": 12, "pattern": "constant-and-store-byte", "probe": "probe_set_byte_26_to_3", "status": "matched"},
+    {"address": "0x800734f4", "size": 12, "pattern": "constant-and-store-byte", "probe": "probe_set_byte_26_to_9", "status": "matched"},
+    {"address": "0x800185fc", "size": 16, "pattern": "two-global-stores", "status": "selected"},
+    {"address": "0x80020da0", "size": 16, "pattern": "boolean-normalization-global", "status": "selected"},
+    {"address": "0x800216a8", "size": 16, "pattern": "global-byte-load", "status": "selected"},
+    {"address": "0x800234ec", "size": 16, "pattern": "global-boolean", "status": "selected"},
+    {"address": "0x8003d198", "size": 16, "pattern": "two-global-argument-stores", "status": "selected"},
+    {"address": "0x80071dd4", "size": 16, "pattern": "mixed-width-struct-stores", "probe": "probe_init_fields", "status": "matched"},
+    {"address": "0x8002c18c", "size": 20, "pattern": "two-global-stores-mixed-addressing", "status": "selected"},
+    {"address": "0x8005e7d8", "size": 24, "pattern": "scaled-index-global-store", "status": "selected"},
+    {"address": "0x8005e7f0", "size": 28, "pattern": "scaled-index-global-load", "status": "selected"},
+    {"address": "0x8001818c", "size": 32, "pattern": "linked-list-insert", "status": "selected"},
+    {"address": "0x80020840", "size": 32, "pattern": "shift-and-global-or", "status": "selected"},
+    {"address": "0x800401d4", "size": 44, "pattern": "branch-scaled-index-address", "status": "selected"},
+    {"address": "0x80044158", "size": 36, "pattern": "scaled-byte-arithmetic", "probe": "probe_scaled_byte", "status": "matched"},
+    {"address": "0x8008aad8", "size": 36, "pattern": "compound-branch-clamp", "probe": "probe_clamp_between", "status": "probe"},
+    {"address": "0x80097cf4", "size": 28, "pattern": "signed-min-branch", "probe": "probe_min", "status": "probe"},
+    {"address": "0x80078c24", "size": 36, "pattern": "stack-and-external-call", "probe": "probe_call_with_loaded_argument", "status": "matched-discriminator"}
+  ]
+}

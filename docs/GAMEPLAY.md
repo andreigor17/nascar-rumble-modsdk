@@ -35,8 +35,19 @@ Estrutura (confirmada navegando o jogo):
 
 → **Mod alvo:** injetar/hookar o preenchimento do grid de oponentes no Championship (usar o
 mecanismo de seleção que JÁ existe no Single Race, ou escrever os IDs de carro direto no grid).
-Temos a tabela de carros (`0x800b6188`) e o catálogo (168), então sabemos *quais* valores injetar;
-falta localizar a **função que monta o grid do championship** (RE — próximo passo).
+Temos a tabela de carros (`0x800b6188`) e o catálogo (168), então sabemos *quais* valores injetar.
+
+### ✅ Grid builder LOCALIZADO (sessão 010, 2026-07-22) — provado ao vivo
+
+A **função que monta o grid** é **`grid_build` = `FUN_8008927c` (0x8008927c)**: define a contagem
+(`DAT_800b0e40`) conforme o modo (`DAT_800b7115`) e seleciona os oponentes via **RNG customizado**
+`FUN_800181ac` (0x800181ac, lagged-Fibonacci — não o rand PsyQ). O grid vive na tabela
+**`0x800b0e40`** (contagem no +0; entradas de 8 bytes; **+2 = MODEL ID**, +4 = ordem de largada,
++1 = `0xff` IA / `0x00` jogador). `FUN_8003132c` **lê** essa tabela e instancia os carros.
+
+**Confirmado numa corrida real** (Jeff Gordon #24 Rookie, Gold Rush): os 6 IDs em +2 = `14`(jogador
+Jeff Gordon), `35,30,26,1,32` (Hornaday/Elliott/K.Wallace/R.Wallace/Burton) — todos Rookie, batendo
+com `cars_wiki.csv`. **Mod = sobrescrever o +2 (ou hookar `grid_build`).** Detalhes: `docs/FUNCTION_MAP.md`.
 
 ## Power-up de velocidade
 
