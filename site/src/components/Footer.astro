@@ -6,10 +6,15 @@ const tr = t(lang);
 ---
 <footer class="site-footer">
   <div class="container">
+    <div class="legend" aria-hidden="true">
+      <span><b>✕</b> {lang === 'pt' ? 'Avançar' : 'Advance'}</span>
+      <span><b>↑↓</b> {lang === 'pt' ? 'Mudar seleção' : 'Change Selection'}</span>
+      <span><b>△</b> {lang === 'pt' ? 'Menu anterior' : 'Previous Menu'}</span>
+    </div>
     <div class="row">
-      <span>🏁 NASCAR Rumble ModSDK · <a href={SITE.github} target="_blank" rel="noopener">GitHub</a></span>
+      <span>NASCAR Rumble Native · <a href={SITE.github} target="_blank" rel="noopener">GitHub</a> · MIT</span>
       <span>{tr('footer.ai')}</span>
     </div>
-    <p style="margin:12px 0 0; font-size:0.82rem;">{tr('footer.disclaimer')}</p>
+    <p style="margin:12px 0 0; font-size:0.85rem;">{tr('footer.disclaimer')}</p>
   </div>
 </footer>

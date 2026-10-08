@@ -7,25 +7,47 @@ interface Props { lang: Lang; page?: string; title?: string; description?: strin
 const { lang, page = 'home', title, description } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.title}` : SITE.title;
 const desc = description ?? (lang === 'pt' ? SITE.tagline_pt : SITE.tagline_en);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <!doctype html>
 <html lang={lang === 'pt' ? 'pt-BR' : 'en'}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#05050b" />
     <title>{fullTitle}</title>
     <meta name="description" content={desc} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
     <meta property="og:type" content="website" />
-    <link rel="icon" href={`${import.meta.env.BASE_URL}/favicon.svg`.replace('//','/')} type="image/svg+xml" />
+    <meta property="og:image" content={`${SITE.url}/shots/countdown.jpg`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700;1,800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div class="checkers"></div>
     <Header lang={lang} page={page} />
     <main>
       <slot />
     </main>
     <Footer lang={lang} />
+    <script>
+      // Reveal panels as they scroll into view (purely cosmetic; content is visible without JS).
+      const items = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        }, { rootMargin: '0px 0px -8% 0px' });
+        items.forEach((el) => io.observe(el));
+      } else items.forEach((el) => el.classList.add('in'));
+      document.querySelector('.menu-toggle')?.addEventListener('click', (ev) => {
+        const nav = (ev.currentTarget as HTMLElement).closest('.nav');
+        nav?.classList.toggle('open');
+        (ev.currentTarget as HTMLElement).setAttribute('aria-expanded', String(nav?.classList.contains('open')));
+      });
+    </script>
+    <noscript><style>.reveal { opacity: 1; transform: none; }</style></noscript>
   </body>
 </html>

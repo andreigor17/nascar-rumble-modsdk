@@ -35,10 +35,10 @@ export const ui = {
     'tools.title': 'Ferramentas do SDK',
     'tools.intro': 'Utilitários em Python construídos a partir da engenharia reversa. Rodam sobre a sua própria cópia do jogo.',
     'gallery.title': 'Galeria',
-    'gallery.intro': 'Recursos extraídos diretamente do jogo pelas nossas ferramentas — sem emulador.',
+    'gallery.intro': 'Capturas do port nativo rodando no macOS e recursos extraídos do disco pelas nossas ferramentas.',
     'about.title': 'Sobre & Contribuir',
     'footer.disclaimer': 'Projeto de fã, sem afiliação com a Electronic Arts. Nenhum arquivo do jogo é distribuído; capturas são usadas apenas para documentar o progresso.',
-    'footer.ai': 'Trabalho assistido por IA sob revisão humana.',
+    'footer.ai': 'Feito por fãs, com ferramentas de IA e revisão humana.',
   },
   en: {
     'nav.home': 'Home',
@@ -74,10 +74,10 @@ export const ui = {
     'tools.title': 'SDK Tools',
     'tools.intro': 'Python utilities built from the reverse engineering. They run on your own copy of the game.',
     'gallery.title': 'Gallery',
-    'gallery.intro': 'Resources extracted straight from the game by our tools — no emulator.',
+    'gallery.intro': 'Captures of the native port running on macOS, plus resources extracted from the disc by our tools.',
     'about.title': 'About & Contribute',
     'footer.disclaimer': 'Fan project, not affiliated with Electronic Arts. No game files are distributed; screenshots are shown only to document progress.',
-    'footer.ai': 'AI-assisted work under human review.',
+    'footer.ai': 'Made by fans, with AI tools and human review.',
   },
 } as const;
 

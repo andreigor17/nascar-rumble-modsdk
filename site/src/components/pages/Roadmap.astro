@@ -1,5 +1,5 @@
 ---
-import { type Lang } from '../../consts';
+import { MATCHING, type Lang } from '../../consts';
 import { t } from '../../i18n/ui';
 import { ROADMAP } from '../../data/roadmap';
 const { lang } = Astro.props as { lang: Lang };
@@ -9,19 +9,23 @@ const badge = { done: tr('roadmap.done'), doing: tr('roadmap.doing'), todo: tr('
 <section class="section">
   <div class="container">
     <p class="eyebrow">Roadmap</p>
-    <h2>{tr('roadmap.title')}</h2>
+    <h1 class="chrome title">{tr('roadmap.title')}</h1>
+    <hr class="rule" />
     <p class="lead">{tr('roadmap.intro')}</p>
-    <div>
+    <div class="panel">
       {ROADMAP.map((p) => (
-        <div class="phase">
+        <div class={`phase ${p.status}`}>
           <div class="num">{p.n}</div>
           <div class="body">
             <h3>{lang === 'pt' ? p.pt : p.en}</h3>
             <p>{lang === 'pt' ? p.pt_d : p.en_d}</p>
           </div>
-          <span class={`badge ${p.status}`}>{badge[p.status]}</span>
+          <span class={`chip ${p.status}`}>{badge[p.status]}</span>
         </div>
       ))}
     </div>
+    <p class="lead" style="margin-top:24px">{lang === 'pt'
+      ? `Em paralelo, a decompilação byte a byte (matching) do executável está em ${MATCHING.code} do código e ${MATCHING.functions} funções; os dados (.rodata/.sdata) já batem 100%.`
+      : `In parallel, the byte-for-byte (matching) decompilation of the executable is at ${MATCHING.code} of the code and ${MATCHING.functions} functions; the data (.rodata/.sdata) already matches 100%.`}</p>
   </div>
 </section>

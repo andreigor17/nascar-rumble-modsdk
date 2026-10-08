@@ -12,6 +12,39 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-016-campeonato-completo',
+    date: '2026-10-08',
+    session: '016',
+    tag: 'Port nativo',
+    image: '/shots/standings.jpg',
+    pt: {
+      title: 'Bandeirada: corrida completa e campeonato inteiro no port nativo',
+      summary:
+        'O port nativo agora vai do boot até o fim de um campeonato: três etapas, pontos, classificação geral e os desbloqueios originais. Ganhou também um lançador no estilo do jogo e um contador de FPS.',
+      points: [
+        'Corrida completa: tempos de volta da IA iguais ao PS1 (±0,4%) a 30 e a 60 fps, com chegada, tela de resultados e retorno ao menu.',
+        'Championship: nome do piloto, copa Gold Rush com Copper Canyon, Golden Rule e Silver Falls, grid invertido pela classificação, pontos por etapa e, no fim, desbloqueio da classe Pro, das regiões Bad Lands e Mardi Gras e de pistas bônus.',
+        'Showdown, Time Trial, Race Options, Game Options e os vídeos do Showcase também funcionam.',
+        'Para percorrer o campeonato inteiro de forma automática criamos um atalho de teste (RUMBLE_QUICK_FINISH) que põe o carro do jogador na última volta; por isso os tempos do “77” nas capturas são curtos. A corrida em si roda do mesmo jeito sem o atalho.',
+        'Lançador antes do boot, desenhado como o menu do jogo e com a arte de abertura lida do seu próprio disco: 30 ou 60 fps, contador de FPS no canto superior direito e modo debug.',
+        'Ainda não: salvar no memory card trava em “Checking...” e o modo 2 jogadores pede um segundo controle que o host ainda não mapeia.',
+      ],
+    },
+    en: {
+      title: 'Checkered flag: a complete race and a whole championship in the native port',
+      summary:
+        'The native port now goes from boot to the end of a championship: three rounds, points, overall standings and the original unlocks. It also gained a game-styled launcher and an FPS counter.',
+      points: [
+        'Complete race: AI lap times match the PS1 (±0.4%) at 30 and 60 fps, with the finish, the results screen and the return to the menu.',
+        'Championship: driver name, the Gold Rush cup with Copper Canyon, Golden Rule and Silver Falls, a grid reversed by the standings, points per round and, at the end, the Pro class, the Bad Lands and Mardi Gras locales and bonus tracks unlocked.',
+        'Showdown, Time Trial, Race Options, Game Options and the Showcase videos work too.',
+        'To drive the whole championship automatically we added a test shortcut (RUMBLE_QUICK_FINISH) that puts the player’s car on its last lap; that is why the “77” times in the captures are short. The race itself runs the same without it.',
+        'A launcher before boot, drawn like the game menu with the title art read from your own disc: 30 or 60 fps, an FPS counter in the top-right corner and debug mode.',
+        'Not yet: saving to the memory card hangs at “Checking...”, and 2 Players asks for a second controller the host does not map yet.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-015-demo-estavel',
     date: '2026-10-08',
     session: '015',

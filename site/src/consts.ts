@@ -1,9 +1,10 @@
 import progress from '../../progress.json';
 
 export const SITE = {
-  title: 'NASCAR Rumble ModSDK',
-  tagline_pt: 'Port nativo & engenharia reversa open source',
-  tagline_en: 'Native port & open-source reverse engineering',
+  title: 'NASCAR Rumble Native',
+  url: 'https://rumble.irontech.dev.br',
+  tagline_pt: 'NASCAR Rumble (PS1) rodando nativo, sem emulador: corrida completa e campeonato inteiro. Projeto de fã, open source.',
+  tagline_en: 'NASCAR Rumble (PS1) running natively, no emulator: complete races and a whole championship. Open-source fan project.',
   github: 'https://github.com/andreigor17/nascar-rumble-modsdk',
   reference: 'https://www.online-ctr.com/',
 };
@@ -18,14 +19,16 @@ export function href(path: string, lang: Lang = 'pt'): string {
   return `${base}${prefix}${clean}` || '/';
 }
 
-/** Métricas matching vêm do manifesto canônico gerado na raiz do repositório. */
+/** Números da vitrine (estilo contadores do online-ctr). */
 export const STATS = [
-  { value: `${progress.code.percent.toFixed(3)}%`, label_pt: 'código matching', label_en: 'matching code' },
-  {
-    value: `${progress.functions.matched}/${progress.functions.total}`,
-    label_pt: 'funções matching',
-    label_en: 'matching functions',
-  },
-  { value: '5', label_pt: 'formatos decodificados', label_en: 'formats decoded' },
-  { value: '168', label_pt: 'carros catalogados', label_en: 'cars catalogued' },
+  { value: `${progress.functions.total}`, label_pt: 'funções do jogo rodando como código nativo', label_en: 'game functions running as native code' },
+  { value: '3/3', label_pt: 'etapas de campeonato completas', label_en: 'championship rounds completed' },
+  { value: '60', label_pt: 'fps opcionais na corrida', label_en: 'optional race fps' },
+  { value: '171', label_pt: 'pinturas reais da NASCAR no disco', label_en: 'real NASCAR liveries on the disc' },
 ];
+
+/** Decompilação byte a byte (matching), mostrada no roadmap. */
+export const MATCHING = {
+  code: `${progress.code.percent.toFixed(3)}%`,
+  functions: `${progress.functions.matched}/${progress.functions.total}`,
+};

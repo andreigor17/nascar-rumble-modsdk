@@ -1,16 +1,25 @@
-export type Step = { key: string; status: 'done' | 'doing' | 'todo'; pt: string; en: string };
+export type Step = {
+  key: string;
+  status: 'done' | 'doing' | 'todo';
+  pt: string;
+  en: string;
+  /** "Total" column of the results-style milestone panel: the date it was reached. */
+  date?: string;
+};
 
-/** Marcos rumo a "qualquer pessoa poder acessar/jogar/modar" — estilo status do online-ctr. */
+/** Milestones toward "anyone can play/mod it", shown as the game's race results screen. */
 export const JOURNEY: Step[] = [
-  { key: 'understand', status: 'doing', pt: 'Entender o jogo', en: 'Understand the game' },
-  { key: 'native', status: 'done', pt: 'Criar a base nativa', en: 'Build the native foundation' },
-  { key: 'boot', status: 'done', pt: 'Exibir intro e menu', en: 'Show intro and menu' },
-  { key: 'race', status: 'doing', pt: 'Completar uma corrida', en: 'Complete a race' },
-  { key: 'package', status: 'todo', pt: 'Empacotar para Mac/Windows/Linux', en: 'Package for Mac/Windows/Linux' },
-  { key: 'mods', status: 'todo', pt: 'Melhorias e mods', en: 'Enhancements and mods' },
+  { key: 'understand', status: 'done', date: '2026-07-21', pt: 'Disco, formatos e executável mapeados', en: 'Disc, formats and executable mapped' },
+  { key: 'native', status: 'done', date: '2026-10-07', pt: 'Primeiro quadro nativo (logo da EA)', en: 'First native frame (EA logo)' },
+  { key: 'boot', status: 'done', date: '2026-10-08', pt: 'Intro, menu e controle', en: 'Intro, menu and controls' },
+  { key: 'race', status: 'done', date: '2026-10-08', pt: 'Corrida completa com IA e física corretas', en: 'Complete race with correct AI and physics' },
+  { key: 'modes', status: 'done', date: '2026-10-08', pt: 'Campeonato completo, Showdown e Time Trial', en: 'Full championship, Showdown and Time Trial' },
+  { key: 'parity', status: 'doing', pt: 'Memory card, 2 jogadores e paridade fina', en: 'Memory card, 2 players and fine parity' },
+  { key: 'package', status: 'todo', pt: 'Pacotes para Mac, Windows e Linux', en: 'Packages for Mac, Windows and Linux' },
+  { key: 'mods', status: 'todo', pt: 'Widescreen, alta resolução e mods', en: 'Widescreen, high resolution and mods' },
 ];
 
 export const JOURNEY_STATUS = {
-  pt: 'Intro, menu e demo de corrida estáveis no port nativo, com os carros no chão. Agora estamos validando a IA e uma corrida completa.',
-  en: 'Intro, menu, and the race demo are stable in the native port, with cars on the ground. We are now validating the AI and a complete race.',
+  pt: 'Do boot à bandeirada: o port nativo já roda uma corrida completa e um campeonato inteiro, com pontos e desbloqueios. Falta salvar no memory card.',
+  en: 'From boot to the checkered flag: the native port runs a complete race and a whole championship, with points and unlocks. Memory card saving is next.',
 };

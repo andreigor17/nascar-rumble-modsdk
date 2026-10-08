@@ -1,132 +1,421 @@
 ---
 import { href, SITE, STATS, type Lang } from '../../consts';
-import { t } from '../../i18n/ui';
 import { DEVLOG } from '../../data/devlog';
 import { JOURNEY, JOURNEY_STATUS } from '../../data/journey';
+import { MODES } from '../../data/modes';
+import { GALLERY } from '../../data/gallery';
 const { lang } = Astro.props as { lang: Lang };
-const tr = t(lang);
+const pt = lang === 'pt';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const img = (src: string) => `${base}${src}`;
 const latest = DEVLOG.slice(0, 3);
-const base = import.meta.env.BASE_URL;
 
-const heroSub = lang === 'pt'
-  ? 'Primeiro, o NASCAR Rumble original jogável como aplicativo nativo. Depois, melhorias gráficas, novas resoluções e mods sobre uma base fiel e estável.'
-  : 'First, the original NASCAR Rumble playable as a native app. Then, graphics enhancements, new resolutions, and mods on a faithful, stable foundation.';
+const done = JOURNEY.filter((s) => s.status === 'done').length;
+const total = JOURNEY.length;
+const pct = done / total;
+const doing = JOURNEY.find((s) => s.status === 'doing');
 
-const gameBody = lang === 'pt'
-  ? 'Lançado pela EA em 2000 para PlayStation e Nintendo 64, o NASCAR Rumble pegou a corrida de stock cars e jogou o realismo pela janela: power-ups, atalhos loucos, tempestades e uma garagem de carros absurdos para desbloquear. Um kart racer disfarçado de NASCAR — puro caos divertido de fim de semana.'
-  : 'Released by EA in 2000 for PlayStation and Nintendo 64, NASCAR Rumble took stock-car racing and threw realism out the window: power-ups, wild shortcuts, storms and a garage of absurd unlockable cars. A kart racer dressed as NASCAR — pure weekend chaos.';
+// Tachometer like the in-race HUD: 0..total over a 240° sweep.
+const sweep = 240, start = -210;
+const polar = (deg: number, r: number) => {
+  const a = (deg * Math.PI) / 180;
+  return [60 + r * Math.cos(a), 60 + r * Math.sin(a)];
+};
+const arc = (from: number, to: number, r: number) => {
+  const [x1, y1] = polar(from, r), [x2, y2] = polar(to, r);
+  return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${to - from > 180 ? 1 : 0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+};
+const ticks = Array.from({ length: total + 1 }, (_, i) => {
+  const d = start + (sweep * i) / total;
+  const [x1, y1] = polar(d, 44), [x2, y2] = polar(d, 52), [tx, ty] = polar(d, 35);
+  return { x1, y1, x2, y2, tx, ty, i };
+});
+const needle = polar(start + sweep * pct, 46);
 
-const funFact = lang === 'pt'
-  ? 'Curiosidade: vasculhando o código do jogo já encontramos nomes de carros escondidos como Golf Cart, Jet Car e EA Sports Car.'
-  : 'Fun fact: digging through the game code we already found hidden car names like Golf Cart, Jet Car and EA Sports Car.';
+const native = GALLERY.filter((s) => s.native && s.src.startsWith('/shots/'));
 
-const pillars = lang === 'pt'
+const t = pt
+  ? {
+      sub: 'O clássico arcade da EA de 2000 rodando como aplicativo nativo — sem emulador. Já dá para ligar o jogo, correr uma prova inteira e fechar um campeonato.',
+      hint: 'Corrida completa e campeonato inteiro funcionando no port nativo.',
+      menu: [
+        { label: 'Ver o progresso', val: 'Devlog', to: href('/devlog', lang), sel: true },
+        { label: 'Modos de jogo', val: `${MODES.filter((m) => m.status === 'finished').length}/${MODES.length}`, to: '#modos' },
+        { label: 'Galeria', val: 'Nativo', to: '#galeria' },
+        { label: 'Preciso do disco?', val: 'FAQ', to: '#faq' },
+        { label: 'Código no GitHub', val: 'MIT', to: SITE.github, ext: true },
+      ],
+      legend: [['✕', 'Avançar'], ['↑↓', 'Mudar seleção'], ['△', 'Menu anterior']],
+      lap: 'Etapa', of: 'de', hudNow: 'Agora:',
+      resultsTitle: 'Resultados do port nativo',
+      resultsSub: 'Classe: Nativo   Power-ups: nenhum',
+      milestone: 'Marco', when: 'Total',
+      racing: 'Correndo...', notStarted: '----',
+      cont: 'Continuar', edit: 'Avançar: ✕',
+      modesEyebrow: 'Classificação geral', modesTitle: 'Modos de jogo no port',
+      modesLead: 'Cada modo foi testado no executável nativo do macOS, navegando pelos menus originais até o fim.',
+      mode: 'Modo', status: 'Status', notes: 'Observações',
+      chip: { finished: 'Completo', racing: 'Em andamento', dnf: 'Não termina' },
+      statsTitle: 'Em números',
+      featEyebrow: 'O que já roda', featTitle: 'O jogo original, nativo',
+      feats: [
+        { h: 'Emulador', v: 'Nenhum', p: 'O código MIPS do PS1 é recompilado para código nativo. Nada de BIOS, nada de emulação de CPU.', img: '/shots/race2.jpg' },
+        { h: 'Fluxo do jogo', v: 'Completo', p: 'Intro, menus, corrida, resultados, recordes, campeonato e desbloqueios — o fluxo original inteiro.', img: '/shots/standings.jpg' },
+        { h: 'Frame Rate', v: '30 / 60', p: '30 fps como no console por padrão; 60 fps opcional, com a IA cronometrando os mesmos tempos do PS1.', img: '/shots/countdown.jpg' },
+        { h: 'Show FPS', v: 'On', p: 'Ligue “Show FPS” no lançador e veja os quadros por segundo no canto superior direito do jogo.', img: '/shots/unlock.jpg' },
+        { h: 'Lançador', v: 'Estilo do jogo', p: 'Menu de abertura com a arte de abertura lida do seu disco: frame rate, contador de FPS e modo debug.', img: '/shots/launcher.jpg' },
+        { h: 'Disco', v: 'O seu', p: 'Nenhum arquivo do jogo é distribuído. O port lê o disco que você possui.', img: '/shots/menu.jpg' },
+      ],
+      galEyebrow: 'Showcase', galTitle: 'Capturas do port nativo',
+      galLead: 'Capturas da janela do executável nativo (macOS ARM), recortadas na imagem 4:3 do jogo.',
+      faqEyebrow: 'Perguntas', faqTitle: 'Preciso do disco do jogo?',
+      latestEyebrow: 'Devlog', latestTitle: 'Últimas voltas', all: 'Todo o progresso →',
+      gameEyebrow: 'O jogo', gameTitle: 'Um kart racer disfarçado de NASCAR',
+      gameBody: 'Lançado pela EA em 2000 para PlayStation, o NASCAR Rumble pegou os stock cars e jogou o realismo pela janela: power-ups, atalhos, tempestades, pistas em cânions e pântanos e uma garagem de carros absurdos para desbloquear.',
+    }
+  : {
+      sub: 'EA’s 2000 arcade classic running as a native app — no emulator. You can already boot the game, race a full event and close out a championship.',
+      hint: 'A complete race and a whole championship working in the native port.',
+      menu: [
+        { label: 'Follow progress', val: 'Devlog', to: href('/devlog', lang), sel: true },
+        { label: 'Game modes', val: `${MODES.filter((m) => m.status === 'finished').length}/${MODES.length}`, to: '#modos' },
+        { label: 'Gallery', val: 'Native', to: '#galeria' },
+        { label: 'Do I need the disc?', val: 'FAQ', to: '#faq' },
+        { label: 'Code on GitHub', val: 'MIT', to: SITE.github, ext: true },
+      ],
+      legend: [['✕', 'Advance'], ['↑↓', 'Change Selection'], ['△', 'Previous Menu']],
+      lap: 'Stage', of: 'of', hudNow: 'Now:',
+      resultsTitle: 'Race Results for the Native Port',
+      resultsSub: 'Class: Native   Power-Ups: None',
+      milestone: 'Milestone', when: 'Total',
+      racing: 'Racing...', notStarted: '----',
+      cont: 'Continue', edit: 'Advance: ✕',
+      modesEyebrow: 'Overall standings', modesTitle: 'Game modes in the port',
+      modesLead: 'Each mode was tested in the native macOS executable, driving the original menus to the end.',
+      mode: 'Mode', status: 'Status', notes: 'Notes',
+      chip: { finished: 'Finished', racing: 'In progress', dnf: 'DNF' },
+      statsTitle: 'By the numbers',
+      featEyebrow: 'What runs today', featTitle: 'The original game, native',
+      feats: [
+        { h: 'Emulator', v: 'None', p: 'The PS1 MIPS code is recompiled into native code. No BIOS, no CPU emulation.', img: '/shots/race2.jpg' },
+        { h: 'Game Flow', v: 'Complete', p: 'Intro, menus, race, results, records, championship and unlocks — the whole original flow.', img: '/shots/standings.jpg' },
+        { h: 'Frame Rate', v: '30 / 60', p: '30 fps like the console by default; 60 fps optional, with the AI lapping the same times as the PS1.', img: '/shots/countdown.jpg' },
+        { h: 'Show FPS', v: 'On', p: 'Turn on “Show FPS” in the launcher to see frames per second in the game’s top-right corner.', img: '/shots/unlock.jpg' },
+        { h: 'Launcher', v: 'Game style', p: 'A start screen with the title art read from your disc: frame rate, FPS counter and debug mode.', img: '/shots/launcher.jpg' },
+        { h: 'Disc', v: 'Yours', p: 'No game files are distributed. The port reads the disc you own.', img: '/shots/menu.jpg' },
+      ],
+      galEyebrow: 'Showcase', galTitle: 'Native port captures',
+      galLead: 'Captures of the native executable’s window (macOS ARM), cropped to the game’s 4:3 image.',
+      faqEyebrow: 'Questions', faqTitle: 'Do I need the game disc?',
+      latestEyebrow: 'Devlog', latestTitle: 'Latest laps', all: 'All progress →',
+      gameEyebrow: 'The game', gameTitle: 'A kart racer dressed as NASCAR',
+      gameBody: 'Released by EA in 2000 for PlayStation, NASCAR Rumble took stock cars and threw realism out the window: power-ups, shortcuts, storms, canyon and swamp tracks and a garage of absurd unlockable cars.',
+    };
+
+const faq = pt
   ? [
-      { i: '🏁', h: 'Jogo original primeiro', p: 'Intro, menu e corrida completa antes de ativar qualquer modificação.' },
-      { i: '💻', h: 'Port nativo', p: 'Aplicativos para macOS, Windows e Linux usando a cópia legal do jogador.' },
-      { i: '🔧', h: 'Melhorias depois', p: 'Resolução, gráficos e mods virão sobre uma base original validada.' },
+      { q: 'O executável roda sem a ISO?', a: ['Não. Hoje ele é um port nativo por recompilação estática: o código do jogo foi traduzido do MIPS do PlayStation para código nativo e roda sem emulador, mas os dados continuam vindo do seu disco — o próprio SLUS_010.68 (tabelas, textos e dados do executável) e todos os recursos: pistas, carros, texturas, vídeos, músicas e menus.', 'Sem o .cue/.bin do NASCAR Rumble (USA) o port não inicia. É o mesmo modelo de outros ports recompilados: traga a sua cópia.'] },
+      { q: 'Então é um port nativo de verdade?', a: ['Sim no sentido de execução: não há emulador de CPU nem BIOS; o jogo é um programa nativo para macOS ARM que reimplementa o hardware do PS1 (GPU, áudio, CD, vídeo) em uma camada própria.', 'Não no sentido de “source port” independente: o código ainda é tradução direta do executável original, não código-fonte reescrito. A decompilação e o entendimento do código seguem em paralelo.'] },
+      { q: 'Vou poder baixar e jogar?', a: ['O objetivo é distribuir apenas o nosso código e as ferramentas, para você usar com a sua cópia legal. Antes disso faltam memory card, 2 jogadores e os pacotes para Mac, Windows e Linux.'] },
+      { q: 'O campeonato funciona?', a: ['Sim. A copa Gold Rush roda inteira no port: nome do piloto, três etapas, pontos, classificação geral e os desbloqueios originais (classe Pro, novas regiões e pistas bônus). Salvar esse progresso no memory card é o próximo passo.'] },
     ]
   : [
-      { i: '🏁', h: 'Original game first', p: 'Intro, menu, and a complete race before enabling any modification.' },
-      { i: '💻', h: 'Native port', p: 'Apps for macOS, Windows, and Linux using the player’s legal copy.' },
-      { i: '🔧', h: 'Enhancements later', p: 'Resolution, graphics, and mods will follow on a validated original base.' },
+      { q: 'Does the executable run without the ISO?', a: ['No. Today it is a native port by static recompilation: the game’s code was translated from PlayStation MIPS into native code and runs without an emulator, but the data still comes from your disc — SLUS_010.68 itself (the executable’s tables, text and data) and every asset: tracks, cars, textures, videos, music and menus.', 'Without the NASCAR Rumble (USA) .cue/.bin the port does not start. It is the same model as other recompiled ports: bring your own copy.'] },
+      { q: 'So is it a real native port?', a: ['Yes in how it runs: there is no CPU emulator and no BIOS; the game is a native macOS ARM program that reimplements the PS1 hardware (GPU, audio, CD, video) in its own layer.', 'Not in the sense of an independent source port: the code is still a direct translation of the original executable, not rewritten source. Decompilation and understanding the code continue in parallel.'] },
+      { q: 'Will I be able to download and play it?', a: ['The plan is to ship only our code and tools, for use with your legal copy. Before that: memory card, 2 players and the Mac, Windows and Linux packages.'] },
+      { q: 'Does the championship work?', a: ['Yes. The Gold Rush cup runs end to end in the port: driver name, three rounds, points, overall standings and the original unlocks (Pro class, new locales and bonus tracks). Saving that progress to the memory card is next.'] },
     ];
+
+const posColors = ['#4ce36c', '#62d3f2', '#f8e830', '#e66a8a', '#9a8cff', '#ff9a3c', '#c4bcec', '#ffffff'];
 ---
+<!-- HERO -->
 <section class="hero">
+  <div class="hero-bg"><img src={img('/shots/countdown.jpg')} alt="" fetchpriority="high" /></div>
+  <div class="go" aria-hidden="true">GO!!!</div>
   <div class="container">
-    <p class="eyebrow">PlayStation 1 · EA · 2000</p>
-    <h1>NASCAR Rumble<br />ModSDK</h1>
-    <p class="sub">{heroSub}</p>
-    <div class="cta">
-      <a class="btn primary" href={href('/devlog', lang)}>{tr('hero.cta.devlog')}</a>
-      <a class="btn" href={href('/gallery', lang)}>{tr('nav.gallery')}</a>
-      <a class="btn" href={SITE.github} target="_blank" rel="noopener">GitHub</a>
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">PlayStation · EA Sports · 2000</p>
+        <h1 class="chrome"><span>NASCAR</span><span class="l2">Rumble</span></h1>
+        <span class="native-tag">NATIVE PORT</span>
+        <p class="sub">{t.sub}</p>
+      </div>
+      <div>
+        <div class="hint">{t.hint}</div>
+        <nav class="panel hero-menu" aria-label={pt ? 'Atalhos' : 'Shortcuts'}>
+          {t.menu.map((m) => (
+            <a class={m.sel ? 'sel' : ''} href={m.to} {...(m.ext ? { target: '_blank', rel: 'noopener' } : {})}>
+              <span>{m.label}</span><span class="val">{m.val}</span>
+            </a>
+          ))}
+        </nav>
+        <div class="legend">{t.legend.map(([k, v]) => <span><b>{k}</b> {v}</span>)}</div>
+      </div>
     </div>
 
-    <div class="statusbar">
-      <span class="dot"></span>
-      <strong>{tr('home.status')}:</strong> {JOURNEY_STATUS[lang]}
+    <div class="panel hud">
+      <div class="lap"><small>{t.lap}</small><b>{done}/{total}</b></div>
+      <div>
+        <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax={total} aria-valuenow={done}>
+          <div class="ticks">{JOURNEY.map(() => <i></i>)}</div>
+          <div class="fill" style={`width:${(pct * 100).toFixed(1)}%`}></div>
+          <div class="car" style={`left:${(pct * 100).toFixed(1)}%`}></div>
+          <div class="flag"></div>
+        </div>
+        <p class="caption"><strong style="color:var(--yellow)">{t.hudNow}</strong> {doing ? doing[lang] : ''} · {JOURNEY_STATUS[lang]}</p>
+      </div>
+      <div class="gauge-wrap">
+        <svg class="gauge" viewBox="0 0 120 120" role="img" aria-label={`${done}/${total}`}>
+          <circle cx="60" cy="60" r="57" fill="#0d0c1f" stroke="#c4bcec" stroke-width="2" />
+          <path d={arc(start, start + sweep, 48)} fill="none" stroke="#2a2850" stroke-width="7" />
+          <path d={arc(start + sweep * 0.8, start + sweep, 48)} fill="none" stroke="#b3262c" stroke-width="7" />
+          <path d={arc(start, start + sweep * pct, 48)} fill="none" stroke="#4ce36c" stroke-width="7" />
+          {ticks.map((k) => (
+            <>
+              <line x1={k.x1} y1={k.y1} x2={k.x2} y2={k.y2} stroke="#f1f0f8" stroke-width="1.5" />
+              <text x={k.tx} y={k.ty + 3} text-anchor="middle" font-size="9" font-weight="700" fill="#f1f0f8" font-family="Barlow Condensed, sans-serif">{k.i}</text>
+            </>
+          ))}
+          <line x1="60" y1="60" x2={needle[0]} y2={needle[1]} stroke="#ff3b30" stroke-width="3" stroke-linecap="round" />
+          <circle cx="60" cy="60" r="5" fill="#ff3b30" />
+          <rect x="38" y="84" width="44" height="20" rx="4" fill="#05050b" stroke="#c4bcec" stroke-width="1.5" />
+          <text x="60" y="99" text-anchor="middle" font-size="15" font-weight="800" fill="#f1f0f8" font-family="Barlow Condensed, sans-serif">{Math.round(pct * 100)}%</text>
+        </svg>
+      </div>
     </div>
+  </div>
+</section>
 
+<!-- RESULTS: milestones as the game's results screen -->
+<section class="section">
+  <div class="container">
+    <p class="eyebrow">{pt ? 'Até onde chegamos' : 'How far we got'}</p>
+    <h2 class="chrome title">{pt ? 'Bandeirada no port nativo' : 'Checkered flag in the native port'}</h2>
+    <hr class="rule" />
+    <div class="panel results reveal">
+      <div class="results-head">
+        <h3>{t.resultsTitle}</h3>
+        <span class="sub">{t.resultsSub}</span>
+      </div>
+      <table class="rtable">
+        <thead><tr><th></th><th>{t.milestone}</th><th style="text-align:right">{t.when}</th></tr></thead>
+        <tbody>
+          {JOURNEY.map((s, i) => (
+            <tr class={s.status === 'done' ? 'finished' : s.status === 'doing' ? 'racing' : 'todo'}>
+              <td class="pos"><i style={`background:${posColors[i % posColors.length]}`}></i>{i + 1}.</td>
+              <td class="name">{s[lang]}</td>
+              <td class="time">{s.status === 'done' ? s.date : s.status === 'doing' ? t.racing : t.notStarted}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div class="results-foot"><a class="cy" href={href('/roadmap', lang)}>{t.cont} →</a><span class="cy">{t.edit}</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MODES -->
+<section class="section tight" id="modos">
+  <div class="container">
+    <p class="eyebrow">{t.modesEyebrow}</p>
+    <h2 class="chrome title">{t.modesTitle}</h2>
+    <hr class="rule" />
+    <p class="lead">{t.modesLead}</p>
+    <div class="panel reveal" style="padding:6px; overflow-x:auto">
+      <table class="standings">
+        <thead><tr><th>#</th><th>{t.mode}</th><th>{t.status}</th><th>{t.notes}</th></tr></thead>
+        <tbody>
+          {MODES.map((m, i) => (
+            <tr>
+              <td class="n">{i + 1}</td>
+              <td style="white-space:nowrap">{m.name}<div class="mnote">{m[lang]}</div></td>
+              <td><span class={`chip ${m.status}`}>{t.chip[m.status]}</span></td>
+              <td class="d">{m[lang]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="section tight">
+  <div class="container">
     <div class="stats">
       {STATS.map((s) => (
-        <div class="stat">
-          <div class="v">{s.value}</div>
-          <div class="l">{lang === 'pt' ? s.label_pt : s.label_en}</div>
+        <div class="panel stat reveal">
+          <div class="v chrome">{s.value}</div>
+          <div class="l">{pt ? s.label_pt : s.label_en}</div>
         </div>
       ))}
     </div>
   </div>
 </section>
 
-<!-- O JOGO -->
-<section class="section">
+<!-- FEATURES: the game's options menu, with its hint box -->
+<section class="section tight">
   <div class="container">
-    <p class="eyebrow">{tr('home.game.eyebrow')}</p>
-    <h2>{tr('home.game.title')}</h2>
-    <div class="gamegrid">
-      <div>
-        <p class="lead" style="margin-bottom:16px">{gameBody}</p>
-        <p style="color:var(--accent-2); font-weight:600">🏁 {funFact}</p>
-        <a class="btn" style="margin-top:18px" href={href('/gallery', lang)}>{tr('home.gallery.cta')}</a>
+    <p class="eyebrow">{t.featEyebrow}</p>
+    <h2 class="chrome title">{t.featTitle}</h2>
+    <hr class="rule" />
+    <div class="options reveal" data-options>
+      <div class="panel opt-menu" role="listbox" aria-label={t.featTitle}>
+        {t.feats.map((f, i) => (
+          <button type="button" role="option" class={i === 0 ? 'sel' : ''} aria-selected={i === 0 ? 'true' : 'false'}
+            data-hint={f.p} data-img={img(f.img)}>
+            <span class="lbl">{f.h}</span>
+            <span class="arr" aria-hidden="true">◄ ►</span>
+            <span class="val">{f.v}</span>
+          </button>
+        ))}
       </div>
-      <figure class="shot" style="margin:0">
-        <img src={`${base}/gallery/native-main-menu.png`.replace('//', '/')} alt={lang === 'pt' ? 'Menu principal original rodando no port nativo' : 'Original main menu running in the native port'} loading="lazy" />
-      </figure>
+      <div class="opt-side">
+        <div class="hint" data-hint-box aria-live="polite">{t.feats[0].p}</div>
+        <div class="shot opt-shot"><img src={img(t.feats[0].img)} alt="" loading="lazy" data-opt-img /></div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- QUÃO PERTO -->
-<section class="section" style="padding-top:0">
+<!-- GALLERY -->
+<section class="section tight" id="galeria">
   <div class="container">
-    <p class="eyebrow">{tr('home.journey.eyebrow')}</p>
-    <h2>{tr('home.journey.title')}</h2>
-    <ol class="journey">
-      {JOURNEY.map((s, i) => (
-        <li class={`jstep ${s.status}`}>
-          <span class="jnum">{i + 1}</span>
-          <span class="jlabel">{lang === 'pt' ? s.pt : s.en}</span>
-        </li>
+    <p class="eyebrow">{t.galEyebrow}</p>
+    <h2 class="chrome title">{t.galTitle}</h2>
+    <hr class="rule" />
+    <p class="lead">{t.galLead}</p>
+    <div class="panel showcase reveal" data-showcase>
+      <div class="bar">
+        <button class="arrow prev" type="button" aria-label={pt ? 'Anterior' : 'Previous'} data-prev></button>
+        <div class="thumbs" role="tablist">
+          {native.map((s, i) => (
+            <button type="button" role="tab" aria-current={i === 0 ? 'true' : 'false'} aria-label={s[lang]} data-i={i}>
+              <img src={img(s.src)} alt="" loading="lazy" />
+            </button>
+          ))}
+        </div>
+        <button class="arrow next" type="button" aria-label={pt ? 'Próxima' : 'Next'} data-next></button>
+      </div>
+      <div class="stage">
+        <div class="frame"><img src={img(native[0].src)} alt={native[0][lang]} data-main /></div>
+        <div class="capt">
+          <h3 class="chrome" data-title>{pt ? 'Port nativo' : 'Native port'}</h3>
+          <p data-caption>{native[0][lang]}</p>
+          <div class="counter" data-counter>1 / {native.length}</div>
+          <a class="btn" style="margin-top:18px" href={href('/gallery', lang)}>{pt ? 'Galeria completa' : 'Full gallery'} <span class="arrows">▶</span></a>
+        </div>
+      </div>
+      <script type="application/json" data-shots set:html={JSON.stringify(native.map((s) => ({ src: img(s.src), cap: s[lang] })))} />
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section tight" id="faq">
+  <div class="container">
+    <p class="eyebrow">{t.faqEyebrow}</p>
+    <h2 class="chrome title">{t.faqTitle}</h2>
+    <hr class="rule" />
+    <div class="faq">
+      {faq.map((f, i) => (
+        <details class="panel reveal" open={i === 0}>
+          <summary>{f.q}</summary>
+          <div class="ans">{f.a.map((p) => <p>{p}</p>)}</div>
+        </details>
       ))}
-    </ol>
+    </div>
   </div>
 </section>
 
-<!-- NOVIDADES -->
-<section class="section" style="padding-top:0">
+<!-- LATEST -->
+<section class="section tight">
   <div class="container">
-    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:16px;">
-      <h2>{tr('home.latest')}</h2>
-      <a href={href('/devlog', lang)}>{tr('home.latest.all')}</a>
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap">
+      <div>
+        <p class="eyebrow">{t.latestEyebrow}</p>
+        <h2 class="chrome title" style="margin-bottom:0">{t.latestTitle}</h2>
+      </div>
+      <a class="btn" href={href('/devlog', lang)}>{t.all}</a>
     </div>
-    <div class="grid cols-3" style="margin-top:24px">
+    <hr class="rule" style="margin-top:14px" />
+    <div class="grid cols-3">
       {latest.map((e) => (
-        <a class="card" href={href(`/devlog/${e.slug}`, lang)}>
-          <span class="tag">{e.tag}</span>
-          <h3>{e[lang].title}</h3>
-          <div class="meta">#{e.session} · {e.date}</div>
-          <p>{e[lang].summary}</p>
+        <a class="card trackcard reveal" href={href(`/devlog/${e.slug}`, lang)}>
+          <div class="thumb"><img src={img(e.image ?? '/shots/menu.jpg')} alt="" loading="lazy" /></div>
+          <div class="body">
+            <span class="tag">{e.tag}</span>
+            <h3>{e[lang].title}</h3>
+            <div class="meta">#{e.session} · {e.date}</div>
+            <p>{e[lang].summary}</p>
+          </div>
         </a>
       ))}
     </div>
   </div>
 </section>
 
-<!-- FRENTES -->
-<section class="section" style="padding-top:0">
+<!-- THE GAME -->
+<section class="section tight">
   <div class="container">
-    <p class="eyebrow">{tr('home.what')}</p>
-    <h2>{tr('home.pillars.title')}</h2>
-    <p class="lead">{tr('home.what.body')}</p>
-    <div class="grid cols-3">
-      {pillars.map((p) => (
-        <div class="card">
-          <div style="font-size:1.8rem">{p.i}</div>
-          <h3>{p.h}</h3>
-          <p>{p.p}</p>
-        </div>
-      ))}
+    <div class="grid cols-2" style="align-items:center; gap:32px">
+      <div class="reveal">
+        <p class="eyebrow">{t.gameEyebrow}</p>
+        <h2 class="chrome title">{t.gameTitle}</h2>
+        <hr class="rule" />
+        <p class="lead" style="margin-bottom:20px">{t.gameBody}</p>
+        <a class="btn" href={href('/cars', lang)}>{pt ? 'Conheça o grid' : 'Meet the grid'} <span class="arrows">▶</span></a>
+      </div>
+      <figure class="shot reveal"><img src={img('/shots/carselect.jpg')} alt={pt ? 'Seleção de carro no port nativo' : 'Car select in the native port'} loading="lazy" /></figure>
     </div>
   </div>
 </section>
+
+<script>
+  // Options menu: hovering/focusing a row updates the hint box, like the game's menus.
+  for (const root of document.querySelectorAll<HTMLElement>('[data-options]')) {
+    const rows = [...root.querySelectorAll<HTMLButtonElement>('[data-hint]')];
+    const box = root.querySelector('[data-hint-box]')!;
+    const pic = root.querySelector<HTMLImageElement>('[data-opt-img]')!;
+    const select = (row: HTMLButtonElement) => {
+      rows.forEach((r) => { r.classList.toggle('sel', r === row); r.setAttribute('aria-selected', String(r === row)); });
+      box.textContent = row.dataset.hint!;
+      if (pic.getAttribute('src') !== row.dataset.img) pic.src = row.dataset.img!;
+    };
+    rows.forEach((r, i) => {
+      r.addEventListener('mouseenter', () => select(r));
+      r.addEventListener('focus', () => select(r));
+      r.addEventListener('click', () => select(r));
+      r.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); rows[(i + 1) % rows.length].focus(); }
+        if (e.key === 'ArrowUp') { e.preventDefault(); rows[(i - 1 + rows.length) % rows.length].focus(); }
+      });
+    });
+  }
+
+  // Car-select style carousel for the native captures.
+  for (const root of document.querySelectorAll<HTMLElement>('[data-showcase]')) {
+    const shots = JSON.parse(root.querySelector('[data-shots]')!.textContent || '[]') as { src: string; cap: string }[];
+    const main = root.querySelector<HTMLImageElement>('[data-main]')!;
+    const cap = root.querySelector('[data-caption]')!;
+    const counter = root.querySelector('[data-counter]')!;
+    const thumbs = [...root.querySelectorAll<HTMLButtonElement>('[data-i]')];
+    let i = 0;
+    const show = (n: number) => {
+      i = (n + shots.length) % shots.length;
+      main.src = shots[i].src;
+      main.alt = shots[i].cap;
+      cap.textContent = shots[i].cap;
+      counter.textContent = `${i + 1} / ${shots.length}`;
+      thumbs.forEach((b, k) => b.setAttribute('aria-current', String(k === i)));
+      thumbs[i].scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    };
+    thumbs.forEach((b) => b.addEventListener('click', () => show(Number(b.dataset.i))));
+    root.querySelector('[data-prev]')!.addEventListener('click', () => show(i - 1));
+    root.querySelector('[data-next]')!.addEventListener('click', () => show(i + 1));
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(i - 1);
+      if (e.key === 'ArrowRight') show(i + 1);
+    });
+  }
+</script>

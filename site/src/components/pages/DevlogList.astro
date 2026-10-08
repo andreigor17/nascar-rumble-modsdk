@@ -4,15 +4,18 @@ import { t } from '../../i18n/ui';
 import { DEVLOG } from '../../data/devlog';
 const { lang } = Astro.props as { lang: Lang };
 const tr = t(lang);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <section class="section">
   <div class="container">
     <p class="eyebrow">Devlog</p>
-    <h2>{tr('devlog.title')}</h2>
+    <h1 class="chrome title">{tr('devlog.title')}</h1>
+    <hr class="rule" />
     <p class="lead">{tr('devlog.intro')}</p>
     <div class="grid cols-2">
       {DEVLOG.map((e) => (
         <a class="card" href={href(`/devlog/${e.slug}`, lang)}>
+          {e.image && <div class="shot" style="margin:-4px 0 14px; aspect-ratio:16/9"><img src={`${base}${e.image}`} alt="" loading="lazy" style="height:100%; object-fit:cover" /></div>}
           <span class="tag">{e.tag}</span>
           <h3>{e[lang].title}</h3>
           <div class="meta">#{e.session} · {e.date}</div>

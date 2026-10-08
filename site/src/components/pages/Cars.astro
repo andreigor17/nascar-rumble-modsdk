@@ -22,20 +22,21 @@ const maxR = Math.max(...CARS.map((c) => c.rating));
 <section class="section">
   <div class="container">
     <p class="eyebrow">{t.eyebrow}</p>
-    <h2>{t.title}</h2>
+    <h1 class="chrome title">{t.title}</h1>
+    <hr class="rule" />
     <p class="lead">{t.intro}</p>
 
-    <h3 style="margin:8px 0 16px">{t.liveries}</h3>
+    <h3 style="margin:8px 0 16px; color:var(--yellow); font-size:1.6rem; font-style:italic">{t.liveries}</h3>
     <div class="grid cols-2" style="margin-bottom:40px">
       {LIVERIES.map((l) => (
-        <figure class="shot" style="margin:0">
+        <figure class="shot pixel">
           <img src={`${base}${l.src}`.replace('//', '/')} alt={lang === 'pt' ? l.pt : l.en} loading="lazy" />
           <figcaption class="cap">{(l.roster ? '★ ' : '') + (lang === 'pt' ? l.pt : l.en)}</figcaption>
         </figure>
       ))}
     </div>
 
-    <div class="tablewrap">
+    <div class="panel tablewrap" style="padding:6px">
       <table class="roster">
         <thead><tr><th>{t.drv}</th><th>{t.num}</th><th>{t.rat}</th><th>{t.cls}</th></tr></thead>
         <tbody>
