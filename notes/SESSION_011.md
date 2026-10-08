@@ -654,3 +654,33 @@ diferença está toda dentro de `FUN_80026d3c`/`FUN_80030cac`** (não em entrada
    transição de patinagem (`[0xAD]`) em 1×10 vs 2×5; testar a hipótese do filtro `[0xAF]`.
 3. Corrigir os termos sensíveis ao passo com hooks (ou, se for erro de integração da suspensão,
    avaliar subpassos fixos de dt=10 acumulados para a física com render a 60).
+
+### Referência PS1 (PCSX-Redux, mesmo teste)
+
+Gravador Lua por VBlank (`PCSX.Events.createEventListener('GPU::Vsync', …)`, lê `0x800AF738`,
+`0x800AF6E0` e o bloco `0x800B12C0[0]`), carregado com `dofile` pelo canal `/api/v1/lua/x` (o
+código inline longo dá HTTP 400). Time Trial, Gold Rush, Mark Martin #6 Rookie, X segurado ~10 s
+depois do GO, partindo parado. No Time Trial o PS1 roda a **~35–40 fps** (`delta` 7–9).
+
+| 0→mph (ticks) | PS1 | nativo ~40 fps (2 rodadas) | nativo 60 | nativo 30 lockstep |
+|---|---|---|---|---|
+| 60 | 240 | 255 / 250 | 245 | 240 |
+| 100 | 550 | 460 / 385 | 605 | 380 |
+| 120 | 815 | 760 / 715 | 865 | 670 |
+| 140 | 1080 | 985 / 985 | 1520* | 910 |
+| troca 1→3 | 315 (80 mph) | — | ~305 (70 mph) | ~385 (98 mph) |
+
+\* depois de ~1000 ticks sem esterçar o carro raspa o muro; comparações além disso não valem.
+
+Conclusões:
+
+- A dependência do ritmo de quadros é **do jogo original** (o momento em que o pneu volta a ter
+  aderência muda com o passo), não do port. Na mesma cadência do PS1, o nativo cai na mesma faixa,
+  e a própria cadência do PS1 varia: ~40 fps no Time Trial, 25–30 fps numa corrida com grid cheio
+  (`delta` 9–12 medido antes).
+- 60 fps fica a ~10% do PS1 no Time Trial até 120 mph; 30 fps travado fica ~30% mais rápido.
+  "Dinâmica original" é um alvo móvel; o critério precisa ser em nível de jogo.
+
+Próximo critério de aceite proposto: tempos de volta da **IA** (dirige sozinha, mesma física) numa
+corrida avulsa completa a 60 fps vs 30 fps vs PCSX-Redux, mais tempo de volta do jogador com
+direção. Se ficarem dentro da variação do próprio PS1, os 60 fps podem virar opção oficial.
