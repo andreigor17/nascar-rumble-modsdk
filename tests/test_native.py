@@ -47,7 +47,10 @@ class NativeBuildTests(unittest.TestCase):
         text = patch.read_text(encoding="utf-8")
         self.assertIn("new APIVersion(4, 1)", text)
         self.assertIn("WaitForValidDisc(cuePath)", text)
+        self.assertIn("HostWindow.UseDiscPath(cuePath)", text)
         self.assertIn("RUMBLE_ENABLE_MODS", text)
+        self.assertIn("bool _deferredIrq", text)
+        self.assertIn("psMemory.TickDma()", text)
 
     def test_native_host_handles_managed_failures(self):
         host = (ROOT / "recompone" / "host" / "Program.cs").read_text(
@@ -70,8 +73,42 @@ class NativeBuildTests(unittest.TestCase):
         self.assertEqual("mdec_output_callback", functions["80094dd0"])
         self.assertEqual("memory_card_event_callback_4", functions["8001e864"])
         self.assertEqual("memory_card_event_callback_8", functions["8001edd0"])
+        self.assertEqual("vblank_tick_callback", functions["8001dcd4"])
+        self.assertEqual("vblank_audio_callback", functions["80022308"])
+        self.assertEqual("intro_cd_sync_callback", functions["800983a0"])
+        self.assertEqual("intro_cd_ready_callback", functions["80098048"])
+        self.assertEqual("intro_spu_dma_callback", functions["8009638c"])
+        self.assertEqual("intro_vblank_callback", functions["800967b0"])
         self.assertEqual("CdSyncCallback", functions["8009f900"])
         self.assertEqual("CdReadyCallback", functions["8009f920"])
+
+    def test_memory_card_poll_yields_to_the_native_scheduler(self):
+        config = json.loads((ROOT / "recompone" / "nascar.json").read_text(encoding="utf-8"))
+        patches = {
+            (entry["function"], entry["mode"]): entry["target"]
+            for entry in config["patches"]
+        }
+        self.assertEqual(
+            "NascarRumble.Host.NativeHooks.MemoryCardPoll",
+            patches[("FUN_8001f560", "post")],
+        )
+        self.assertEqual(
+            "RecompOne.Runtime.Sdk.LibCd.CdSync",
+            patches[("CD_sync", "replace")],
+        )
+        self.assertEqual(
+            "NascarRumble.Host.NativeHooks.CdReady",
+            patches[("CD_ready", "replace")],
+        )
+        self.assertEqual(
+            "NascarRumble.Host.NativeHooks.IntroAudioPoll",
+            patches[("FUN_80096e90", "pre")],
+        )
+        hook = (ROOT / "recompone" / "host" / "NativeHooks.cs").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Runtime.PresentFrame()", hook)
+        self.assertIn("Runtime.PumpCd()", hook)
 
 
 if __name__ == "__main__":

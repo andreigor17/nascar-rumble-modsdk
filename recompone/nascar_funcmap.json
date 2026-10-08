@@ -991,6 +991,11 @@
    "size": 532
   },
   {
+   "address": "8001dcd4",
+   "name": "vblank_tick_callback",
+   "size": 192
+  },
+  {
    "address": "8001dd94",
    "name": "FUN_8001dd94",
    "size": 68
@@ -1504,6 +1509,11 @@
    "address": "80021f70",
    "name": "FUN_80021f70",
    "size": 44
+  },
+  {
+   "address": "80022308",
+   "name": "vblank_audio_callback",
+   "size": 40
   },
   {
    "address": "80022330",
@@ -6046,6 +6056,11 @@
    "size": 260
   },
   {
+   "address": "8009638c",
+   "name": "intro_spu_dma_callback",
+   "size": 136
+  },
+  {
    "address": "80096414",
    "name": "FUN_80096414",
    "size": 116
@@ -6064,6 +6079,11 @@
    "address": "800966b0",
    "name": "FUN_800966b0",
    "size": 256
+  },
+  {
+   "address": "800967b0",
+   "name": "intro_vblank_callback",
+   "size": 64
   },
   {
    "address": "800967f0",
@@ -6209,6 +6229,16 @@
    "address": "80098008",
    "name": "FUN_80098008",
    "size": 64
+  },
+  {
+   "address": "80098048",
+   "name": "intro_cd_ready_callback",
+   "size": 856
+  },
+  {
+   "address": "800983a0",
+   "name": "intro_cd_sync_callback",
+   "size": 396
   },
   {
    "address": "8009852c",

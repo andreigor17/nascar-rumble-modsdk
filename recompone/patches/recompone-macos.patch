@@ -83,8 +83,47 @@ diff --git a/RecompOne.Runtime/Bios/BiosB.cs b/RecompOne.Runtime/Bios/BiosB.cs
 diff --git a/RecompOne.Runtime/Memory/Dma.cs b/RecompOne.Runtime/Memory/Dma.cs
 --- a/RecompOne.Runtime/Memory/Dma.cs
 +++ b/RecompOne.Runtime/Memory/Dma.cs
-@@ -114,0 +115 @@
+@@ -14,0 +15,2 @@
++    bool _raisingIrq;
++    bool _deferredIrq;
+@@ -28,0 +31,7 @@
++    public void Tick()
++    {
++        if (!_deferredIrq || _raisingIrq) return;
++        _deferredIrq = false;
++        RaiseIrq();
++    }
++
+@@ -114,0 +122 @@
 +        Sdk.LibCd.NotifySectorConsumed();
+@@ -136 +145,19 @@
+-        _raiseIrq();
++        if (_raisingIrq)
++        {
++            _deferredIrq = true;
++            return;
++        }
++        RaiseIrq();
++    }
++
++    void RaiseIrq()
++    {
++        _raisingIrq = true;
++        try
++        {
++            _raiseIrq();
++        }
++        finally
++        {
++            _raisingIrq = false;
++        }
+     }
+diff --git a/RecompOne.Runtime/Memory/PSMemory.cs b/RecompOne.Runtime/Memory/PSMemory.cs
+--- a/RecompOne.Runtime/Memory/PSMemory.cs
++++ b/RecompOne.Runtime/Memory/PSMemory.cs
+@@ -32,0 +33,2 @@
++    public void TickDma() => _dma.Tick();
++
 diff --git a/RecompOne.Runtime/Cdrom/CdController.cs b/RecompOne.Runtime/Cdrom/CdController.cs
 --- a/RecompOne.Runtime/Cdrom/CdController.cs
 +++ b/RecompOne.Runtime/Cdrom/CdController.cs
@@ -251,15 +290,44 @@ diff --git a/RecompOne.Runtime/Host/Window/HostWindow.cs b/RecompOne.Runtime/Hos
 +                    ContextProfile.Core,
 +                    ContextFlags.Default,
 +                    apiVersion),
+@@ -123,0 +131,10 @@
++    public static void UseDiscPath(string path)
++    {
++        bool needsInitialLayout = string.IsNullOrWhiteSpace(ConfigManager.Game.CdPath)
++            || !File.Exists(ConfigManager.Game.CdPath);
++        ConfigManager.Game.CdPath = path;
++        ConfigManager.SaveGame();
++        _discPicker?.Hide();
++        if (needsInitialLayout) _layoutPending = true;
++    }
++
+diff --git a/RecompOne.Runtime/Host/Window/Panels/Configuration/DiscPickerPopup.cs b/RecompOne.Runtime/Host/Window/Panels/Configuration/DiscPickerPopup.cs
+--- a/RecompOne.Runtime/Host/Window/Panels/Configuration/DiscPickerPopup.cs
++++ b/RecompOne.Runtime/Host/Window/Panels/Configuration/DiscPickerPopup.cs
+@@ -34,0 +35,6 @@
++    public void Hide()
++    {
++        _pendingOpen = false;
++        IsOpen = false;
++    }
++
 diff --git a/RecompOne.Runtime/Runtime.cs b/RecompOne.Runtime/Runtime.cs
 --- a/RecompOne.Runtime/Runtime.cs
 +++ b/RecompOne.Runtime/Runtime.cs
-@@ -42 +42,5 @@
+@@ -42 +42,9 @@
 -    public static void WaitForValidDisc() => HostWindow.WaitForValidDisc();
 +    public static void WaitForValidDisc(string? cuePath = null)
 +    {
-+        if (!string.IsNullOrWhiteSpace(cuePath) && File.Exists(cuePath)) return;
++        if (!string.IsNullOrWhiteSpace(cuePath) && File.Exists(cuePath))
++        {
++            HostWindow.UseDiscPath(cuePath);
++            return;
++        }
 +        HostWindow.WaitForValidDisc();
 +    }
-@@ -58,0 +63 @@
+@@ -58,0 +63,2 @@
 +        if (Mem != null) Bios.BiosB.TickCard(Mem);
++        if (Mem is PSMemory psMemory) psMemory.TickDma();
+@@ -66,0 +72,2 @@
++
++    public static void PumpCd() => Sdk.LibCd.Tick();

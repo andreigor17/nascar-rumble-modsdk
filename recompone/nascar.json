@@ -10,5 +10,30 @@
  "overlays": [],
  "stubs": [],
  "ignored": [],
- "patches": []
+ "patches": [
+ {
+   "overlay": "main",
+   "function": "FUN_8001f560",
+   "target": "NascarRumble.Host.NativeHooks.MemoryCardPoll",
+   "mode": "post"
+  },
+  {
+   "overlay": "main",
+   "function": "CD_sync",
+   "target": "RecompOne.Runtime.Sdk.LibCd.CdSync",
+   "mode": "replace"
+  },
+  {
+   "overlay": "main",
+   "function": "CD_ready",
+   "target": "NascarRumble.Host.NativeHooks.CdReady",
+   "mode": "replace"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_80096e90",
+   "target": "NascarRumble.Host.NativeHooks.IntroAudioPoll",
+   "mode": "pre"
+  }
+ ]
 }

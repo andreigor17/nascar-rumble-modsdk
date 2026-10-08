@@ -20,10 +20,10 @@
 - Prioridade do mantenedor em 2026-10-07: jogo original jogável primeiro. Mods, melhorias gráficas
   e novas resoluções ficam depois de menu e corrida original estáveis; o carregador de mods do host
   nativo permanece desligado por padrão.
-- Trilha nativa: `NascarRumbleNative` abre no macOS ARM, lê por completo
-  `CW/OPENING/LEGAL.LSC`, decodifica suas duas imagens MDEC e as transfere para a GPU. O bloqueio
-  atual está no agendamento assíncrono de VBlank/memory card antes do loop normal de quadros;
-  intro e menu ainda não foram alcançados visualmente.
+- Trilha nativa: `NascarRumbleNative` abre no macOS ARM, lê e decodifica a tela legal, carrega
+  `CW/OPENING/INTRO.WVE` e já apresenta visualmente o primeiro trecho da intro (logo vermelho da
+  EA). O próximo bloqueio é um underflow do buffer de áudio após aproximadamente 15 quadros; o
+  menu ainda não foi alcançado.
 - Os avisos “NascarRumbleNative encerrou inesperadamente” vistos no Mac vieram das execuções de
   diagnóstico de 2026-10-07: os relatórios indicam `SIGABRT` após exceção .NET não tratada, com o
   processo de desenvolvimento como pai. Não existe LaunchAgent ou processo relançando o host. O
@@ -212,7 +212,7 @@ por enquanto o GitHub é usado somente para preservar e compartilhar o código.
 
 ### Etapa 5 — Boot original visível
 
-Status: **EM ANDAMENTO — CD/MDEC vencidos; bloqueio no agendamento de VBlank/memory card**
+Status: **EM ANDAMENTO — primeiro quadro visível; intro completa e menu ainda pendentes**
 
 Estado observado no macOS ARM:
 
@@ -221,13 +221,49 @@ Estado observado no macOS ARM:
 - localiza `CW/OPENING/LEGAL.LSC` no LBA 97407, com 35.136 bytes, e entrega seus 18 setores;
 - decodifica as duas imagens da tela legal via MDEC (160 macroblocos e 30.720 palavras cada) e
   executa as transferências para a GPU com fallbacks OpenGL compatíveis com macOS;
-- inicializa os eventos do memory card sem encerrar inesperadamente, mas para antes do loop normal
-  porque callbacks de VBlank e cartão ainda precisam de um agendador cooperativo;
-- por isso intro, menu e jogo controlável ainda não foram alcançados visualmente.
+- agenda cooperativamente callbacks de memory card, VBlank, CD e DMA sem o estouro de pilha que a
+  conclusão síncrona da DMA de SPU causava;
+- localiza `CW/OPENING/INTRO.WVE` no LBA 93447, carrega áudio/vídeo e decodifica quadros MDEC de
+  280 macroblocos e 53.760 palavras;
+- apresenta na janela o primeiro trecho real do vídeo, confirmado visualmente pelo logo vermelho
+  da EA em 2026-10-07;
+- a reprodução ainda para depois de aproximadamente 15 quadros por underflow do ring buffer de
+  áudio (`available=832`, `required=3360`); intro completa, menu e jogo controlável permanecem
+  pendentes.
 
-Próximo gate: implementar o agendamento cooperativo de VBlank/memory card, confirmar a primeira
-tela visível e seguir até o menu aceitar input. A decomp matching permanece disponível para
-esclarecer funções necessárias; trabalho de mods está suspenso.
+Validação executada:
+
+```text
+python3 -m unittest tests.test_native -v
+  PASS — 5 testes
+
+make native-build
+  PASS — NascarRumbleNative compilado para macOS arm64
+
+execução local com a cópia legal
+  PASS — primeiro trecho de INTRO.WVE visível na janela (logo EA)
+```
+
+Próximo gate: corrigir o abastecimento assíncrono do ring buffer de áudio, reproduzir a intro sem
+parar e seguir até o menu aceitar input. A decomp matching permanece disponível para esclarecer
+funções necessárias; trabalho de mods está suspenso.
+
+Ponto exato de retomada para a próxima sessão:
+
+1. Não reabrir os bloqueios de memory card, callbacks de CD, VBlank ou reentrância de DMA: eles já
+   foram atravessados e estão cobertos por `NativeHooks.cs`, pelo patch local do RecompOne e pelo
+   funcmap.
+2. `FUN_80096e90` consome o áudio da intro. O hook `IntroAudioPoll` bombeia até 64 callbacks de CD
+   antes de entrar na espera original, o que permite avançar aproximadamente 15 quadros, mas a
+   leitura acaba em `read=16832`, `write=2304`, `available=832`, `required=3360`.
+3. Investigar por que `LibCd.Tick()` deixa de aumentar o ponteiro de escrita nesse ponto: confirmar
+   `_readActive`, `_readGeneration`, posição/LBA e se `intro_cd_ready_callback` consumiu o setor.
+   A correção desejada é manter o produtor do ring buffer assíncrono/cooperativo, não ignorar o
+   áudio nem substituir a intro por um atalho.
+4. Para reproduzir: `make native-build` e depois `make native-run`. Para filtrar o diagnóstico,
+   usar `RUMBLE_NATIVE_TRACE=1` e observar MDEC/CD e a linha `intro audio underflow`.
+5. O primeiro quadro já foi confirmado. O próximo critério visual é a intro continuar se movendo;
+   depois disso, seguir até o menu e validar input.
 
 ## Protocolo para finalizar uma etapa
 
