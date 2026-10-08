@@ -290,15 +290,13 @@ diff --git a/RecompOne.Runtime/Host/Window/HostWindow.cs b/RecompOne.Runtime/Hos
 +                    ContextProfile.Core,
 +                    ContextFlags.Default,
 +                    apiVersion),
-@@ -123,0 +131,10 @@
+@@ -123,0 +131,7 @@
 +    public static void UseDiscPath(string path)
 +    {
-+        bool needsInitialLayout = string.IsNullOrWhiteSpace(ConfigManager.Game.CdPath)
-+            || !File.Exists(ConfigManager.Game.CdPath);
 +        ConfigManager.Game.CdPath = path;
 +        ConfigManager.SaveGame();
 +        _discPicker?.Hide();
-+        if (needsInitialLayout) _layoutPending = true;
++        _layoutPending = true;
 +    }
 +
 diff --git a/RecompOne.Runtime/Host/Window/Panels/Configuration/DiscPickerPopup.cs b/RecompOne.Runtime/Host/Window/Panels/Configuration/DiscPickerPopup.cs

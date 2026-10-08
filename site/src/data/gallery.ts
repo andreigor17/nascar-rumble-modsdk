@@ -1,6 +1,9 @@
 export type Shot = { src: string; pt: string; en: string };
 
 export const GALLERY: Shot[] = [
+  { src: '/gallery/native-ea-first-frame.png',
+    pt: 'Primeiro quadro confirmado no port nativo macOS ARM: o vídeo INTRO.WVE exibindo o logo da EA na janela OpenGL.',
+    en: 'First confirmed frame in the native macOS ARM port: INTRO.WVE showing the EA logo in the OpenGL window.' },
   { src: '/gallery/help1-loading.png',
     pt: 'Tela "LOADING" (HELP1.LSC) decodificada de MDEC para PNG — 320×256.',
     en: '"LOADING" screen (HELP1.LSC) decoded from MDEC to PNG — 320×256.' },

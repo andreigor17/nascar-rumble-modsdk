@@ -12,6 +12,33 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-014-primeiro-quadro-nativo',
+    date: '2026-10-07',
+    session: '014',
+    tag: 'Port nativo',
+    image: '/gallery/native-ea-first-frame.png',
+    pt: {
+      title: 'A primeira imagem do jogo apareceu no port nativo',
+      summary:
+        'O executável macOS ARM já abre o vídeo original de introdução e apresenta o logo da EA em sua própria janela OpenGL.',
+      points: [
+        'O boot atravessa tela legal, memory card e inicialização do streaming até encontrar INTRO.WVE no disco original.',
+        'Callbacks cooperativos de VBlank, CD e DMA alimentam o MDEC; os primeiros quadros de 280 macroblocos chegam à GPU e aparecem na janela nativa.',
+        'A reprodução avança aproximadamente 15 quadros antes de um underflow do buffer de áudio. O próximo marco é manter a intro em movimento e alcançar o menu.',
+      ],
+    },
+    en: {
+      title: 'The game’s first image is visible in the native port',
+      summary:
+        'The macOS ARM executable now opens the original intro video and presents the EA logo in its own OpenGL window.',
+      points: [
+        'Boot crosses the legal screen, memory-card flow, and streaming setup before finding INTRO.WVE on the original disc.',
+        'Cooperative VBlank, CD, and DMA callbacks feed MDEC; the first 280-macroblock frames reach the GPU and appear in the native window.',
+        'Playback advances for roughly 15 frames before an audio-buffer underflow. The next milestone is continuous intro playback and reaching the menu.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-013-cd-mdec-e-tela-legal',
     date: '2026-10-07',
     session: '013',

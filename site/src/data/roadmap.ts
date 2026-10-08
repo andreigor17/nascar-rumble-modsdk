@@ -8,7 +8,7 @@ export const ROADMAP: Phase[] = [
   { n: 3, status: 'done', pt: 'Base nativa macOS', en: 'macOS native foundation',
     pt_d: 'Executável ARM abre janela própria e inicializa os subsistemas do jogo.', en_d: 'The ARM executable opens its own window and initializes game subsystems.' },
   { n: 4, status: 'doing', pt: 'Intro e menu', en: 'Intro and menu',
-    pt_d: 'CD e imagens MDEC já avançam; falta agendar VBlank/cartão e confirmar intro e menu.', en_d: 'CD and MDEC images now advance; VBlank/card scheduling and visual intro/menu confirmation remain.' },
+    pt_d: 'O primeiro quadro da intro já aparece; falta estabilizar o buffer de áudio, reproduzir o vídeo inteiro e chegar ao menu.', en_d: 'The first intro frame is now visible; audio buffering, continuous playback, and reaching the menu remain.' },
   { n: 5, status: 'todo', pt: 'Corrida completa', en: 'Complete race',
     pt_d: 'Vídeo, áudio, controles, física, IA e HUD funcionando como no original.', en_d: 'Video, audio, input, physics, AI, and HUD working like the original.' },
   { n: 6, status: 'todo', pt: 'Paridade e estabilidade', en: 'Parity and stability',

@@ -11,6 +11,6 @@ export const JOURNEY: Step[] = [
 ];
 
 export const JOURNEY_STATUS = {
-  pt: 'O executável macOS ARM abre a janela e inicia o jogo original; estamos corrigindo a leitura de CD antes do primeiro quadro.',
-  en: 'The macOS ARM executable opens a window and starts the original game; we are fixing CD reads before the first frame.',
+  pt: 'Primeiro quadro confirmado: o port nativo já mostra o logo da EA. Agora estamos estabilizando áudio e intro até chegar ao menu.',
+  en: 'First frame confirmed: the native port now shows the EA logo. We are stabilizing audio and intro playback on the way to the menu.',
 };

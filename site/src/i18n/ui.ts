@@ -37,7 +37,7 @@ export const ui = {
     'gallery.title': 'Galeria',
     'gallery.intro': 'Recursos extraídos diretamente do jogo pelas nossas ferramentas — sem emulador.',
     'about.title': 'Sobre & Contribuir',
-    'footer.disclaimer': 'Projeto de fã, sem afiliação com a Electronic Arts. Nenhum asset do jogo é distribuído.',
+    'footer.disclaimer': 'Projeto de fã, sem afiliação com a Electronic Arts. Nenhum arquivo do jogo é distribuído; capturas são usadas apenas para documentar o progresso.',
     'footer.ai': 'Trabalho assistido por IA sob revisão humana.',
   },
   en: {
@@ -76,7 +76,7 @@ export const ui = {
     'gallery.title': 'Gallery',
     'gallery.intro': 'Resources extracted straight from the game by our tools — no emulator.',
     'about.title': 'About & Contribute',
-    'footer.disclaimer': 'Fan project, not affiliated with Electronic Arts. No game assets are distributed.',
+    'footer.disclaimer': 'Fan project, not affiliated with Electronic Arts. No game files are distributed; screenshots are shown only to document progress.',
     'footer.ai': 'AI-assisted work under human review.',
   },
 } as const;

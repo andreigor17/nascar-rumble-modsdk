@@ -17,4 +17,5 @@ make site-deploy
 ```
 
 O domínio continua sendo `https://rumble.irontech.dev.br`, preservado pelo arquivo `CNAME`.
-Nenhum CUE, BIN, executável do jogo ou outro asset proprietário entra na publicação.
+Nenhum CUE, BIN, executável ou recurso reutilizável do jogo entra na publicação. Capturas de tela
+podem ser publicadas apenas como evidência visual do progresso do port.
