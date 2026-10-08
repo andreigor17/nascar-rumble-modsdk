@@ -95,4 +95,5 @@ recompone/boot.log
 recompone/host/settings.json
 recompone/*.sav
 settings.json
+launcher.json
 interface.ini

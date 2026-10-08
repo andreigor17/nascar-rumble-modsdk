@@ -97,13 +97,26 @@ public static class NativeHooks
     private const double VBlankMs = 1000.0 / 60.0;
 
     /// <summary>
-    /// Race frame pacing. The console draws a race frame every two VBlanks (delta 10), and some
-    /// race logic advances per frame rather than per delta: at 60 fps the launch to 100 mph is
-    /// about 25% quicker. Keep the console cadence unless RUMBLE_RACE_FPS=60 is requested.
+    /// Race frame pacing. The console runs races at about 25-40 fps; 30 fps (delta 10) is the
+    /// default. At 60 fps AI lap times match the console, but the player's launch regains grip
+    /// earlier (notes/SESSION_011.md), so 60 is opt-in via the launcher or RUMBLE_RACE_FPS.
     /// </summary>
-    private static readonly double RaceFrameMs =
+    private static readonly int? RaceFpsFromEnvironment =
         int.TryParse(Environment.GetEnvironmentVariable("RUMBLE_RACE_FPS"), out int fps) && fps is > 0 and <= 60
-            ? 1000.0 / fps : 1000.0 / 30.0;
+            ? fps : null;
+
+    /// <summary>Race frame rate in effect; RUMBLE_RACE_FPS wins over the launcher's choice.</summary>
+    public static int RaceFpsSetting { get; private set; } = RaceFpsFromEnvironment ?? 30;
+
+    public static void SetRaceFrameRate(int fps)
+    {
+        if (RaceFpsFromEnvironment == null && fps is > 0 and <= 60) RaceFpsSetting = fps;
+    }
+
+    private static double RaceFrameMs => 1000.0 / RaceFpsSetting;
+
+    /// <summary>True while the race loop drives the frame cadence (used by the debug HUD).</summary>
+    public static bool InRace => _raceTimingActive;
 
     private static readonly bool RaceLockstep =
         Environment.GetEnvironmentVariable("RUMBLE_RACE_LOCKSTEP") == "1";
@@ -238,7 +251,7 @@ public static class NativeHooks
         Console.Error.WriteLine($"[host] RAM dumped to {path}");
     }
 
-    private static readonly bool LapLog = Environment.GetEnvironmentVariable("RUMBLE_LAP_LOG") == "1";
+    public static bool LapLogEnabled { get; set; } = Environment.GetEnvironmentVariable("RUMBLE_LAP_LOG") == "1";
 
     [ThreadStatic]
     private static Dictionary<uint, (int Major, int Finish)>? _raceProgress;
@@ -250,7 +263,7 @@ public static class NativeHooks
     /// </summary>
     private static void LogRaceProgress(CpuContext c, IMemory m)
     {
-        if (!LapLog) return;
+        if (!LapLogEnabled) return;
         _raceProgress ??= new();
         uint count = m.ReadU32(c.GP + 0x6E8u);
         uint raw = m.ReadU32(c.GP + 0x654u);

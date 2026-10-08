@@ -81,7 +81,25 @@ class NativeBuildTests(unittest.TestCase):
         self.assertIn("SwapPendingFlag = 0x800AF720u", hooks)
         # Console cadence (30 fps) is the default; 60 fps changes the launch and is opt-in.
         self.assertIn('GetEnvironmentVariable("RUMBLE_RACE_FPS")', hooks)
-        self.assertIn("? 1000.0 / fps : 1000.0 / 30.0;", hooks)
+        self.assertIn("public static int RaceFpsSetting { get; private set; } = RaceFpsFromEnvironment ?? 30;", hooks)
+
+    def test_launcher_hooks_and_host(self):
+        # Generic RecompOne hooks the launcher relies on (docs/LAUNCHER.md).
+        text = (ROOT / "recompone" / "patches" / "recompone-macos.patch").read_text(
+            encoding="utf-8"
+        )
+        for hook in ("PreBoot?.Invoke();", "public static void PumpUi()",
+                     "Runtime.UiOverlay?.Invoke();", "CreateRgbaTexture",
+                     "Runtime.TopBarOverride ?? !ConfigManager.View.HideTopBar"):
+            self.assertIn(hook, text)
+        host = ROOT / "recompone" / "host"
+        program = (host / "Program.cs").read_text(encoding="utf-8")
+        self.assertIn('GetEnvironmentVariable("RUMBLE_LAUNCHER") == "0"', program)
+        self.assertIn("Runtime.PreBoot = NascarRumble.Host.Launcher.Run", program)
+        launcher = (host / "Launcher.cs").read_text(encoding="utf-8")
+        # Title art comes from the user's disc at run time; no game asset is versioned.
+        self.assertIn('ReadFile("CW/FEND/FELD.LSC")', launcher)
+        self.assertTrue((host / "LscImage.cs").is_file())
 
     def test_shadow_checker_is_opt_in(self):
         hooks = json.loads((ROOT / "recompone" / "nascar.json").read_text(encoding="utf-8"))

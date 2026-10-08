@@ -442,7 +442,7 @@ index fff4026..9a0489a 100644
          byte flags = Ram[(addr + 1) & (RamSize - 1)];
  
 diff --git a/RecompOne.Runtime/Host/Window/HostWindow.cs b/RecompOne.Runtime/Host/Window/HostWindow.cs
-index 4a3da3d..8711dd0 100644
+index 4a3da3d..1e320c3 100644
 --- a/RecompOne.Runtime/Host/Window/HostWindow.cs
 +++ b/RecompOne.Runtime/Host/Window/HostWindow.cs
 @@ -42,6 +42,9 @@ internal static class HostWindow
@@ -468,7 +468,38 @@ index 4a3da3d..8711dd0 100644
              };
              _window = Silk.NET.Windowing.Window.Create(options);
              _window.Load += OnLoad;
-@@ -114,6 +121,14 @@ internal static class HostWindow
+@@ -89,6 +96,30 @@ internal static class HostWindow
+         _window.DoRender();
+     }
+ 
++    internal static void PumpUi()
++    {
++        if (_headless || _window == null) return;
++        try { _window.DoEvents(); } catch { }
++        if (_window.IsClosing) { Runtime.Shutdown(); Environment.Exit(0); }
++        InputManager.Poll();
++        _window.DoRender();
++    }
++
++    internal static (int Width, int Height) FramebufferSize =>
++        _window == null ? (0, 0) : (_window.FramebufferSize.X, _window.FramebufferSize.Y);
++
++    internal static nint CreateRgbaTexture(byte[] rgba, int width, int height)
++    {
++        if (_gl == null) return 0;
++        uint tex = CreateTexture(_gl);
++        _gl.BindTexture(TextureTarget.Texture2D, tex);
++        _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)GLEnum.Linear);
++        _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)GLEnum.Linear);
++        _gl.TexImage2D<byte>(TextureTarget.Texture2D, 0, InternalFormat.Rgba, (uint)width, (uint)height, 0,
++            PixelFormat.Rgba, PixelType.UnsignedByte, rgba);
++        return (nint)tex;
++    }
++
+     internal static void Pump()
+     {
+         if (_headless || _window == null) return;
+@@ -114,6 +145,14 @@ internal static class HostWindow
  
      public static void RequestDiscPath() => _discPicker?.Show();
  
@@ -483,6 +514,37 @@ index 4a3da3d..8711dd0 100644
      public static void WaitForValidDisc() // wait for disc path to be valid before running it!!
      {
          if (_headless || _window == null) return;
+@@ -198,6 +237,13 @@ internal static class HostWindow
+ 
+         if (Config.ConfigManager.ApplyImGuiLayout())
+             _layoutPending = false;
++
++        if (Runtime.UiFontRequests.Count > 0)
++        {
++            io.Fonts.AddFontDefault();
++            foreach (var (path, size) in Runtime.UiFontRequests)
++                Runtime.UiFonts.Add(File.Exists(path) ? io.Fonts.AddFontFromFileTTF(path, size) : null);
++        }
+     }
+ 
+     static void OnRender(double dt)
+@@ -247,7 +293,7 @@ internal static class HostWindow
+             if (_ramReady) FlushRamTexture(gl);
+         }
+ 
+-        if (!ConfigManager.View.HideTopBar)
++        if (Runtime.TopBarOverride ?? !ConfigManager.View.HideTopBar)
+             MainMenuBar.Draw();
+ 
+         DrawDockspace();
+@@ -256,6 +302,7 @@ internal static class HostWindow
+         Modding.ModLoadingPopup.Draw();
+         NoticePopup.Draw();
+         if (StartupNotice.NeedsAck) StartupNotice.Draw();
++        Runtime.UiOverlay?.Invoke();
+         gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+         gl.Viewport(0, 0, (uint)fbDef.X, (uint)fbDef.Y);
+         _imgui.Render();
 diff --git a/RecompOne.Runtime/Host/Window/Panels/Configuration/DiscPickerPopup.cs b/RecompOne.Runtime/Host/Window/Panels/Configuration/DiscPickerPopup.cs
 index 4223d9c..914b819 100644
 --- a/RecompOne.Runtime/Host/Window/Panels/Configuration/DiscPickerPopup.cs
@@ -583,10 +645,10 @@ index c1476f7..a023923 100644
  
      private uint Hw32(uint phys)
 diff --git a/RecompOne.Runtime/Runtime.cs b/RecompOne.Runtime/Runtime.cs
-index bcefd60..6d5f5ff 100644
+index bcefd60..0dc1bf6 100644
 --- a/RecompOne.Runtime/Runtime.cs
 +++ b/RecompOne.Runtime/Runtime.cs
-@@ -39,7 +39,15 @@ public static class Runtime
+@@ -39,7 +39,39 @@ public static class Runtime
          }
      }
  
@@ -594,16 +656,40 @@ index bcefd60..6d5f5ff 100644
 +    public static void WaitForValidDisc(string? cuePath = null)
 +    {
 +        if (!string.IsNullOrWhiteSpace(cuePath) && File.Exists(cuePath))
-+        {
 +            HostWindow.UseDiscPath(cuePath);
-+            return;
-+        }
-+        HostWindow.WaitForValidDisc();
++        else
++            HostWindow.WaitForValidDisc();
++        PreBoot?.Invoke();
 +    }
++
++    /// <summary>Runs once the disc is valid and before the game boots (e.g. a launcher screen).</summary>
++    public static Action? PreBoot { get; set; }
++
++    /// <summary>Drawn with ImGui on top of everything every frame, before and during the game.</summary>
++    public static Action? UiOverlay { get; set; }
++
++    /// <summary>Extra fonts (path, pixel size) loaded when ImGui starts; see <see cref="UiFonts"/>.</summary>
++    public static List<(string Path, float Size)> UiFontRequests { get; } = new();
++
++    /// <summary>Fonts loaded from <see cref="UiFontRequests"/>, in the same order (null if missing).</summary>
++    public static List<ImGuiNET.ImFontPtr?> UiFonts { get; } = new();
++
++    /// <summary>Processes window events, input and one UI frame without advancing the game.</summary>
++    public static void PumpUi() => HostWindow.PumpUi();
++
++    /// <summary>Uploads an RGBA image and returns a texture id usable with ImGui draw lists.</summary>
++    public static nint CreateUiTexture(byte[] rgba, int width, int height) =>
++        HostWindow.CreateRgbaTexture(rgba, width, height);
++
++    /// <summary>Shows or hides the top menu bar for this session without changing the saved setting.</summary>
++    public static bool? TopBarOverride { get; set; }
++
++    /// <summary>Framebuffer size of the main window, in pixels.</summary>
++    public static (int Width, int Height) WindowPixelSize => HostWindow.FramebufferSize;
      
      public static void ShowNotice(string message) => Host.Window.NoticePopup.Show(message);
      public static void SetStartupNotice(string message, string title = "Notice", string ackKey = "StartupNoticeAck") => Host.Window.StartupNotice.Set(message, title, ackKey);
-@@ -56,10 +64,22 @@ public static class Runtime
+@@ -56,10 +88,22 @@ public static class Runtime
          Audio.Attach(Spu);
          FrameClock.Throttle();
          Sdk.LibCd.Tick();
