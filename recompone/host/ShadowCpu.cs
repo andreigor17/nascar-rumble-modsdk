@@ -115,7 +115,7 @@ public static class ShadowCpu
         .Where(f => !f.IsLiteral && f.Name != "Unr")
         .ToArray();
 
-    private static object?[] SnapshotGte()
+    internal static object?[] SnapshotGte()
     {
         var snap = new object?[GteFields.Length];
         for (int i = 0; i < GteFields.Length; i++)
@@ -126,7 +126,7 @@ public static class ShadowCpu
         return snap;
     }
 
-    private static void RestoreGte(object?[] snap)
+    internal static void RestoreGte(object?[] snap)
     {
         for (int i = 0; i < GteFields.Length; i++)
         {

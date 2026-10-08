@@ -106,6 +106,12 @@
    "function": "FUN_80056c6c",
    "target": "NascarRumble.Host.NativeHooks.ShadowPre80056c6c",
    "mode": "pre"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_80026d3c",
+   "target": "NascarRumble.Host.DtProbe.VehicleStepPre",
+   "mode": "pre"
   }
  ]
 }

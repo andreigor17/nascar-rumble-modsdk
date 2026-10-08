@@ -595,3 +595,62 @@ Por isso:
    10 ticks acumulados), mantendo a renderização a 60.
 3. Critério de aceite: curvas de mph×ticks a 60 iguais às de 30 (e às do PCSX-Redux), mais IA e
    tempos de volta equivalentes.
+
+## Continuação 4 (2026-10-08) — investigação dos 60 fps
+
+### Ferramentas novas (todas opt-in por variável de ambiente)
+
+| Variável | O que faz |
+|---|---|
+| `RUMBLE_RACE_FPS=60` | corrida a 60 fps (padrão continua 30) |
+| `RUMBLE_RACE_LOCKSTEP=1` | VBlanks fixos por quadro (30 fps ⇒ `delta=10` exato), corrida determinística |
+| `RUMBLE_NATIVE_TRACE=2` | trace por quadro agora inclui `mph=` |
+| `RUMBLE_CAR_DUMP=<arq>` | grava por quadro: u32 relógio, u32 delta, 0x500 B de `0x800B12C0[0]` (bloco físico) + 0x100 B da entidade |
+| `RUMBLE_DT_PROBE=1` | a cada 20 quadros roda `FUN_80026d3c` 1×dt10 e 2×dt5 sobre um snapshot (RAM+scratchpad+GTE+regs), restaura e lista os campos que divergem |
+| `RUMBLE_VEH_SUBSTEPS=2` | divide o passo de veículos `FUN_80026d3c` em 2 subpassos |
+| `RUMBLE_SUBSTEP_FN=80056c6c` | divide só a função indicada (dt em A0) — ver ressalva abaixo |
+
+Código em `recompone/host/DtProbe.cs` e `NativeHooks.cs` (hook pre em `FUN_80026d3c` no `nascar.json`).
+
+### Correção do diagnóstico anterior
+
+A comparação da Continuação 3 estava contaminada: (1) a 30 fps com relógio de parede o `delta`
+oscila 10/11/12 e a corrida **não é determinística** (0→100 em 460 ou 665 ticks em rodadas iguais);
+(2) segurando Z durante a contagem, a rotação de largada depende de quando o Z começou, e rotação
+alta no GO faz o pneu patinar (`+0x2B4` = 256→13). Método limpo: Time Trial, `LOCKSTEP=1`, Z só
+**depois** do GO, partindo parado (ambos os modos ficam determinísticos):
+
+| mph | 60 fps | 30 fps lockstep | 30 fps + `VEH_SUBSTEPS=2` |
+|---|---|---|---|
+| 60 | 245 | 240 | 240 |
+| 100 | 605 | 380 | 630 |
+| 120 | 865 | 670 | 870 |
+| 140 | 1520 | 910 | 1560 |
+
+A 60 fps o carro **recupera a aderência cedo** (~70 mph em vez de ~98), a rotação passa a vir da
+roda, bate no limitador e o câmbio sobe 1→3; a 30 fps segue patinando em 1ª (força máxima de
+tração) até ~98 mph. Dividir só o passo de veículos em 2×5 a 30 fps reproduz os 60 fps ⇒ **a
+diferença está toda dentro de `FUN_80026d3c`/`FUN_80030cac`** (não em entrada, câmera, render).
+
+### Estrutura física mapeada (bloco `0x800B12C0[i]`, `piVar26`)
+
+- `+0x15C` (`[0x57]`) velocidade longitudinal interna; `entity+0xCC` = |`+0x18C..0x194`|>>8 (mph).
+- `+0x3EC` rotação, `+0x3F0` variação da rotação no último quadro, `+0x3F4` marcha (−1 = ponto
+  morto), `+0x3E8` → tabela do câmbio (`+4` rotação máx. = 118<<8, `+6` marcha lenta = 16<<8,
+  `+0x18+2g` relação da marcha). Troca de marcha em `FUN_80056c6c` no máximo uma por quadro.
+- `+0x2B4` (`[0xAD]`) patinagem 0..256; `FUN_80052dbc(veh, …, dt)` = trem de força/tração.
+- `+0x400..0x40C` molas das 4 rodas, `+0x410..0x41C` amortecedores (Δcompressão·256/dt, correto).
+- `+0x2BC` (`[0xAF]`) carga traseira do **quadro anterior**: `média = (atual + anterior) >> 1`
+  ⇒ filtro por quadro (suspeito).
+- `+0x31C` cronômetro da volta (+= delta global).
+- Forças de entrada são acumuladas antes da física e consumidas por ela; por isso
+  `RUMBLE_SUBSTEP_FN=80056c6c` sozinho não é um experimento válido.
+
+### Próximos passos
+
+1. Medir a referência no PCSX-Redux (mesmo teste: Time Trial, Gold Rush, Mark Martin, Z após o
+   GO) para saber se o original fica perto de 380 ticks (lockstep 30) — critério de aceite.
+2. Bissecção dentro de `FUN_80030cac` respeitando os acumuladores: sondar a carga das rodas e a
+   transição de patinagem (`[0xAD]`) em 1×10 vs 2×5; testar a hipótese do filtro `[0xAF]`.
+3. Corrigir os termos sensíveis ao passo com hooks (ou, se for erro de integração da suspensão,
+   avaliar subpassos fixos de dt=10 acumulados para a física com render a 60).

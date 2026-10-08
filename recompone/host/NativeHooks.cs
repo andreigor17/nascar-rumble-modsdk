@@ -105,6 +105,9 @@ public static class NativeHooks
         int.TryParse(Environment.GetEnvironmentVariable("RUMBLE_RACE_FPS"), out int fps) && fps is > 0 and <= 60
             ? 1000.0 / fps : 1000.0 / 30.0;
 
+    private static readonly bool RaceLockstep =
+        Environment.GetEnvironmentVariable("RUMBLE_RACE_LOCKSTEP") == "1";
+
     [ThreadStatic]
     private static System.Diagnostics.Stopwatch? _raceClock;
 
@@ -124,6 +127,14 @@ public static class NativeHooks
         _raceClock ??= System.Diagnostics.Stopwatch.StartNew();
         while (RaceFrameMs > VBlankMs && _raceClock.Elapsed.TotalMilliseconds < RaceFrameMs)
             Thread.Sleep(1);
+        if (RaceLockstep)
+        {
+            // Fixed VBlanks per frame regardless of host timing, for reproducible comparisons.
+            _raceClock.Restart();
+            for (int i = (int)Math.Round(RaceFrameMs / VBlankMs) - 1; i > 0; i--)
+                RecompOne.Runtime.Runtime.DispatchIrq(0);
+            return;
+        }
         _raceVBlankDebtMs += _raceClock.Elapsed.TotalMilliseconds - VBlankMs;
         _raceClock.Restart();
         int extra = Math.Clamp((int)(_raceVBlankDebtMs / VBlankMs), 0, 4);
@@ -227,11 +238,40 @@ public static class NativeHooks
         Console.Error.WriteLine($"[host] RAM dumped to {path}");
     }
 
+    [ThreadStatic]
+    private static FileStream? _carDump;
+
+    /// <summary>
+    /// RUMBLE_CAR_DUMP=&lt;file&gt; appends, after each vehicle pass, the race clock, the smoothed
+    /// delta, the first vehicle's simulation block (0x800B12C0[0]) and its entity:
+    /// u32 raw, u32 delta, 0x500 + 0x100 bytes.
+    /// </summary>
+    private static void DumpPlayerCar(CpuContext c, IMemory m)
+    {
+        string? path = Environment.GetEnvironmentVariable("RUMBLE_CAR_DUMP");
+        if (string.IsNullOrEmpty(path) || m is not PSMemory psm) return;
+        static bool Ram(uint a) => a is >= 0x80010000u and < 0x801FF000u;
+        uint vehicle = m.ReadU32(0x800B12C0u);
+        if (!Ram(vehicle)) return;
+        uint entity = m.ReadU32(vehicle);
+        if (!Ram(entity)) return;
+        _carDump ??= File.Create(path);
+        Span<byte> header = stackalloc byte[8];
+        BitConverter.TryWriteBytes(header, m.ReadU32(c.GP + 0x654u));
+        BitConverter.TryWriteBytes(header[4..], m.ReadU32(c.GP + 0x5FCu));
+        _carDump.Write(header);
+        _carDump.Write(psm.Ram.Slice((int)(vehicle & 0x1FFFFFu), 0x500));
+        _carDump.Write(psm.Ram.Slice((int)(entity & 0x1FFFFFu), 0x100));
+        _carDump.Flush();
+    }
+
     /// <summary>Trace the first vehicle immediately after the main vehicle simulation pass.</summary>
     public static void VehicleStateTrace(CpuContext c, IMemory m)
     {
+        if (DtProbe.Running) return;
         ShadowCpu.Post(0x80056C6Cu, c, m);
         DumpRamOnce(m);
+        DumpPlayerCar(c, m);
         if (Environment.GetEnvironmentVariable("RUMBLE_NATIVE_TRACE") != "1") return;
         uint traceFrame = ++_vehicleTraceCounter;
         if (traceFrame > 20u && traceFrame % 60u != 0u) return;
@@ -275,7 +315,11 @@ public static class NativeHooks
     // Differential checks of recompiled terrain/physics code against the original MIPS code.
     public static void ShadowPre80064acc(CpuContext c, IMemory m) => ShadowCpu.Pre(0x80064ACCu, c, m);
     public static void ShadowPost80064acc(CpuContext c, IMemory m) => ShadowCpu.Post(0x80064ACCu, c, m);
-    public static void ShadowPre80056c6c(CpuContext c, IMemory m) => ShadowCpu.Pre(0x80056C6Cu, c, m);
+    public static void ShadowPre80056c6c(CpuContext c, IMemory m)
+    {
+        DtProbe.SubstepPre(0x80056C6Cu, c, m, Recompiled.NASCAR_Rumble__USA_.FUN_80056c6c);
+        ShadowCpu.Pre(0x80056C6Cu, c, m);
+    }
 
     /// <summary>Ground-height query FUN_80065488(hint, pos, mode): records inputs for tracing.</summary>
     public static void ShadowPre80065488(CpuContext c, IMemory m)
