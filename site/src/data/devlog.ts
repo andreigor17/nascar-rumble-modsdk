@@ -12,6 +12,37 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-015-demo-estavel',
+    date: '2026-10-08',
+    session: '015',
+    tag: 'Port nativo',
+    image: '/gallery/native-main-menu.png',
+    pt: {
+      title: 'Intro, menu e demo estável: os carros agora correm no chão',
+      summary:
+        'O port nativo reproduz a intro inteira, chega ao menu, aceita o controle e roda a demo de corrida com os carros apoiados na pista, no ritmo do tempo real.',
+      points: [
+        'A intro completa toca com áudio, pode ser pulada como no PS1 e leva ao carregamento e ao menu principal, que já responde ao teclado.',
+        'Os carros flutuavam e eram lançados ao céu. Um verificador diferencial executa o código MIPS original ao lado do código traduzido e provou que a tradução estava certa; o defeito era no comando OP da GTE do runtime, que reaproveitava um registrador já sobrescrito e corrompia a altura do terreno.',
+        'Com a GTE corrigida, os seis carros nascem no grid na mesma altura e percorrem a pista sem decolar.',
+        'A corrida passou de ~12 para ~33 quadros por segundo ao eliminar uma espera da GPU a cada lote de desenho no macOS, e o relógio da corrida agora segue o tempo real, como no console.',
+        'Próximo marco: validar a IA, jogar uma corrida manual completa e conferir HUD, áudio e retorno ao menu.',
+      ],
+    },
+    en: {
+      title: 'Intro, menu, and a stable demo: cars now race on the ground',
+      summary:
+        'The native port plays the full intro, reaches the menu, accepts input, and runs the race demo with cars resting on the track at real-time speed.',
+      points: [
+        'The full intro plays with audio, can be skipped as on the PS1, and leads to the loading screen and the main menu, which responds to the keyboard.',
+        'Cars used to float and get launched into the sky. A differential checker runs the original MIPS code next to the translated code and proved the translation correct; the bug was in the runtime GTE OP command, which reused an already-overwritten register and corrupted terrain height.',
+        'With the GTE fixed, all six cars spawn on the grid at the same height and drive the track without taking off.',
+        'Race rendering went from ~12 to ~33 frames per second by removing a per-batch GPU wait on macOS, and the race clock now follows real time, as on the console.',
+        'Next milestone: validate the AI, play a complete manual race, and check the HUD, audio, and return to the menu.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-014-primeiro-quadro-nativo',
     date: '2026-10-07',
     session: '014',

@@ -1,6 +1,9 @@
 export type Shot = { src: string; pt: string; en: string };
 
 export const GALLERY: Shot[] = [
+  { src: '/gallery/native-main-menu.png',
+    pt: 'Menu principal original rodando no port nativo macOS ARM, depois da intro e do carregamento.',
+    en: 'The original main menu running in the native macOS ARM port, after the intro and loading screen.' },
   { src: '/gallery/native-ea-first-frame.png',
     pt: 'Primeiro quadro confirmado no port nativo macOS ARM: o vídeo INTRO.WVE exibindo o logo da EA na janela OpenGL.',
     en: 'First confirmed frame in the native macOS ARM port: INTRO.WVE showing the EA logo in the OpenGL window.' },
