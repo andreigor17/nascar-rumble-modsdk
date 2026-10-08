@@ -51,6 +51,7 @@ public static class NativeHooks
     {
         if (!_raceTimingActive)
         {
+            HostOverlay.CountGameFrame();
             RecompOne.Runtime.Runtime.PresentFrame();
             return;
         }
@@ -195,6 +196,7 @@ public static class NativeHooks
     /// </summary>
     public static void RaceTimingEnter(CpuContext c, IMemory m)
     {
+        HostOverlay.CountGameFrame();
         if (!_raceTimingActive)
         {
             _raceClock = System.Diagnostics.Stopwatch.StartNew();
@@ -290,6 +292,44 @@ public static class NativeHooks
         }
     }
 
+    private static readonly bool QuickFinish =
+        Environment.GetEnvironmentVariable("RUMBLE_QUICK_FINISH") == "1";
+
+    [ThreadStatic]
+    private static uint _quickFinishCar;
+
+    /// <summary>
+    /// RUMBLE_QUICK_FINISH=1 (test aid): five seconds into a race, puts the human car on its last
+    /// lap (+0x328 = race laps - 1, race laps at *(0x800AF744)+0x14) with the lap distance
+    /// accumulator (+0x324) full, so the game's own lap check (FUN_8003014c) completes the race
+    /// as soon as the car moves forward. Lets automated runs reach the results and championship
+    /// standings without driving every lap.
+    /// </summary>
+    private static void QuickFinishRace(CpuContext c, IMemory m)
+    {
+        if (!QuickFinish) return;
+        if (m.ReadU32(c.GP + 0x654u) < 1500u)
+        {
+            _quickFinishCar = 0;
+            return;
+        }
+        uint race = m.ReadU32(0x800AF744u);
+        if (race is < 0x80010000u or >= 0x801FF000u) return;
+        int laps = unchecked((int)m.ReadU32(race + 0x14u));
+        uint count = m.ReadU32(c.GP + 0x6E8u);
+        for (uint i = 0; i < count && i < 8; i++)
+        {
+            uint vehicle = m.ReadU32(0x800B12C0u + i * 4u);
+            if (vehicle is < 0x80010000u or >= 0x801FF000u || vehicle == _quickFinishCar) continue;
+            uint entity = m.ReadU32(vehicle);
+            if (entity is < 0x80010000u or >= 0x801FF000u || m.ReadU8(entity + 0x22u) != 0x01) continue;
+            m.WriteU32(vehicle + 0x328u, (uint)Math.Max(0, laps - 1));
+            m.WriteU32(vehicle + 0x324u, 0x10000u);
+            _quickFinishCar = vehicle;
+            Console.Error.WriteLine($"[host] quick finish: car={vehicle:x8} laps={laps}");
+        }
+    }
+
     [ThreadStatic]
     private static FileStream? _carDump;
 
@@ -323,6 +363,7 @@ public static class NativeHooks
         if (DtProbe.Running) return;
         ShadowCpu.Post(0x80056C6Cu, c, m);
         DumpRamOnce(m);
+        QuickFinishRace(c, m);
         LogRaceProgress(c, m);
         DumpPlayerCar(c, m);
         if (Environment.GetEnvironmentVariable("RUMBLE_NATIVE_TRACE") != "1") return;

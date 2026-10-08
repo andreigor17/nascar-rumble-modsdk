@@ -714,3 +714,33 @@ Roteiros usados (scratchpad, não versionados): navegação por `CGEvent` ao PID
 de ≥2 s após cada troca de tela (teclas se perdem logo após transições); no PCSX, listeners
 Lua só podem ser criados — remover um listener derrubou o emulador; código Lua inline com `+`
 quebra (o bootstrap troca `+` por espaço) → usar `dofile`.
+
+## Continuação 5 (2026-10-08) — modos de jogo, campeonato completo e contador de FPS
+
+Validado no nativo (macOS ARM, 30 fps, entrada por `CGEvent` + `screencapture -l`):
+
+| Modo | Resultado |
+|---|---|
+| Single Race | completo (já validado nas continuações anteriores) |
+| Championship | **completo**: nome do piloto → copa Gold Rush (Copper Canyon, Golden Rule, Silver Falls) → resultados, recordes e classificação geral com pontos a cada etapa (grid da etapa seguinte invertido pela classificação) → "Fast Track" → desbloqueios (classe Pro; regiões Bad Lands e Mardi Gras; pistas bônus Road to Ruin e Circus Maximus; "Legend of this Locale") → menu principal com **Racing Class Pro selecionável** |
+| Showdown | completo (carro → oponente → pista → resultados → Exit Race) |
+| Time Trial | completo (continuação 4) |
+| Race Options / Game Options / Showcase (vídeo Credits) | funcionam |
+| Memory card (salvar após a corrida) | **trava** em "Checking..." na tela Load/Save/Exit; nenhuma tecla responde; `carda.sav/cardb.sav` não mudam. Pilha: `main → FUN_80029be4 → FUN_8002865c → FUN_80028634 → FUN_8001a24c` (laço da tela rodando, status do cartão nunca sai de "checking") |
+| 2 Players | jogo pede "Controllers are needed in both Controller ports"; host não expõe a porta 2 sem mapeamento (`Keys2` vazio) |
+
+Observações: Race Options › Laps não vale para o campeonato (sempre 4 voltas na Rookie). O padrão
+do diálogo "save current game status?" é **No**. Desbloqueios ficam só na memória da sessão até o
+memory card funcionar.
+
+Ferramentas novas: `RUMBLE_QUICK_FINISH=1` e o contador de FPS (`RUMBLE_SHOW_FPS=1` / item Show
+FPS no lançador) — detalhes em `docs/LAUNCHER.md`.
+
+### Precisa da ISO?
+
+Sim. `Recompiled/Entry.Run` abre o `.cue`, carrega o `SLUS_010.68` do disco na RAM (o código foi
+recompilado, mas `.rodata/.data`, tabelas e textos vêm do EXE) e todo recurso (GLBLDATA, `.TRK`,
+`.LSC`, `.WVE`, XA/áudio) é lido do disco via `CdController`. O build também depende do EXE (o
+recompilador o consome) e o C# gerado (`recompone/Recompiled/main.cs`) é derivado dele, por isso
+fica fora do Git. Classificação honesta: port nativo por recompilação estática ("traga seu disco"),
+não source port independente.

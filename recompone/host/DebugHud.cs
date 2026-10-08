@@ -24,7 +24,7 @@ public static class DebugHud
             Clock.Restart();
         }
 
-        var lines = new List<string> { $"Host {_fps:0} fps   Race cap {NativeHooks.RaceFpsSetting} fps" };
+        var lines = new List<string> { $"Game {HostOverlay.GameFps:0} fps   Host {_fps:0} fps   Race cap {NativeHooks.RaceFpsSetting}" };
         if (RecompOne.Runtime.Runtime.Mem is { } m && NativeHooks.InRace)
         {
             static bool Ram(uint a) => a is >= 0x80010000u and < 0x801FF000u;
@@ -45,7 +45,7 @@ public static class DebugHud
         float scale = MathF.Max(1f, display.Y / 720f);
         float size = 15f * scale, pad = 8f * scale, lineHeight = size + 2f * scale;
         float width = 300f * scale;
-        var min = new Vector2(display.X - width - 12f * scale, 34f * scale);
+        var min = new Vector2(display.X - width - 12f * scale, (HostOverlay.ShowFps ? 70f : 34f) * scale);
         var max = min + new Vector2(width, pad * 2 + lines.Count * lineHeight);
         dl.AddRectFilled(min, max, 0xC0100808u, 5f * scale);
         dl.AddRect(min, max, 0xFFECBCC4u, 5f * scale, ImDrawFlags.None, 1.5f * scale);

@@ -18,11 +18,12 @@ public static class Launcher
     {
         public int Fps { get; set; } = 30;
         public bool Debug { get; set; }
+        public bool ShowFps { get; set; }
     }
 
-    private enum Item { Start, FrameRate, Debug, Quit }
+    private enum Item { Start, FrameRate, ShowFps, Debug, Quit }
 
-    private static readonly Item[] Items = [Item.Start, Item.FrameRate, Item.Debug, Item.Quit];
+    private static readonly Item[] Items = [Item.Start, Item.FrameRate, Item.ShowFps, Item.Debug, Item.Quit];
 
     private static Prefs _prefs = new();
     private static int _selected;
@@ -78,8 +79,11 @@ public static class Launcher
         NativeHooks.SetRaceFrameRate(prefs.Fps);
         RecompOne.Runtime.Runtime.TopBarOverride = prefs.Debug;
         NativeHooks.LapLogEnabled |= prefs.Debug;
-        if (prefs.Debug) RecompOne.Runtime.Runtime.UiOverlay = DebugHud.Draw;
-        Console.Error.WriteLine($"[launcher] race fps={prefs.Fps} debug={(prefs.Debug ? "on" : "off")}");
+        HostOverlay.ShowFps |= prefs.ShowFps;
+        HostOverlay.ShowDebugHud = prefs.Debug;
+        HostOverlay.Install();
+        Console.Error.WriteLine(
+            $"[launcher] race fps={prefs.Fps} show fps={(HostOverlay.ShowFps ? "on" : "off")} debug={(prefs.Debug ? "on" : "off")}");
     }
 
     private static void HandleInput()
@@ -94,6 +98,9 @@ public static class Launcher
         {
             case Item.FrameRate when change || confirm:
                 _prefs.Fps = _prefs.Fps == 60 ? 30 : 60;
+                break;
+            case Item.ShowFps when change || confirm:
+                _prefs.ShowFps = !_prefs.ShowFps;
                 break;
             case Item.Debug when change || confirm:
                 _prefs.Debug = !_prefs.Debug;
@@ -171,6 +178,9 @@ public static class Launcher
             Item.FrameRate => _prefs.Fps == 60
                 ? "60 fps races. Experimental: launch grip differs slightly."
                 : "30 fps races, the console's own cadence.",
+            Item.ShowFps => _prefs.ShowFps
+                ? "Frame counter in the top-right corner of the game."
+                : "No frame counter on screen.",
             Item.Debug => _prefs.Debug
                 ? "Shows the Debug menu bar, race HUD and lap log."
                 : "Clean screen, no debug tools.",
@@ -179,21 +189,23 @@ public static class Launcher
         DrawHintBox(dl, hintFont, hintSize, hint, P(214, 86), P(312, 122));
 
         // Menu box.
-        var boxMin = P(84, 128);
-        var boxMax = P(236, 128 + Items.Length * 19f + 8f);
+        const float top = 122f, rowH = 18f;
+        var boxMin = P(84, top);
+        var boxMax = P(236, top + Items.Length * rowH + 8f);
         dl.AddRectFilled(boxMin, boxMax, BoxFill, 6f * unit);
         dl.AddRect(boxMin, boxMax, Lavender, 6f * unit, ImDrawFlags.None, 1.6f * unit);
 
         for (int i = 0; i < Items.Length; i++)
         {
-            var rowMin = P(88, 132 + i * 19f);
-            var rowMax = P(232, 132 + i * 19f + 18f);
+            var rowMin = P(88, top + 4f + i * rowH);
+            var rowMax = P(232, top + 4f + i * rowH + rowH - 1f);
             bool selected = i == _selected;
             if (selected) dl.AddRectFilled(rowMin, rowMax, SelectedFill, 2f * unit);
             string label = Items[i] switch
             {
                 Item.Start => "Start Game",
                 Item.FrameRate => "Frame Rate",
+                Item.ShowFps => "Show FPS",
                 Item.Debug => "Debug Mode",
                 _ => "Quit",
             };
@@ -204,13 +216,14 @@ public static class Launcher
             string? value = Items[i] switch
             {
                 Item.FrameRate => _prefs.Fps == 60 ? "60 FPS" : "30 FPS",
+                Item.ShowFps => _prefs.ShowFps ? "On" : "Off",
                 Item.Debug => _prefs.Debug ? "On" : "Off",
                 _ => null,
             };
             if (value == null) continue;
-            DrawArrows(dl, P(200, 132 + i * 19f + 9f), unit, selected);
-            var valueMin = P(244, 132 + i * 19f + 1f);
-            var valueMax = P(304, 132 + i * 19f + 17f);
+            DrawArrows(dl, P(200, top + 4f + i * rowH + 9f), unit, selected);
+            var valueMin = P(244, top + 4f + i * rowH + 1f);
+            var valueMax = P(304, top + 4f + i * rowH + 17f);
             dl.AddRectFilled(valueMin, valueMax, ValueFill, 1.5f * unit);
             dl.AddRect(valueMin, valueMax, Rgba(150, 150, 160), 1.5f * unit, ImDrawFlags.None, 1.2f * unit);
             dl.AddText(itemFont, itemSize * 0.9f, valueMin + new Vector2(5f * unit, 0.5f * unit), selected ? Yellow : White, value);

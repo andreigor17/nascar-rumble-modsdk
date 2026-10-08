@@ -54,6 +54,7 @@ nosso host: traces `RUMBLE_*` (`NATIVE_TRACE`, `LAP_LOG`, `CAR_DUMP`, `DT_PROBE`
 |---|---|---|
 | Start Game | — | inicia o boot com as opções escolhidas |
 | Frame Rate | `30` (padrão) / `60` | ritmo da corrida (`NativeHooks.RaceFrameMs`); 60 marcado como experimental |
+| Show FPS | `Off` (padrão) / `On` | contador de quadros do jogo no canto superior direito da imagem 4:3 |
 | Debug Mode | `Off` / `On` | tabela acima |
 | Quit | — | fecha |
 
@@ -97,3 +98,25 @@ V1 implementada e validada:
 - Patch do RecompOne: `Runtime.PreBoot`, `PumpUi`, `UiOverlay`, `UiFontRequests/UiFonts`,
   `CreateUiTexture`, `TopBarOverride`, `WindowPixelSize`.
 - Fonte: Arial Narrow Bold (sistema macOS); a fonte original (`Cfnt`) fica para a V2.
+
+## Show FPS (2026-10-08)
+
+Item novo no lançador (`launcher.json` → `ShowFps`; também `RUMBLE_SHOW_FPS=1`). Desenhado por
+`recompone/host/HostOverlay.cs` no canto superior direito da imagem 4:3 do jogo, no estilo das
+caixas de dica (borda lilás), com ponto verde (≥50), amarelo (≥25) ou vermelho.
+
+O que é contado é **quadro do jogo**, não quadro do host: na corrida, uma iteração do laço de
+corrida (`FUN_800269c0`, gancho `RaceTimingEnter`); fora dela, cada troca de buffer pedida pelo
+jogo (`FUN_8001a24c`, gancho `FrameSubmitted`). Na corrida `FUN_8001a24c` é chamada várias vezes
+por quadro (uma por lista de desenho), por isso não serve de contador ali — dava ~200 "fps".
+Conferido: menus a 60, corrida a 30 com `Frame Rate 30`. Com debug ligado, o HUD de debug desce
+para não sobrepor o contador e mostra `Game N fps` ao lado do fps do host.
+
+## Atalho de teste: RUMBLE_QUICK_FINISH=1
+
+Para validar campeonato/resultados sem pilotar todas as voltas: 5 s após a largada o host põe o
+carro humano na última volta (`+0x328 = voltas - 1`, voltas em `*(0x800AF744)+0x14`) com o
+acumulador de distância da volta (`+0x324`) cheio; a checagem original de volta (`FUN_8003014c`)
+fecha a prova assim que o carro anda para frente (segurar ✕ uns segundos). Trocar `+0x22` do
+jogador de `0x01` para `0x11` **não** faz a IA pilotar (o carro fica parado) — a IA precisa de
+estado próprio criado no spawn. Os tempos do jogador ficam irreais e entram nos recordes da sessão.
