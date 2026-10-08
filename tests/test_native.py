@@ -66,6 +66,23 @@ class NativeBuildTests(unittest.TestCase):
         self.assertIn("long ir1 = IR1, ir2 = IR2, ir3 = IR3;", text)
         self.assertIn("(long)RT[8] * ir1 - (long)RT[0] * ir3", text)
 
+    def test_vertex_upload_does_not_stall_the_macos_driver(self):
+        # Updating the VBO in place forced a GL-on-Metal flush per batch (~60% of a race frame).
+        text = (ROOT / "recompone" / "patches" / "recompone-macos.patch").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("-        _gl.BufferSubData<GlVertex>(BufferTargetARB.ArrayBuffer, 0", text)
+        self.assertIn("BufferUsageARB.StreamDraw);", text)
+
+    def test_race_exit_and_frame_pacing(self):
+        hooks = (ROOT / "recompone" / "host" / "NativeHooks.cs").read_text(encoding="utf-8")
+        # Quit/restart/finish leave FUN_800299a8 spinning on the swap flag; it needs VBlanks.
+        self.assertIn("FinishRaceTiming(m);", hooks)
+        self.assertIn("SwapPendingFlag = 0x800AF720u", hooks)
+        # Console cadence (30 fps) is the default; 60 fps changes the launch and is opt-in.
+        self.assertIn('GetEnvironmentVariable("RUMBLE_RACE_FPS")', hooks)
+        self.assertIn("? 1000.0 / fps : 1000.0 / 30.0;", hooks)
+
     def test_shadow_checker_is_opt_in(self):
         hooks = json.loads((ROOT / "recompone" / "nascar.json").read_text(encoding="utf-8"))
         targets = {patch["target"] for patch in hooks["patches"]}

@@ -534,3 +534,64 @@ Para a demo: apertar Z **uma vez** durante a intro e não tocar mais em nada at�
 - Pendências para a próxima sessão: o mantenedor vai avaliar a IA na demo e jogar uma corrida
   manual; depois disso, corrida completa (voltas, resultado, frontend), HUD, áudio, power-ups e
   saves. Se o FPS ainda incomodar, perfilar de novo com `sample <pid> 5` e atacar o próximo gargalo.
+
+## Continuação 3 (2026-10-08) — travamento ao sair da corrida e 60 fps
+
+### "Crash" ao confirmar Quit Race = loop infinito
+
+Não era exceção: o processo ficava a 100% de CPU com a tela congelada em `Quit Race: NO/YES`.
+`dotnet-stack report -p <pid>` (instalado em `~/.dotnet/tools`, rodar com `DOTNET_ROOT=~/.dotnet`)
+apontou `FUN_800299a8` (laço da corrida). Ao sair do laço (estado `gp+0x600` ≠ 4/0xD), a função
+envia um último quadro (`FUN_8001a24c(4)`) e gira em `L80029BB4` esperando o byte
+`gp+0x63C` = `0x800AF720` zerar. Esse byte é o "swap pendente": `FUN_8001a24c` o liga e o callback
+de VBlank `FUN_8001dac0` o desliga depois do `DrawSync`. Na corrida o VBlank vem do hook
+`RaceTimingEnter`, que não é mais alcançado depois do Quit → nenhum VBlank, laço eterno.
+
+Correção em `NativeHooks.FrameSubmitted`: com a corrida ativa e estado fora de {4, 0xD},
+`FinishRaceTiming` desliga o modo corrida e entrega VBlanks até o flag zerar (guarda de 8).
+Validado ao vivo: Quit volta ao menu principal, Restart reinicia, Continue retoma, e uma nova
+corrida depois do Quit funciona. (Fim de corrida por bandeirada passa pelo mesmo caminho, mas
+ainda não foi jogado até o fim.)
+
+### Desempenho: `glBufferSubData` era ~62% da thread principal
+
+`sample` na corrida mostrou `glBufferSubData` → `flushContext`/`semaphore_wait`: no OpenGL sobre
+Metal da Apple, reescrever o VBO que o lote anterior ainda lê força um flush + espera **por lote**.
+`GlBackend.Flush` agora re-especifica o buffer (`BufferData(..., StreamDraw)`, "orphaning").
+Resultado: corrida de 32 → **60 fps** com CPU ~28% (patch canônico regenerado e verificado com
+`git archive` + `apply` + `diff -r`).
+
+Também corrigido `DeliverElapsedVBlanks`: o VBlank que o `PresentFrame` já entrega não era
+descontado da dívida, então a 60 fps o relógio corria a 374 ticks/s. Agora fica em 300–301.
+
+### 60 fps × dinâmica original
+
+O motor é de passo variável (`delta` = 5 × VBlanks desde o último quadro, teto 25). A 60 fps o
+jogo roda com `delta=5` fixo; o PS1 roda a ~25–30 fps (`delta` 9–12). Comparação no **Time Trial**
+(Mark Martin #6 Rookie, Gold Rush, Z segurado, eixo = ticks do relógio do jogo após o GO;
+`RUMBLE_NATIVE_TRACE=2` agora registra `mph=`):
+
+| ticks | 60 fps | 30 fps (a) | 30 fps (b) |
+|---|---|---|---|
+| 400 | 93 | 75 | 74 |
+| 600 | 106 | 96 | 94 |
+| 800 | 119 | 110 | 109 |
+| 1600 | 144 | 144 | 142 |
+| 2000 | 153 | 155 | 153 |
+
+0→100 mph: 495 ticks a 60 fps contra 660–665 a 30 fps; velocidade final igual (~160). As duas
+rodadas a 60 fps foram idênticas (determinístico). Conclusão: parte da lógica avança **por
+quadro** e não por `delta` (suspeita: troca de marcha/embreagem ou suavização do acelerador).
+Por isso:
+
+- **padrão = 30 fps** (cada quadro da corrida segura dois VBlanks, `delta=10`, como no console);
+- `RUMBLE_RACE_FPS=60` liga os 60 fps (experimental). Outros valores entre 1 e 60 também valem.
+
+### Próximos passos para os 60 fps "sem alterar a dinâmica"
+
+1. Achar as variáveis por quadro na física (`FUN_80056c6c` e chamadas): rastrear marcha/rpm/
+   acelerador por quadro a 30 e 60 fps e ver qual muda de ritmo. O shadow/trace já dá a base.
+2. Para cada uma, escalar pelo `delta` num hook (ou rodar a lógica "por quadro" só a cada
+   10 ticks acumulados), mantendo a renderização a 60.
+3. Critério de aceite: curvas de mph×ticks a 60 iguais às de 30 (e às do PCSX-Redux), mais IA e
+   tempos de volta equivalentes.

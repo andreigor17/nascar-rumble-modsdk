@@ -140,7 +140,7 @@ index 18deeb2..841e9de 100644
                  }
                  else if (_index == 1)
 diff --git a/RecompOne.Runtime/Gpu/Hle/Gl/GlBackend.cs b/RecompOne.Runtime/Gpu/Hle/Gl/GlBackend.cs
-index c3792b6..f4f9cf2 100644
+index c3792b6..9154f98 100644
 --- a/RecompOne.Runtime/Gpu/Hle/Gl/GlBackend.cs
 +++ b/RecompOne.Runtime/Gpu/Hle/Gl/GlBackend.cs
 @@ -36,6 +36,50 @@ public sealed class GlBackend : IGpuBackend
@@ -255,7 +255,19 @@ index c3792b6..f4f9cf2 100644
  
          _gl.Disable(EnableCap.DepthTest);
          _gl.Disable(EnableCap.CullFace);
-@@ -450,7 +504,7 @@ public sealed class GlBackend : IGpuBackend
+@@ -433,7 +487,10 @@ public sealed class GlBackend : IGpuBackend
+         _gl.Uniform4(_uBlendOpaque, 1f, 1f, 1f, 0f);
+ 
+         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
+-        _gl.BufferSubData<GlVertex>(BufferTargetARB.ArrayBuffer, 0, _verts.AsSpan(0, _count));
++        // Respecify instead of updating in place: rewriting a buffer the previous batch still reads
++        // makes Apple's GL-on-Metal driver flush and wait on every batch.
++        fixed (GlVertex* vp = _verts)
++            _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(_count * sizeof(GlVertex)), vp, BufferUsageARB.StreamDraw);
+ 
+         if (!_kTransparent)
+         {
+@@ -450,7 +507,7 @@ public sealed class GlBackend : IGpuBackend
                  SetBlend(0f, 1f);
                  _gl.DrawArrays(PrimitiveType.Triangles, 0, (uint)_count);
  
@@ -264,7 +276,7 @@ index c3792b6..f4f9cf2 100644
                  _gl.BlendEquationSeparate(BlendEquationModeEXT.FuncReverseSubtract, BlendEquationModeEXT.FuncAdd);
                  SetBlend(1f, 1f);
                  _gl.Uniform4(_uBlendOpaque, 0f, 0f, 0f, 1f);
-@@ -465,7 +519,9 @@ public sealed class GlBackend : IGpuBackend
+@@ -465,7 +522,9 @@ public sealed class GlBackend : IGpuBackend
          }
  
          _gl.Disable(EnableCap.ScissorTest);

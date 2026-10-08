@@ -55,6 +55,13 @@ public static class NativeHooks
             return;
         }
 
+        uint raceState = m.ReadU32(c.GP + 0x600u);
+        if (raceState != RaceStateRunning && raceState != RaceStatePaused)
+        {
+            FinishRaceTiming(m);
+            return;
+        }
+
         uint currentTick = m.ReadU32(c.GP + 0x654u);
         uint consumedTick = m.ReadU32(c.GP + 0x634u);
         if (unchecked((int)(currentTick - consumedTick)) < 1)
@@ -64,7 +71,39 @@ public static class NativeHooks
         }
     }
 
+    // Race loop FUN_800299a8 keeps iterating while the state at gp+0x600 is 4 (running) or 0xD
+    // (paused); any other value means the race is over (quit, restart or finish).
+    private const uint RaceStateRunning = 0x4u;
+    private const uint RaceStatePaused = 0xDu;
+
+    // Set by FUN_8001a24c when it queues a buffer swap; the VBlank callback FUN_8001dac0 clears
+    // it after DrawSync. Every frame wait in the game spins on this byte.
+    private const uint SwapPendingFlag = 0x800AF720u;
+
+    /// <summary>
+    /// After the race loop exits, FUN_800299a8 submits a last frame and then spins on the swap
+    /// flag with no further calls. During the race RaceTimingEnter supplies that VBlank, but it
+    /// is not reached again, so deliver VBlanks here until the swap completes and hand the
+    /// cadence back to the frontend.
+    /// </summary>
+    private static void FinishRaceTiming(IMemory m)
+    {
+        _raceTimingActive = false;
+        RecompOne.Runtime.Runtime.PresentFrame();
+        for (int guard = 0; guard < 8 && m.ReadU8(SwapPendingFlag) != 0; guard++)
+            RecompOne.Runtime.Runtime.PresentFrame();
+    }
+
     private const double VBlankMs = 1000.0 / 60.0;
+
+    /// <summary>
+    /// Race frame pacing. The console draws a race frame every two VBlanks (delta 10), and some
+    /// race logic advances per frame rather than per delta: at 60 fps the launch to 100 mph is
+    /// about 25% quicker. Keep the console cadence unless RUMBLE_RACE_FPS=60 is requested.
+    /// </summary>
+    private static readonly double RaceFrameMs =
+        int.TryParse(Environment.GetEnvironmentVariable("RUMBLE_RACE_FPS"), out int fps) && fps is > 0 and <= 60
+            ? 1000.0 / fps : 1000.0 / 30.0;
 
     [ThreadStatic]
     private static System.Diagnostics.Stopwatch? _raceClock;
@@ -77,17 +116,22 @@ public static class NativeHooks
     /// frame that spans two VBlanks advances the race clock by 10 instead of 5. PresentFrame
     /// delivers one VBlank; deliver the ones that elapsed in wall time beyond it, capped at the
     /// game's own delta limit (25 = five VBlanks), so slow host frames do not slow the race down.
+    /// The VBlank PresentFrame already delivered is charged against the debt, so a host running
+    /// at full speed does not get extra ones and the race clock stays at 300 ticks per second.
     /// </summary>
     private static void DeliverElapsedVBlanks()
     {
         _raceClock ??= System.Diagnostics.Stopwatch.StartNew();
-        _raceVBlankDebtMs += _raceClock.Elapsed.TotalMilliseconds;
+        while (RaceFrameMs > VBlankMs && _raceClock.Elapsed.TotalMilliseconds < RaceFrameMs)
+            Thread.Sleep(1);
+        _raceVBlankDebtMs += _raceClock.Elapsed.TotalMilliseconds - VBlankMs;
         _raceClock.Restart();
-        int due = (int)(_raceVBlankDebtMs / VBlankMs);
-        _raceVBlankDebtMs -= due * VBlankMs;
-        for (int extra = Math.Min(due, 5) - 1; extra > 0; extra--)
+        int extra = Math.Clamp((int)(_raceVBlankDebtMs / VBlankMs), 0, 4);
+        _raceVBlankDebtMs -= extra * VBlankMs;
+        for (int i = 0; i < extra; i++)
             RecompOne.Runtime.Runtime.DispatchIrq(0);
-        if (due > 5) _raceVBlankDebtMs = 0;
+        // Forget time that exceeds the game's delta cap, and do not bank credit from fast frames.
+        _raceVBlankDebtMs = Math.Clamp(_raceVBlankDebtMs, -VBlankMs, VBlankMs);
     }
 
     /// <summary>
@@ -159,7 +203,15 @@ public static class NativeHooks
             + $"delta={m.ReadU32(c.GP + 0x5FCu)} "
             + $"state={m.ReadU32(c.GP + 0x600u)} "
             + $"localPlayers={m.ReadU32(c.GP + 0x604u)} "
-            + $"vehicles={m.ReadU32(c.GP + 0x6E8u)}");
+            + $"vehicles={m.ReadU32(c.GP + 0x6E8u)} "
+            + $"mph={PlayerSpeed(m)}");
+    }
+
+    /// <summary>Displayed speed of the first human car: *(u16*)(*(0x800B6188) + 0xCC).</summary>
+    private static int PlayerSpeed(IMemory m)
+    {
+        uint car = m.ReadU32(0x800B6188u);
+        return car is >= 0x80010000u and < 0x80200000u ? m.ReadU16(car + 0xCCu) : -1;
     }
 
     [ThreadStatic]
