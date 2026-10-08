@@ -238,6 +238,45 @@ public static class NativeHooks
         Console.Error.WriteLine($"[host] RAM dumped to {path}");
     }
 
+    private static readonly bool LapLog = Environment.GetEnvironmentVariable("RUMBLE_LAP_LOG") == "1";
+
+    [ThreadStatic]
+    private static Dictionary<uint, (int Major, int Finish)>? _raceProgress;
+
+    /// <summary>
+    /// RUMBLE_LAP_LOG=1: logs every change of a vehicle's race progress. 0x800B12C0 is re-sorted
+    /// by position each frame (FUN_8002fc9c), so vehicles are keyed by their block address.
+    /// Sort keys: +0x330 finish time, +0x328 major progress, +0x324 minor progress.
+    /// </summary>
+    private static void LogRaceProgress(CpuContext c, IMemory m)
+    {
+        if (!LapLog) return;
+        _raceProgress ??= new();
+        uint count = m.ReadU32(c.GP + 0x6E8u);
+        uint raw = m.ReadU32(c.GP + 0x654u);
+        if (_raceProgress.Count == 0)
+        {
+            var grid = new byte[0x40];
+            for (uint i = 0; i < grid.Length; i++) grid[i] = m.ReadU8(0x800B0E40u + i);
+            Console.Error.WriteLine($"[lap] grid {Convert.ToHexString(grid)}");
+        }
+        for (uint i = 0; i < count && i < 8; i++)
+        {
+            uint vehicle = m.ReadU32(0x800B12C0u + i * 4u);
+            if (vehicle is < 0x80010000u or >= 0x801FF000u) continue;
+            int major = unchecked((int)m.ReadU32(vehicle + 0x328u));
+            int finish = unchecked((int)m.ReadU32(vehicle + 0x330u));
+            bool periodic = raw % 1500u < 5u;
+            if (!periodic && _raceProgress.TryGetValue(vehicle, out var last) && last == (major, finish)) continue;
+            _raceProgress[vehicle] = (major, finish);
+            uint entity = m.ReadU32(vehicle);
+            Console.Error.WriteLine(
+                $"[lap] raw={raw} car={vehicle:x8} type={m.ReadU8(entity + 0x22u):x2} "
+                + $"model={m.ReadU16(entity + 0x1Cu)} pos={m.ReadU8(vehicle + 0x31Au)} "
+                + $"major={major} minor={unchecked((int)m.ReadU32(vehicle + 0x324u))} finish={finish}");
+        }
+    }
+
     [ThreadStatic]
     private static FileStream? _carDump;
 
@@ -271,6 +310,7 @@ public static class NativeHooks
         if (DtProbe.Running) return;
         ShadowCpu.Post(0x80056C6Cu, c, m);
         DumpRamOnce(m);
+        LogRaceProgress(c, m);
         DumpPlayerCar(c, m);
         if (Environment.GetEnvironmentVariable("RUMBLE_NATIVE_TRACE") != "1") return;
         uint traceFrame = ++_vehicleTraceCounter;

@@ -684,3 +684,33 @@ Conclusões:
 Próximo critério de aceite proposto: tempos de volta da **IA** (dirige sozinha, mesma física) numa
 corrida avulsa completa a 60 fps vs 30 fps vs PCSX-Redux, mais tempo de volta do jogador com
 direção. Se ficarem dentro da variação do próprio PS1, os 60 fps podem virar opção oficial.
+
+### Tempos de volta da IA — duelo controlado (critério de jogo)
+
+Configuração idêntica no nativo e no PCSX-Redux (sugestão do mantenedor para tirar ruído de
+batidas e power-ups): Power-Ups **None**; 1 Player › Race Options: **Vehicles 2**, **Laps 2**,
+**Select Opponents Yes**; Single Race, Mark Martin #6 (parado no grid) contra **Steve Park #1** (IA),
+Gold Rush. Medição por `RUMBLE_LAP_LOG=1` (nativo) e gravador Lua (PCSX): `+0x328` = voltas
+completas, `+0x324` = segmento (~730 por volta), `+0x330` = tempo de chegada. Atenção: `0x800B12C0`
+é reordenado por posição a cada quadro (`FUN_8002fc9c`); `+0x31A` = posição e `+0x31C/+0x320` =
+tempo na posição atual/anterior (narração de ultrapassagem), **não** cronômetro de volta.
+
+| ticks (300/s) | 60 fps (a) | 60 fps (b) | 30 travado | 30 relógio | PS1 (PCSX, ~38 fps) |
+|---|---|---|---|---|---|
+| 1ª volta | 38 020 | 38 000 | 37 990 | 37 730 | 37 825 |
+| 2ª volta | 37 290 | 37 110 | 37 110 | 37 310 | 37 290 |
+| chegada | 74 405 | 74 205 | 74 190 | 74 130 | 74 215 |
+
+Tudo dentro de ±0,4%; a variação entre duas rodadas a 60 fps (200 ticks) é do mesmo tamanho que a
+diferença entre modos. **No nível da corrida da IA, os 60 fps não alteram o resultado.** No grid
+cheio com power-ups (amostra ruidosa) as faixas também coincidiram (2ª volta 36 900–40 650).
+
+Ressalva: o que muda a 60 fps é o comportamento do **carro do jogador** na arrancada/aderência
+(Continuação 4). A IA pode depender menos desses termos. Próximo passo: validar a sensação de
+direção com o mantenedor a 60 fps e, se preciso, gravar uma volta dele (entrada por quadro) para
+teste de regressão no mesmo FPS (corrida determinística).
+
+Roteiros usados (scratchpad, não versionados): navegação por `CGEvent` ao PID com pausas
+de ≥2 s após cada troca de tela (teclas se perdem logo após transições); no PCSX, listeners
+Lua só podem ser criados — remover um listener derrubou o emulador; código Lua inline com `+`
+quebra (o bootstrap troca `+` por espaço) → usar `dofile`.
