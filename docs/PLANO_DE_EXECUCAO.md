@@ -32,9 +32,10 @@
 - testes dos parsers e experimentos dinâmicos;
 - estrutura e convenções que permitam colaboração paralela.
 
-**Diagnóstico:** a base de *matching decomp* e o primeiro host nativo existem. O bloqueio mais
-próximo de algo visível é o fluxo assíncrono de CD após o primeiro `ReadN`. A prioridade passa a
-ser intro → menu → corrida original; a decompilação continua como apoio técnico ao port.
+**Diagnóstico atual:** a base de *matching decomp* e o host nativo existem; intro, carregamento,
+menu, input, demo e entrada em corrida já foram alcançados, com os veículos apoiados na pista
+depois da correção do comando GTE `OP`. O próximo gate é validar IA e uma corrida completa. A
+decompilação continua como apoio técnico ao port. Ver `notes/SESSION_011.md`.
 
 ## 2. O que os projetos de referência ensinam
 
@@ -194,11 +195,11 @@ corrida e save com comportamento original estável.
 
 ## 5. Sprint imediata
 
-1. Impedir exceções não tratadas e manter mods desligados no host padrão.
-2. Instrumentar estados, comandos, respostas e IRQs do CD em torno do primeiro `ReadN`.
-3. Corrigir o avanço assíncrono até o primeiro quadro da tela legal.
-4. Repetir o ciclo para logos/intro até chegar ao menu com input.
-5. Somente então atacar a primeira corrida e os subsistemas exigidos por ela.
+1. ✅ Altura do terreno: divergência localizada no comando GTE `OP` do runtime e corrigida.
+2. ✅ Desempenho da corrida: barreira de textura condicional no macOS e VBlanks em tempo real.
+3. Validar IA na demo e uma corrida manual (aceleração, direção, colisões, voltas).
+4. Completar uma corrida, validar HUD/áudio/power-ups/transições e retornar ao frontend.
+5. Medir de novo o FPS e atacar o próximo gargalo se a corrida ainda ficar abaixo de ~30 quadros/s.
 6. Preservar cada avanço no Git após gates locais; não usar GitHub Actions neste momento.
 
 ## 6. Indicadores corretos

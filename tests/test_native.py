@@ -50,7 +50,28 @@ class NativeBuildTests(unittest.TestCase):
         self.assertIn("HostWindow.UseDiscPath(cuePath)", text)
         self.assertIn("RUMBLE_ENABLE_MODS", text)
         self.assertIn("bool _deferredIrq", text)
+        self.assertIn("channel == 2 || _raisingIrq", text)
+        self.assertIn("int _irqPending", text)
+        self.assertIn("public bool ConsumeIrq()", text)
+        self.assertIn("public void TickSpuIrq()", text)
         self.assertIn("psMemory.TickDma()", text)
+        self.assertIn("public static void PumpSpu()", text)
+
+    def test_gte_outer_product_latches_ir_operands(self):
+        # OP (cop2 0x0C) must use the IR values from before the command. Without this the
+        # terrain height interpolation (FUN_80064998) returns garbage and cars float/fly.
+        text = (ROOT / "recompone" / "patches" / "recompone-macos.patch").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("long ir1 = IR1, ir2 = IR2, ir3 = IR3;", text)
+        self.assertIn("(long)RT[8] * ir1 - (long)RT[0] * ir3", text)
+
+    def test_shadow_checker_is_opt_in(self):
+        hooks = json.loads((ROOT / "recompone" / "nascar.json").read_text(encoding="utf-8"))
+        targets = {patch["target"] for patch in hooks["patches"]}
+        self.assertIn("NascarRumble.Host.NativeHooks.ShadowPre80064acc", targets)
+        shadow = (ROOT / "recompone" / "host" / "ShadowCpu.cs").read_text(encoding="utf-8")
+        self.assertIn('GetEnvironmentVariable("RUMBLE_SHADOW") == "1"', shadow)
 
     def test_native_host_handles_managed_failures(self):
         host = (ROOT / "recompone" / "host" / "Program.cs").read_text(
@@ -75,10 +96,41 @@ class NativeBuildTests(unittest.TestCase):
         self.assertEqual("memory_card_event_callback_8", functions["8001edd0"])
         self.assertEqual("vblank_tick_callback", functions["8001dcd4"])
         self.assertEqual("vblank_audio_callback", functions["80022308"])
+        self.assertEqual("audio_bank_read_callback", functions["800224f4"])
+        self.assertEqual("spu_stream_transfer_callback", functions["80020160"])
+        self.assertEqual("spu_upload_completion_callback", functions["80020658"])
+        self.assertEqual("spu_irq_callback", functions["80021f9c"])
+        self.assertEqual("spu_stream_buffer_callback", functions["800221f8"])
+        self.assertEqual("audio_upload_completion_callback", functions["80022e40"])
+        self.assertEqual("audio_stream_status_callback", functions["80023b34"])
         self.assertEqual("intro_cd_sync_callback", functions["800983a0"])
         self.assertEqual("intro_cd_ready_callback", functions["80098048"])
         self.assertEqual("intro_spu_dma_callback", functions["8009638c"])
         self.assertEqual("intro_vblank_callback", functions["800967b0"])
+        self.assertEqual("frontend_track_read_callback", functions["80029f7c"])
+        object_callbacks = {
+            "80030f84": "object_type_17_callback",
+            "8003203c": "object_type_22_callback",
+            "80033274": "object_type_8_callback",
+            "80033468": "object_type_13_callback",
+            "80034198": "object_type_6_callback",
+            "800343dc": "object_type_11_callback",
+            "80034894": "object_type_14_callback",
+            "80034e6c": "object_type_5_callback",
+            "80060190": "object_type_1_callback",
+        }
+        for address, name in object_callbacks.items():
+            self.assertEqual(name, functions[address])
+        entity_callbacks = {
+            "8003be84": "frontend_entity_callback_3be84",
+            "800481bc": "entity_callback_481bc",
+            "8006a214": "entity_callback_6a214",
+            "8006e074": "entity_callback_6e074",
+            "8006fa04": "entity_callback_6fa04",
+            "80074fd0": "entity_callback_74fd0",
+        }
+        for address, name in entity_callbacks.items():
+            self.assertEqual(name, functions[address])
         self.assertEqual("CdSyncCallback", functions["8009f900"])
         self.assertEqual("CdReadyCallback", functions["8009f920"])
 
@@ -101,6 +153,22 @@ class NativeBuildTests(unittest.TestCase):
             patches[("CD_ready", "replace")],
         )
         self.assertEqual(
+            "NascarRumble.Host.NativeHooks.FrameSubmitted",
+            patches[("FUN_8001a24c", "post")],
+        )
+        self.assertEqual(
+            "NascarRumble.Host.NativeHooks.FrontendFrameWait",
+            patches[("FUN_800285e4", "pre")],
+        )
+        self.assertEqual(
+            "NascarRumble.Host.NativeHooks.FrontendUpdateEnter",
+            patches[("FUN_8007a994", "pre")],
+        )
+        self.assertEqual(
+            "NascarRumble.Host.NativeHooks.FrontendUpdateExit",
+            patches[("FUN_8007a994", "post")],
+        )
+        self.assertEqual(
             "NascarRumble.Host.NativeHooks.IntroAudioPoll",
             patches[("FUN_80096e90", "pre")],
         )
@@ -108,7 +176,8 @@ class NativeBuildTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("Runtime.PresentFrame()", hook)
-        self.assertIn("Runtime.PumpCd()", hook)
+        self.assertIn("Runtime.PumpSpu()", hook)
+        self.assertIn("currentTick - consumedTick", hook)
 
 
 if __name__ == "__main__":

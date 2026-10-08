@@ -2,9 +2,10 @@
 
 Ponte **Ghidra → RecompOne**: o MIPS do NASCAR Rumble é recompilado para C# nativo usando o
 nosso mapa de funções do Ghidra. Estado: **recompila e compila (0 erros)**; no macOS ARM a janela
-agora abre com o patch OpenGL 4.1, o jogo entra no `main`, inicializa os subsistemas e localiza
-`CW/OPENING/LEGAL.LSC`. Ainda trava no primeiro `ReadN` do CD, antes de mostrar a tela legal,
-intro ou menu (ver `docs/ANALISE_RECOMPONE.md`).
+abre com OpenGL 4.1, reproduz a intro, aceita o skip original, conclui o carregamento, chega ao menu
+e entra em demo/corrida manual. A flutuação dos carros foi rastreada até um bug no comando OP da
+GTE do runtime (corrigido no patch local); com ele os carros nascem e correm apoiados na pista. O
+handoff técnico completo está em `notes/SESSION_011.md`.
 
 O objetivo desta trilha é executar primeiro o jogo **original**. O carregador de mods fica
 desligado, a menos que `RUMBLE_ENABLE_MODS=1` seja definido explicitamente; esse modo não faz parte
@@ -49,3 +50,23 @@ recompone/host/bin/Release/net10.0/NascarRumbleNative.exe "CAMINHO\NASCAR Rumble
 ```
 > Ajuste os caminhos em `nascar.json` (`cue`, `funcMap`) e no `host.csproj` (ProjectReference)
 > conforme a sua estrutura.
+
+## Verificação diferencial (`RUMBLE_SHADOW=1`)
+
+`host/ShadowCpu.cs` executa o MIPS original (residente na RAM emulada) num interpretador R3000
+antes de cada chamada recompilada de `FUN_80064acc`, `FUN_80065488` e `FUN_80056c6c`, com escritas
+num overlay e a GTE salva/restaurada. Depois compara V0 e as escritas com o C# gerado em três
+variantes: com load-delay, sem load-delay e com uma GTE mínima independente (só OP). Divergências
+aparecem como `[shadow] MISMATCH`; sem a variável, os hooks são inertes. Para checar outra função,
+registrar pre/post em `nascar.json` chamando `ShadowCpu.Pre/Post` com o endereço dela.
+
+```sh
+RUMBLE_SHADOW=1 RUMBLE_NATIVE_TRACE=1 make native-run
+```
+
+## Controles e desempenho
+
+Teclado padrão (`settings.json`, criado pelo runtime): Z = Cross (acelerar/confirmar), A = Square
+(frear/ré), X = Circle (voltar), S = Triangle, Q/W = L1/R1, E/R = L2/R2, Enter = Start, Shift
+direito = Select, setas = direcional. Para avaliar jogabilidade ou FPS, rodar **sem**
+`RUMBLE_SHADOW`; `RUMBLE_NATIVE_TRACE=2` registra o timing de todos os quadros da corrida.

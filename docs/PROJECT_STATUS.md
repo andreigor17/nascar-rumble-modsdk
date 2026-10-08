@@ -10,7 +10,8 @@
 - **Etapa 2 — Esqueleto reproduzível e split integral: CONCLUÍDA em 2026-10-06**
 - **Etapa 3 — Loop produtivo por função: CONCLUÍDA em 2026-10-06**
 - **Etapa 4 — Métricas, validação local e governança: CONCLUÍDA em 2026-10-07**.
-- **Etapa 5 — Boot original visível: EM ANDAMENTO**.
+- **Etapa 5 — Boot original visível: EM ANDAMENTO; menu/input alcançados, validação final pendente**.
+- **Etapa 6 — Primeira corrida original completa: investigação antecipada em andamento**.
 - Decisão do mantenedor em 2026-10-07: não armazenar a cópia do jogo na nuvem e não usar GitHub
   Actions neste momento. O código continua versionado no Git; antes de cada envio, os gates rodam
   localmente com a cópia legal existente no Mac.
@@ -20,10 +21,13 @@
 - Prioridade do mantenedor em 2026-10-07: jogo original jogável primeiro. Mods, melhorias gráficas
   e novas resoluções ficam depois de menu e corrida original estáveis; o carregador de mods do host
   nativo permanece desligado por padrão.
-- Trilha nativa: `NascarRumbleNative` abre no macOS ARM, lê e decodifica a tela legal, carrega
-  `CW/OPENING/INTRO.WVE` e já apresenta visualmente o primeiro trecho da intro (logo vermelho da
-  EA). O próximo bloqueio é um underflow do buffer de áudio após aproximadamente 15 quadros; o
-  menu ainda não foi alcançado.
+- Trilha nativa: `NascarRumbleNative` abre no macOS ARM, reproduz a intro completa, permite pulá-la
+  com Z/Cross, conclui o carregamento, chega ao menu e aceita input. A demo ociosa e uma corrida
+  manual abrem com os carros no chão: a flutuação era um bug do comando GTE `OP` do RecompOne
+  (MAC2/MAC3 usavam IR1/IR2 já sobrescritos), corrigido no patch local. A corrida subiu de ~12 para
+  ~33 quadros/s e o relógio da corrida segue o tempo real (VBlanks a 60 Hz).
+- Retomada detalhada, traces, comandos e evidências da sessão atual:
+  `notes/SESSION_011.md`.
 - Os avisos “NascarRumbleNative encerrou inesperadamente” vistos no Mac vieram das execuções de
   diagnóstico de 2026-10-07: os relatórios indicam `SIGABRT` após exceção .NET não tratada, com o
   processo de desenvolvimento como pai. Não existe LaunchAgent ou processo relançando o host. O
@@ -212,7 +216,7 @@ por enquanto o GitHub é usado somente para preservar e compartilhar o código.
 
 ### Etapa 5 — Boot original visível
 
-Status: **EM ANDAMENTO — primeiro quadro visível; intro completa e menu ainda pendentes**
+Status: **EM ANDAMENTO — intro, carregamento, menu e input alcançados; fechamento formal pendente**
 
 Estado observado no macOS ARM:
 
@@ -225,45 +229,49 @@ Estado observado no macOS ARM:
   conclusão síncrona da DMA de SPU causava;
 - localiza `CW/OPENING/INTRO.WVE` no LBA 93447, carrega áudio/vídeo e decodifica quadros MDEC de
   280 macroblocos e 53.760 palavras;
-- apresenta na janela o primeiro trecho real do vídeo, confirmado visualmente pelo logo vermelho
-  da EA em 2026-10-07;
-- a reprodução ainda para depois de aproximadamente 15 quadros por underflow do ring buffer de
-  áudio (`available=832`, `required=3360`); intro completa, menu e jogo controlável permanecem
-  pendentes.
+- reproduz a intro completa depois que a espera do ring buffer passou a bombear IRQs de SPU/DMA;
+- permite pular a intro com Z/Cross, mantendo a intro original intacta;
+- conclui a tela de carregamento, exibe o menu principal e aceita controle;
+- entra tanto na demo ociosa quanto em corrida manual;
+- corrigiu a cadência da corrida de `delta=25` para o valor original estável `delta=5`;
+- corrigiu os carros levitando/quicando: o comando GTE `OP` do runtime calculava MAC2/MAC3 com
+  IR1/IR2 já sobrescritos por MAC1/MAC2, o que corrompia a interpolação de altura do terreno
+  (`FUN_80064998`). Provado com o verificador diferencial `recompone/host/ShadowCpu.cs`;
+- removeu o `glFinish` por lote no macOS (barreira de textura condicional a feedback real na VRAM) e
+  passou a entregar na corrida os VBlanks decorridos em tempo real; ~33 quadros/s e `delta` variável
+  (5–25, mediana ~7), como o jogo original faz quando um quadro dura mais de um VBlank.
 
 Validação executada:
 
 ```text
 python3 -m unittest tests.test_native -v
-  PASS — 5 testes
+  PASS — 7 testes
 
 make native-build
   PASS — NascarRumbleNative compilado para macOS arm64
 
 execução local com a cópia legal
-  PASS — primeiro trecho de INTRO.WVE visível na janela (logo EA)
+  PASS — intro completa, skip, carregamento, menu, input, demo e entrada em corrida
+  PASS — carros apoiados na pista na demo (confirmado visualmente pelo mantenedor em 2026-10-08)
+  PENDENTE — IA, corrida manual completa, HUD, áudio, retorno ao frontend
 ```
 
-Próximo gate: corrigir o abastecimento assíncrono do ring buffer de áudio, reproduzir a intro sem
-parar e seguir até o menu aceitar input. A decomp matching permanece disponível para esclarecer
-funções necessárias; trabalho de mods está suspenso.
+Próximo gate técnico: validar IA e corrida manual completa (voltas, resultado, retorno ao frontend),
+HUD, áudio e saves. A decomp matching permanece disponível para esclarecer funções necessárias;
+trabalho de mods está suspenso.
 
 Ponto exato de retomada para a próxima sessão:
 
-1. Não reabrir os bloqueios de memory card, callbacks de CD, VBlank ou reentrância de DMA: eles já
-   foram atravessados e estão cobertos por `NativeHooks.cs`, pelo patch local do RecompOne e pelo
-   funcmap.
-2. `FUN_80096e90` consome o áudio da intro. O hook `IntroAudioPoll` bombeia até 64 callbacks de CD
-   antes de entrar na espera original, o que permite avançar aproximadamente 15 quadros, mas a
-   leitura acaba em `read=16832`, `write=2304`, `available=832`, `required=3360`.
-3. Investigar por que `LibCd.Tick()` deixa de aumentar o ponteiro de escrita nesse ponto: confirmar
-   `_readActive`, `_readGeneration`, posição/LBA e se `intro_cd_ready_callback` consumiu o setor.
-   A correção desejada é manter o produtor do ring buffer assíncrono/cooperativo, não ignorar o
-   áudio nem substituir a intro por um atalho.
-4. Para reproduzir: `make native-build` e depois `make native-run`. Para filtrar o diagnóstico,
-   usar `RUMBLE_NATIVE_TRACE=1` e observar MDEC/CD e a linha `intro audio underflow`.
-5. O primeiro quadro já foi confirmado. O próximo critério visual é a intro continuar se movendo;
-   depois disso, seguir até o menu e validar input.
+1. Ler `notes/SESSION_011.md`; ele contém os traces atuais, comandos, screenshots e hipóteses já
+   eliminadas.
+2. Não reabrir os bloqueios de memory card, CD, intro, frontend ou excesso de VBlank: já foram
+   atravessados e estão cobertos por `NativeHooks.cs`, patch local do RecompOne e funcmap.
+3. A física do terreno está resolvida (ver seção "Continuação" de `notes/SESSION_011.md`). Diante de
+   novo comportamento estranho, rodar com `RUMBLE_SHADOW=1` e estender o shadow à função suspeita
+   antes de alterar lógica.
+4. Validar IA na demo e uma corrida manual completa; depois HUD, áudio, power-ups e saves.
+5. Ao mexer em `tools/RecompOne`, regenerar o patch com `git diff` completo (com contexto) e provar
+   que ele reproduz a árvore a partir do commit fixado; nunca gerar com `-U0`.
 
 ## Protocolo para finalizar uma etapa
 

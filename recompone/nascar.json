@@ -11,7 +11,7 @@
  "stubs": [],
  "ignored": [],
  "patches": [
- {
+  {
    "overlay": "main",
    "function": "FUN_8001f560",
    "target": "NascarRumble.Host.NativeHooks.MemoryCardPoll",
@@ -31,8 +31,80 @@
   },
   {
    "overlay": "main",
+   "function": "FUN_8001a24c",
+   "target": "NascarRumble.Host.NativeHooks.FrameSubmitted",
+   "mode": "post"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_800285e4",
+   "target": "NascarRumble.Host.NativeHooks.FrontendFrameWait",
+   "mode": "pre"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_8007a994",
+   "target": "NascarRumble.Host.NativeHooks.FrontendUpdateEnter",
+   "mode": "pre"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_8007a994",
+   "target": "NascarRumble.Host.NativeHooks.FrontendUpdateExit",
+   "mode": "post"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_800269c0",
+   "target": "NascarRumble.Host.NativeHooks.RaceTimingEnter",
+   "mode": "pre"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_800269c0",
+   "target": "NascarRumble.Host.NativeHooks.RaceTimingTrace",
+   "mode": "post"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_80056c6c",
+   "target": "NascarRumble.Host.NativeHooks.VehicleStateTrace",
+   "mode": "post"
+  },
+  {
+   "overlay": "main",
    "function": "FUN_80096e90",
    "target": "NascarRumble.Host.NativeHooks.IntroAudioPoll",
+   "mode": "pre"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_80064acc",
+   "target": "NascarRumble.Host.NativeHooks.ShadowPre80064acc",
+   "mode": "pre"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_80064acc",
+   "target": "NascarRumble.Host.NativeHooks.ShadowPost80064acc",
+   "mode": "post"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_80065488",
+   "target": "NascarRumble.Host.NativeHooks.ShadowPre80065488",
+   "mode": "pre"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_80065488",
+   "target": "NascarRumble.Host.NativeHooks.ShadowPost80065488",
+   "mode": "post"
+  },
+  {
+   "overlay": "main",
+   "function": "FUN_80056c6c",
+   "target": "NascarRumble.Host.NativeHooks.ShadowPre80056c6c",
    "mode": "pre"
   }
  ]

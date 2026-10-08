@@ -1226,6 +1226,11 @@
    "size": 188
   },
   {
+   "address": "80020160",
+   "name": "spu_stream_transfer_callback",
+   "size": 244
+  },
+  {
    "address": "80020254",
    "name": "FUN_80020254",
    "size": 120
@@ -1264,6 +1269,11 @@
    "address": "800205f4",
    "name": "FUN_800205f4",
    "size": 100
+  },
+  {
+   "address": "80020658",
+   "name": "spu_upload_completion_callback",
+   "size": 16
   },
   {
    "address": "80020668",
@@ -1511,6 +1521,16 @@
    "size": 44
   },
   {
+   "address": "80021f9c",
+   "name": "spu_irq_callback",
+   "size": 604
+  },
+  {
+   "address": "800221f8",
+   "name": "spu_stream_buffer_callback",
+   "size": 272
+  },
+  {
    "address": "80022308",
    "name": "vblank_audio_callback",
    "size": 40
@@ -1524,6 +1544,11 @@
    "address": "8002246c",
    "name": "FUN_8002246c",
    "size": 136
+  },
+  {
+   "address": "800224f4",
+   "name": "audio_bank_read_callback",
+   "size": 16
   },
   {
    "address": "80022504",
@@ -1569,6 +1594,11 @@
    "address": "80022da4",
    "name": "FUN_80022da4",
    "size": 156
+  },
+  {
+   "address": "80022e40",
+   "name": "audio_upload_completion_callback",
+   "size": 16
   },
   {
    "address": "80022e50",
@@ -1673,6 +1703,11 @@
   {
    "address": "80023b00",
    "name": "FUN_80023b00",
+   "size": 52
+  },
+  {
+   "address": "80023b34",
+   "name": "audio_stream_status_callback",
    "size": 52
   },
   {
@@ -1899,6 +1934,11 @@
    "address": "80029ea0",
    "name": "FUN_80029ea0",
    "size": 220
+  },
+  {
+   "address": "80029f7c",
+   "name": "frontend_track_read_callback",
+   "size": 532
   },
   {
    "address": "8002a190",
@@ -2256,6 +2296,11 @@
    "size": 728
   },
   {
+   "address": "80030f84",
+   "name": "object_type_17_callback",
+   "size": 936
+  },
+  {
    "address": "8003132c",
    "name": "FUN_8003132c",
    "size": 1140
@@ -2286,6 +2331,11 @@
    "size": 312
   },
   {
+   "address": "8003203c",
+   "name": "object_type_22_callback",
+   "size": 352
+  },
+  {
    "address": "8003219c",
    "name": "FUN_8003219c",
    "size": 596
@@ -2296,9 +2346,19 @@
    "size": 3716
   },
   {
+   "address": "80033274",
+   "name": "object_type_8_callback",
+   "size": 256
+  },
+  {
    "address": "80033374",
    "name": "FUN_80033374",
    "size": 244
+  },
+  {
+   "address": "80033468",
+   "name": "object_type_13_callback",
+   "size": 700
   },
   {
    "address": "80033724",
@@ -2321,9 +2381,19 @@
    "size": 1128
   },
   {
+   "address": "80034198",
+   "name": "object_type_6_callback",
+   "size": 132
+  },
+  {
    "address": "8003421c",
    "name": "FUN_8003421c",
    "size": 448
+  },
+  {
+   "address": "800343dc",
+   "name": "object_type_11_callback",
+   "size": 92
   },
   {
    "address": "80034438",
@@ -2344,6 +2414,11 @@
    "address": "8003477c",
    "name": "FUN_8003477c",
    "size": 280
+  },
+  {
+   "address": "80034894",
+   "name": "object_type_14_callback",
+   "size": 216
   },
   {
    "address": "8003496c",
@@ -2369,6 +2444,11 @@
    "address": "80034dd8",
    "name": "FUN_80034dd8",
    "size": 148
+  },
+  {
+   "address": "80034e6c",
+   "name": "object_type_5_callback",
+   "size": 896
   },
   {
    "address": "800351ec",
@@ -2759,6 +2839,11 @@
    "address": "8003be24",
    "name": "FUN_8003be24",
    "size": 96
+  },
+  {
+   "address": "8003be84",
+   "name": "frontend_entity_callback_3be84",
+   "size": 424
   },
   {
    "address": "8003c02c",
@@ -3581,6 +3666,11 @@
    "size": 108
   },
   {
+   "address": "800481bc",
+   "name": "entity_callback_481bc",
+   "size": 288
+  },
+  {
    "address": "800482dc",
    "name": "FUN_800482dc",
    "size": 236
@@ -4311,6 +4401,11 @@
    "size": 468
   },
   {
+   "address": "80060190",
+   "name": "object_type_1_callback",
+   "size": 944
+  },
+  {
    "address": "80060540",
    "name": "FUN_80060540",
    "size": 100
@@ -4781,6 +4876,11 @@
    "size": 244
   },
   {
+   "address": "8006a214",
+   "name": "entity_callback_6a214",
+   "size": 384
+  },
+  {
    "address": "8006a394",
    "name": "FUN_8006a394",
    "size": 384
@@ -4881,6 +4981,11 @@
    "size": 20
   },
   {
+   "address": "8006e074",
+   "name": "entity_callback_6e074",
+   "size": 988
+  },
+  {
    "address": "8006e450",
    "name": "FUN_8006e450",
    "size": 100
@@ -4909,6 +5014,11 @@
    "address": "8006f840",
    "name": "FUN_8006f840",
    "size": 452
+  },
+  {
+   "address": "8006fa04",
+   "name": "entity_callback_6fa04",
+   "size": 916
   },
   {
    "address": "8006fd98",
@@ -5179,6 +5289,11 @@
    "address": "80074f34",
    "name": "FUN_80074f34",
    "size": 156
+  },
+  {
+   "address": "80074fd0",
+   "name": "entity_callback_74fd0",
+   "size": 48
   },
   {
    "address": "80075000",

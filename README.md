@@ -22,11 +22,14 @@
 - ✅ Toolchain PsyQ identificada e validada por funções *matching*.
 - ✅ Split Splat integral e build híbrido ASM/dados do `SLUS_010.68`, idêntico byte a byte.
 - ✅ Loop por função com asm-differ, objdiff, contexto local, backlog e primeiro C matching.
-- 🟡 Port nativo macOS abre a janela e chega à leitura de `OPENING/LEGAL.LSC`; ainda não exibe
-  intro/menu porque o fluxo assíncrono de CD do RecompOne precisa ser corrigido.
+- 🟡 Port nativo macOS reproduz a intro, permite pulá-la, chega ao menu e entra em corrida com os
+  carros apoiados na pista (bug do comando OP da GTE corrigido) e a corrida no ritmo do tempo real.
+  Falta validar IA, uma corrida completa, HUD, áudio e retorno ao frontend.
 - 🔒 O host nativo não carrega mods por padrão: a prioridade é intro, menu e corrida original.
 
 Veja o progresso detalhado em [`docs/`](docs/) e nas notas de sessão em [`notes/`](notes/).
+O ponto exato para retomar a investigação nativa está em
+[`notes/SESSION_011.md`](notes/SESSION_011.md).
 As métricas de decompilação vêm exclusivamente de [`progress.json`](progress.json), gerado a partir
 do backlog e dos objetos registrados por `make progress-write`.
 
