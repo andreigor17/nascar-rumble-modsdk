@@ -726,12 +726,11 @@ Validado no nativo (macOS ARM, 30 fps, entrada por `CGEvent` + `screencapture -l
 | Showdown | completo (carro → oponente → pista → resultados → Exit Race) |
 | Time Trial | completo (continuação 4) |
 | Race Options / Game Options / Showcase (vídeo Credits) | funcionam |
-| Memory card (salvar após a corrida) | **trava** em "Checking..." na tela Load/Save/Exit; nenhuma tecla responde; `carda.sav/cardb.sav` não mudam. Pilha: `main → FUN_80029be4 → FUN_8002865c → FUN_80028634 → FUN_8001a24c` (laço da tela rodando, status do cartão nunca sai de "checking") |
+| Memory card (salvar após a corrida) | ~~trava em "Checking..."~~ **corrigido na continuação 6** (salva, "Saved Successfully", e carrega de volta) |
 | 2 Players | jogo pede "Controllers are needed in both Controller ports"; host não expõe a porta 2 sem mapeamento (`Keys2` vazio) |
 
 Observações: Race Options › Laps não vale para o campeonato (sempre 4 voltas na Rookie). O padrão
-do diálogo "save current game status?" é **No**. Desbloqueios ficam só na memória da sessão até o
-memory card funcionar.
+do diálogo "save current game status?" é **No**.
 
 Ferramentas novas: `RUMBLE_QUICK_FINISH=1` e o contador de FPS (`RUMBLE_SHOW_FPS=1` / item Show
 FPS no lançador) — detalhes em `docs/LAUNCHER.md`.
@@ -744,3 +743,47 @@ recompilado, mas `.rodata/.data`, tabelas e textos vêm do EXE) e todo recurso (
 recompilador o consome) e o C# gerado (`recompone/Recompiled/main.cs`) é derivado dele, por isso
 fica fora do Git. Classificação honesta: port nativo por recompilação estática ("traga seu disco"),
 não source port independente.
+
+## Continuação 6 (2026-10-08) — memory card: salvar e carregar
+
+Sintoma: depois da corrida, "save current game status?" → Yes abria a tela Load/Save/Exit presa em
+"Checking..."; `carda.sav` nunca mudava. Na verdade **o boot também falhava** (só não aparecia).
+
+**Driver do jogo** (estado em `*(0x800AA598)`, decompilado do Ghidra): orientado a eventos. Abre 8
+eventos com callback — SwCARD `0xF4000001` (IOE/ERROR/TIMEOUT/NEWCARD → `0x8001e864/ecf0/ebec/ead4`)
+e HwCARD `0xF0000011` (→ `0x8001e140/e714/e5c4/e530`) — mais um VSync callback de watchdog
+(`0x8001edd0`, erro −3 após 60 VBlanks sem evento). Campos: `+0x8F4` estado (0 ocioso/info,
+1 `_card_load`, 2 leitura, 3/6 escrita, 4 clear), `+0x8F8` pedido (2 ler, 3 gravar, 5 formatar,
+6 criar), `+0x900` status que a tela consulta (`FUN_8001f560`: canal = pronto, −2 cartão novo,
+−3 erro, −4 lendo, −5 gravando), `+0x994` contador que **ignora o 1º HwCARD IOE** de cada
+transferência. Cada callback re-emite `_card_info` (polling contínuo).
+
+**Causa** (instrumentado com `RUMBLE_CARD_TRACE=1`): o runtime entregava SwCARD **e** HwCARD em
+toda operação. O callback SwCARD IOE no estado 2/3 é "aborta e volta ao info": a leitura do
+diretório nunca terminava, `+0x8F8` ficava 1 (driver "ocupado", pedidos de save recusados) e o
+status ficava em −2 ("Checking...").
+
+**Referência PS1** (OpenBIOS do PCSX-Redux, `pcsx-redux/nugget` `openbios/sio0/driver.c` +
+`openbios/card/backupunit.c`): `_card_read/_card_write` (B 4F/4E) → só **HwCARD**; `_card_info`
+(A AB) → SwCARD (resultado) e **depois** HwCARD; `_card_load` (A AC) → HwCARD por setor e no fim
+SwCARD+HwCARD; `_card_info` com operação em andamento é recusado (retorna 0, sem evento). Isso
+explica o "ignora o 1º HwCARD": é o HwCARD que vem depois do SwCARD que iniciou a transferência.
+
+**Correção** (`recompone/patches/recompone-macos.patch`, `BiosB.cs`/`BiosA.cs`):
+1. leitura/escrita de setor entrega só HwCARD; info/load entregam SwCARD e depois HwCARD;
+2. `_card_info`/`_card_load` recusados (V0=0) enquanto a porta tem conclusão pendente;
+3. leitura/escrita concluem **uma por quadro** (`TickCard` no `PresentFrame`). Sem isso, as 60
+   leituras do Load rodavam numa só cadeia de callbacks e o status ia de −4 para pronto dentro do
+   mesmo quadro; a tela (`FUN_8009358c`) detecta o fim vendo −4 → pronto entre consultas e ficava
+   em "Loading..." para sempre. No console cada setor leva milissegundos.
+
+Validado no nativo (cartão em branco, `RUMBLE_QUICK_FINISH=1`): Single Race → recorde → "save?"
+Yes → **"Saved Successfully"** (~1 s, 62 escritas: clear + 60 quadros de dados + diretório),
+`carda.sav` com `BASLUS-01068NASCRMBL` (1 bloco, 8 KB) no bloco 1. Novo boot → tela Load and Save
+mostra **"Save Found"** → Load → **"Loaded Successfully"** → recorde de Copper Canyon da sessão
+anterior de volta em Track Times. Nenhum evento de watchdog/erro no trace.
+
+Ferramenta: `RUMBLE_CARD_TRACE=1` (`recompone/host/CardTrace.cs`) registra cada chamada `_card_*`,
+callback de evento e pedido do frontend com o estado do driver. Teste: `tests/test_native.py`
+(`test_memory_card_events_follow_the_console_bios`). Os arquivos `carda.sav/cardb.sav` foram
+restaurados do backup depois dos testes.

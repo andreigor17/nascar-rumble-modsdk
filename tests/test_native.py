@@ -57,6 +57,18 @@ class NativeBuildTests(unittest.TestCase):
         self.assertIn("psMemory.TickDma()", text)
         self.assertIn("public static void PumpSpu()", text)
 
+    def test_memory_card_events_follow_the_console_bios(self):
+        # The game's card driver aborts a sector transfer on a SwCARD event and detects the end of
+        # a load/save by polling its busy status, so: sector I/O raises HwCARD only, one transfer
+        # per frame, and _card_info/_card_load are refused while the port is busy.
+        text = (ROOT / "recompone" / "patches" / "recompone-macos.patch").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("if (completion.Software) DeliverEventIntr(c, m, 0xF4000001u, spec);", text)
+        self.assertEqual(2, text.count("CardComplete(c, m, c.A0, immediate: false, software: false);"))
+        self.assertEqual(2, text.count("if (CardBusy(slot)) return false;"))
+        self.assertIn("case 0xAB: c.V0 = BiosB.CardInfo(c, m, c.A0) ? 1u : 0u; break;", text)
+
     def test_gte_outer_product_latches_ir_operands(self):
         # OP (cop2 0x0C) must use the IR values from before the command. Without this the
         # terrain height interpolation (FUN_80064998) returns garbage and cars float/fly.

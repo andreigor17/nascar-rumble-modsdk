@@ -20,7 +20,7 @@ index 5206d73..05d72f1 100644
          entry.AppendLine("        Dispatcher.Load(\"main\");");
          entry.AppendLine("        var c = new CpuContext();");
 diff --git a/RecompOne.Runtime/Bios/BiosA.cs b/RecompOne.Runtime/Bios/BiosA.cs
-index 997d8c6..c13fdb5 100644
+index 997d8c6..6c1796f 100644
 --- a/RecompOne.Runtime/Bios/BiosA.cs
 +++ b/RecompOne.Runtime/Bios/BiosA.cs
 @@ -415,8 +415,8 @@ public static class BiosA
@@ -29,20 +29,24 @@ index 997d8c6..c13fdb5 100644
              case 0xA6: c.V0 = _cd != null ? _cd.DriveStatusByte() : 0x02u; break;
 -            case 0xAB: BiosB.CardComplete(c, m, c.A0); c.V0 = 1u; break;
 -            case 0xAC: BiosB.CardComplete(c, m, c.A0); c.V0 = 1u; break;
-+            case 0xAB: BiosB.CardInfo(c, m, c.A0); c.V0 = 1u; break;
-+            case 0xAC: BiosB.CardLoad(c, m, c.A0); c.V0 = 1u; break;
++            case 0xAB: c.V0 = BiosB.CardInfo(c, m, c.A0) ? 1u : 0u; break;
++            case 0xAC: c.V0 = BiosB.CardLoad(c, m, c.A0) ? 1u : 0u; break;
              case 0xA7: case 0xA8: case 0xA9: case 0xAA:
              case 0xAD: case 0xAE: case 0xAF: break;
              case 0xB4:
 diff --git a/RecompOne.Runtime/Bios/BiosB.cs b/RecompOne.Runtime/Bios/BiosB.cs
-index f5935c8..e24965b 100644
+index f5935c8..2e7602e 100644
 --- a/RecompOne.Runtime/Bios/BiosB.cs
 +++ b/RecompOne.Runtime/Bios/BiosB.cs
-@@ -19,6 +19,11 @@ public static class BiosB
+@@ -19,6 +19,15 @@ public static class BiosB
      public static uint IntrEnvInInterruptAddr = 0u;
  
      static uint _padBuf;
-+    readonly record struct CardCompletion(uint Port, uint? Spec, bool Immediate);
++    // Completion of one card operation. The BIOS reports the low-level sector transfer as a HwCARD
++    // event; the higher-level _card_info/_card_load also report a SwCARD event, delivered first.
++    // Sector reads/writes complete one per frame (TickCard): a console transfer takes milliseconds,
++    // and games detect the end of a load or save by seeing their busy status between polls.
++    readonly record struct CardCompletion(uint Port, uint? Spec, bool Software, bool Immediate);
 +    static readonly Queue<CardCompletion> _pendingCardCompletions = new();
 +    static readonly bool[] _cardKnown = new bool[2];
 +    static readonly bool[] _cardInitialized = new bool[2];
@@ -50,7 +54,7 @@ index f5935c8..e24965b 100644
  
      public static void DeliverEvent(uint @class, uint spec)
      {
-@@ -45,31 +50,69 @@ public static class BiosB
+@@ -45,38 +54,97 @@ public static class BiosB
          }
      }
      
@@ -60,15 +64,17 @@ index f5935c8..e24965b 100644
 -        var card = (port & 0x10u) != 0 ? Runtime.CardB : Runtime.CardA;
 -        uint spec = card.Enabled ? 0x0004u : 0x0100u;
 -        
+-        DeliverEventIntr(c, m, 0xF4000001u, spec);
 +        var card = (completion.Port & 0x10u) != 0 ? Runtime.CardB : Runtime.CardA;
 +        uint spec = completion.Spec ?? (card.Enabled ? 0x0004u : 0x0100u);
-         DeliverEventIntr(c, m, 0xF4000001u, spec);
++        if (completion.Software) DeliverEventIntr(c, m, 0xF4000001u, spec);
          DeliverEventIntr(c, m, 0xF0000011u, spec);
      }
  
-+    public static void CardComplete(CpuContext c, IMemory m, uint port, uint? requestedSpec = null, bool immediate = true)
++    public static void CardComplete(CpuContext c, IMemory m, uint port, uint? requestedSpec = null,
++        bool immediate = true, bool software = true)
 +    {
-+        _pendingCardCompletions.Enqueue(new CardCompletion(port, requestedSpec, immediate));
++        _pendingCardCompletions.Enqueue(new CardCompletion(port, requestedSpec, software, immediate));
 +        if (!immediate || _deliveringCardCompletion) return;
 +
 +        _deliveringCardCompletion = true;
@@ -91,16 +97,36 @@ index f5935c8..e24965b 100644
 +        DeliverCardCompletion(c, m, _pendingCardCompletions.Dequeue());
 +    }
 +
-+    public static void CardInfo(CpuContext c, IMemory m, uint port)
++    static bool CardBusy(int slot)
++    {
++        foreach (var pending in _pendingCardCompletions)
++            if (((pending.Port & 0x10u) != 0 ? 1 : 0) == slot) return true;
++        return false;
++    }
++
++    /// <summary>
++    /// A(ABh) _card_info. Like the console BIOS, it is refused (returns false, no events) while the
++    /// port still has an operation in flight; games that re-issue it from both the SwCARD and HwCARD
++    /// callbacks rely on the second request being dropped.
++    /// </summary>
++    public static bool CardInfo(CpuContext c, IMemory m, uint port)
 +    {
 +        int slot = (port & 0x10u) != 0 ? 1 : 0;
++        if (CardBusy(slot)) return false;
 +        var card = slot == 1 ? Runtime.CardB : Runtime.CardA;
 +        uint spec = !card.Enabled ? 0x0100u : _cardKnown[slot] ? 0x0004u : 0x2000u;
 +        _cardKnown[slot] = card.Enabled;
 +        CardComplete(c, m, port, spec, immediate: !_cardInitialized[slot]);
++        return true;
 +    }
 +
-+    public static void CardLoad(CpuContext c, IMemory m, uint port) => CardComplete(c, m, port);
++    public static bool CardLoad(CpuContext c, IMemory m, uint port)
++    {
++        int slot = (port & 0x10u) != 0 ? 1 : 0;
++        if (CardBusy(slot)) return false;
++        CardComplete(c, m, port);
++        return true;
++    }
 +
      static void CardRead(CpuContext c, IMemory m)
      {
@@ -113,8 +139,9 @@ index f5935c8..e24965b 100644
              card.FrameRead((int)(c.A1 & 0x3FFu), f);
              for (uint i = 0; i < 0x80u; i++) m.WriteU8(c.A2 + i, f[(int)i]);
          }
+-        CardComplete(c, m, c.A0);
 +        _cardInitialized[slot] = true;
-         CardComplete(c, m, c.A0);
++        CardComplete(c, m, c.A0, immediate: false, software: false);
          c.V0 = 1u;
      }
  
@@ -126,6 +153,14 @@ index f5935c8..e24965b 100644
          if (card.Enabled && c.A2 != 0u)
          {
              Span<byte> f = stackalloc byte[0x80];
+             for (uint i = 0; i < 0x80u; i++) f[(int)i] = m.ReadU8(c.A2 + i);
+             card.FrameWrite((int)(c.A1 & 0x3FFu), f);
+         }
+-        CardComplete(c, m, c.A0);
++        CardComplete(c, m, c.A0, immediate: false, software: false);
+         c.V0 = 1u;
+     }
+ 
 diff --git a/RecompOne.Runtime/Cdrom/CdController.cs b/RecompOne.Runtime/Cdrom/CdController.cs
 index 18deeb2..841e9de 100644
 --- a/RecompOne.Runtime/Cdrom/CdController.cs

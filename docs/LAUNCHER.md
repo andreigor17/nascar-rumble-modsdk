@@ -38,7 +38,7 @@ condensada e pesada (Futura Condensed ExtraBold / Impact no macOS; ImGui padrão
 O jogo não tem modo debug próprio (o EXE só traz `SetGraphDebug` do PsyQ). O que existe é o
 conjunto do **RecompOne**, acessível pela barra superior da janela (menu **Debug**): visualizador
 de VRAM, estado da CPU, editor de memória, mapa de RAM, SPU, CD, console e eventos de overlay; e do
-nosso host: traces `RUMBLE_*` (`NATIVE_TRACE`, `LAP_LOG`, `CAR_DUMP`, `DT_PROBE`…).
+nosso host: traces `RUMBLE_*` (`NATIVE_TRACE`, `LAP_LOG`, `CAR_DUMP`, `DT_PROBE`, `CARD_TRACE`…).
 
 "Modo debug" no lançador liga esse pacote de uma vez:
 
