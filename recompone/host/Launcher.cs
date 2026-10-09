@@ -2,12 +2,13 @@ using System.Numerics;
 using System.Text.Json;
 using ImGuiNET;
 using RecompOne.Runtime.Hardware;
+using Silk.NET.Input;
 
 namespace NascarRumble.Host;
 
 /// <summary>
 /// Start screen shown after the disc is validated and before the game boots, styled after the
-/// game's own menus (see docs/LAUNCHER.md). It sets the race frame rate and the debug mode.
+/// game's own menus (see docs/LAUNCHER.md). It sets display, graphics, frame rate and debug mode.
 /// The background is the game's title art, decoded from the user's disc (CW/FEND/FELD.LSC).
 /// </summary>
 public static class Launcher
@@ -16,19 +17,32 @@ public static class Launcher
 
     public sealed class Prefs
     {
+        public int Width { get; set; } = 1280;
+        public int Height { get; set; } = 720;
+        public bool Fullscreen { get; set; }
+        public int RenderScale { get; set; } = 4;
+        public bool SmoothScaling { get; set; } = true;
         public int Fps { get; set; } = 30;
         public bool Debug { get; set; }
         public bool ShowFps { get; set; }
     }
 
-    private enum Item { Start, FrameRate, ShowFps, Debug, Quit }
+    private enum Item { Start, DisplayMode, Resolution, Graphics, Scaling, Controller, FrameRate, ShowFps, Debug, Quit }
 
-    private static readonly Item[] Items = [Item.Start, Item.FrameRate, Item.ShowFps, Item.Debug, Item.Quit];
+    private static readonly Item[] Items =
+        [Item.Start, Item.DisplayMode, Item.Resolution, Item.Graphics, Item.Scaling, Item.Controller,
+         Item.FrameRate, Item.ShowFps, Item.Debug, Item.Quit];
+    private static readonly (int Width, int Height)[] Resolutions =
+        [(960, 720), (1280, 720), (1600, 900), (1920, 1080), (2560, 1440)];
 
     private static Prefs _prefs = new();
+    private static bool _prepared;
     private static int _selected;
     private static ushort _previousButtons = 0xFFFF;
     private static bool _done;
+    private static bool _testingController;
+    private static bool _previousMapKey, _previousBackKey;
+    private static string _controllerMessage = "";
     private static nint _background;
     private static int _backgroundWidth, _backgroundHeight;
     private static ImFontPtr? _itemFont, _hintFont;
@@ -41,10 +55,22 @@ public static class Launcher
         RecompOne.Runtime.Runtime.UiFontRequests.Add((fonts + "Arial Narrow Bold.ttf", 26f));
     }
 
+    /// <summary>
+    /// Loads display preferences before Runtime.Initialize creates the window and GL backend.
+    /// Other launcher choices are applied after the window exists, immediately before game boot.
+    /// </summary>
+    public static void PrepareStartupDisplay()
+    {
+        _prefs = Normalize(Load());
+        _prepared = true;
+        RecompOne.Runtime.Runtime.ConfigureStartupDisplay(
+            _prefs.Width, _prefs.Height, _prefs.Fullscreen, _prefs.RenderScale, _prefs.SmoothScaling);
+    }
+
     /// <summary>Loads saved choices and applies them without showing the screen.</summary>
     public static Prefs LoadAndApply()
     {
-        _prefs = Load();
+        if (!_prepared) PrepareStartupDisplay();
         Apply(_prefs);
         return _prefs;
     }
@@ -52,7 +78,10 @@ public static class Launcher
     /// <summary>Runtime.PreBoot callback: shows the screen until Start Game is chosen.</summary>
     public static void Run()
     {
-        _prefs = Load();
+        if (!_prepared) PrepareStartupDisplay();
+        _done = false;
+        _testingController = Environment.GetEnvironmentVariable("RUMBLE_CONTROLLER_TEST") == "1";
+        _previousMapKey = _previousBackKey = false;
         if (RecompOne.Runtime.Runtime.UiFonts is [var item, var hint, ..])
         {
             _itemFont = item;
@@ -76,6 +105,8 @@ public static class Launcher
 
     private static void Apply(Prefs prefs)
     {
+        RecompOne.Runtime.Runtime.ApplyDisplaySettings(
+            prefs.Width, prefs.Height, prefs.Fullscreen, prefs.RenderScale, prefs.SmoothScaling);
         NativeHooks.SetRaceFrameRate(prefs.Fps);
         RecompOne.Runtime.Runtime.TopBarOverride = prefs.Debug;
         NativeHooks.LapLogEnabled |= prefs.Debug;
@@ -83,19 +114,47 @@ public static class Launcher
         HostOverlay.ShowDebugHud = prefs.Debug;
         HostOverlay.Install();
         Console.Error.WriteLine(
-            $"[launcher] race fps={prefs.Fps} show fps={(HostOverlay.ShowFps ? "on" : "off")} debug={(prefs.Debug ? "on" : "off")}");
+            $"[launcher] display={prefs.Width}x{prefs.Height} fullscreen={(prefs.Fullscreen ? "on" : "off")} "
+            + $"graphics={GraphicsName(prefs.RenderScale)} filter={(prefs.SmoothScaling ? "smooth" : "sharp")} "
+            + $"race fps={prefs.Fps} show fps={(HostOverlay.ShowFps ? "on" : "off")} debug={(prefs.Debug ? "on" : "off")}");
     }
 
     private static void HandleInput()
     {
         ushort now = Controller.State;
+        if (_testingController)
+        {
+            HandleControllerTest();
+            _previousButtons = now;
+            return;
+        }
+
         bool Pressed(ushort bit) => (now & bit) == 0 && (_previousButtons & bit) != 0;
         if (Pressed(Controller.Up)) _selected = (_selected + Items.Length - 1) % Items.Length;
         if (Pressed(Controller.Down)) _selected = (_selected + 1) % Items.Length;
-        bool change = Pressed(Controller.Left) || Pressed(Controller.Right);
+        int direction = Pressed(Controller.Left) ? -1 : Pressed(Controller.Right) ? 1 : 0;
+        bool change = direction != 0;
         bool confirm = Pressed(Controller.Cross) || Pressed(Controller.Start);
         switch (Items[_selected])
         {
+            case Item.DisplayMode when change || confirm:
+                _prefs.Fullscreen = !_prefs.Fullscreen;
+                break;
+            case Item.Resolution when change || confirm:
+                ChangeResolution(direction == 0 ? 1 : direction);
+                break;
+            case Item.Graphics when change || confirm:
+                ChangeGraphics(direction == 0 ? 1 : direction);
+                break;
+            case Item.Scaling when change || confirm:
+                _prefs.SmoothScaling = !_prefs.SmoothScaling;
+                break;
+            case Item.Controller when confirm:
+                _testingController = true;
+                _controllerMessage = "";
+                _previousMapKey = RecompOne.Runtime.Runtime.IsKeyDown(Key.Enter);
+                _previousBackKey = RecompOne.Runtime.Runtime.IsKeyDown(Key.Escape);
+                break;
             case Item.FrameRate when change || confirm:
                 _prefs.Fps = _prefs.Fps == 60 ? 30 : 60;
                 break;
@@ -116,6 +175,50 @@ public static class Launcher
         }
         _previousButtons = now;
     }
+
+    private static void HandleControllerTest()
+    {
+        bool mapKey = RecompOne.Runtime.Runtime.IsKeyDown(Key.Enter);
+        bool backKey = RecompOne.Runtime.Runtime.IsKeyDown(Key.Escape);
+        if (mapKey && !_previousMapKey)
+        {
+            _controllerMessage = RecompOne.Runtime.Runtime.ApplyStandardGamepadMapping()
+                ? "Standard SDL mapping saved for Pad 1."
+                : "Connect a compatible controller before mapping.";
+        }
+        else if (backKey && !_previousBackKey)
+        {
+            _testingController = false;
+            _controllerMessage = "";
+        }
+
+        _previousMapKey = mapKey;
+        _previousBackKey = backKey;
+    }
+
+    private static void ChangeResolution(int direction)
+    {
+        int index = Array.FindIndex(Resolutions,
+            r => r.Width == _prefs.Width && r.Height == _prefs.Height);
+        if (index < 0) index = 1;
+        index = (index + direction + Resolutions.Length) % Resolutions.Length;
+        (_prefs.Width, _prefs.Height) = Resolutions[index];
+    }
+
+    private static void ChangeGraphics(int direction)
+    {
+        int[] scales = [1, 2, 4];
+        int index = Array.IndexOf(scales, _prefs.RenderScale);
+        if (index < 0) index = 2;
+        _prefs.RenderScale = scales[(index + direction + scales.Length) % scales.Length];
+    }
+
+    private static string GraphicsName(int scale) => scale switch
+    {
+        1 => "Original",
+        2 => "Balanced",
+        _ => "Enhanced",
+    };
 
     private static void LoadBackground()
     {
@@ -169,12 +272,36 @@ public static class Launcher
 
         var itemFont = _itemFont ?? ImGui.GetFont();
         var hintFont = _hintFont ?? ImGui.GetFont();
-        float itemSize = 15f * unit, hintSize = 9.5f * unit;
+        float itemSize = 14f * unit, hintSize = 9.5f * unit;
+
+        if (_testingController)
+        {
+            DrawControllerTest(dl, itemFont, hintFont, unit, origin);
+            return;
+        }
 
         // Hint box, top right, like "Select this for 1 player mode."
         string hint = Items[_selected] switch
         {
             Item.Start => "Start the game with these settings.",
+            Item.DisplayMode => _prefs.Fullscreen
+                ? "Use the whole display. F11 can toggle this during the game."
+                : "Run in a resizable desktop window.",
+            Item.Resolution => _prefs.Fullscreen
+                ? "Window size used when leaving fullscreen."
+                : "Output window size. This does not change game physics.",
+            Item.Graphics => _prefs.RenderScale switch
+            {
+                1 => "Original PS1 internal resolution. Fastest and most authentic.",
+                2 => "2x internal resolution. Balanced quality and GPU use.",
+                _ => "4x internal resolution. Sharpest geometry; current default.",
+            },
+            Item.Scaling => _prefs.SmoothScaling
+                ? "Smooth final image scaling."
+                : "Sharp nearest-neighbor scaling.",
+            Item.Controller => RecompOne.Runtime.Runtime.GetGamepadSnapshot() is { Connected: true } pad
+                ? $"{pad.Name} detected. Press X to test its buttons."
+                : "No SDL-compatible controller detected. You may connect one now.",
             Item.FrameRate => _prefs.Fps == 60
                 ? "60 fps races. Experimental: launch grip differs slightly."
                 : "30 fps races, the console's own cadence.",
@@ -186,47 +313,57 @@ public static class Launcher
                 : "Clean screen, no debug tools.",
             _ => "Close the game.",
         };
-        DrawHintBox(dl, hintFont, hintSize, hint, P(214, 86), P(312, 122));
+        DrawHintBox(dl, hintFont, hintSize, hint, P(180, 14), P(312, 54));
 
         // Menu box.
-        const float top = 122f, rowH = 18f;
-        var boxMin = P(84, top);
+        const float top = 58f, rowH = 15.7f;
+        var boxMin = P(76, top);
         var boxMax = P(236, top + Items.Length * rowH + 8f);
         dl.AddRectFilled(boxMin, boxMax, BoxFill, 6f * unit);
         dl.AddRect(boxMin, boxMax, Lavender, 6f * unit, ImDrawFlags.None, 1.6f * unit);
 
         for (int i = 0; i < Items.Length; i++)
         {
-            var rowMin = P(88, top + 4f + i * rowH);
+            var rowMin = P(80, top + 4f + i * rowH);
             var rowMax = P(232, top + 4f + i * rowH + rowH - 1f);
             bool selected = i == _selected;
             if (selected) dl.AddRectFilled(rowMin, rowMax, SelectedFill, 2f * unit);
             string label = Items[i] switch
             {
                 Item.Start => "Start Game",
+                Item.DisplayMode => "Display Mode",
+                Item.Resolution => "Resolution",
+                Item.Graphics => "Graphics",
+                Item.Scaling => "Scaling",
+                Item.Controller => "Controller Test",
                 Item.FrameRate => "Frame Rate",
                 Item.ShowFps => "Show FPS",
                 Item.Debug => "Debug Mode",
                 _ => "Quit",
             };
-            var textPos = rowMin + new Vector2(5f * unit, 1.5f * unit);
+            var textPos = rowMin + new Vector2(5f * unit, 1.2f * unit);
             dl.AddText(itemFont, itemSize, textPos + new Vector2(1, 1) * unit, Shadow, label);
             dl.AddText(itemFont, itemSize, textPos, selected ? Yellow : White, label);
 
             string? value = Items[i] switch
             {
+                Item.DisplayMode => _prefs.Fullscreen ? "Fullscreen" : "Windowed",
+                Item.Resolution => $"{_prefs.Width}x{_prefs.Height}",
+                Item.Graphics => GraphicsName(_prefs.RenderScale),
+                Item.Scaling => _prefs.SmoothScaling ? "Smooth" : "Sharp",
+                Item.Controller => RecompOne.Runtime.Runtime.GetGamepadSnapshot().Connected ? "Connected" : "Not Found",
                 Item.FrameRate => _prefs.Fps == 60 ? "60 FPS" : "30 FPS",
                 Item.ShowFps => _prefs.ShowFps ? "On" : "Off",
                 Item.Debug => _prefs.Debug ? "On" : "Off",
                 _ => null,
             };
             if (value == null) continue;
-            DrawArrows(dl, P(200, top + 4f + i * rowH + 9f), unit, selected);
+            DrawArrows(dl, P(200, top + 4f + i * rowH + rowH / 2f), unit, selected);
             var valueMin = P(244, top + 4f + i * rowH + 1f);
-            var valueMax = P(304, top + 4f + i * rowH + 17f);
+            var valueMax = P(312, top + 4f + i * rowH + rowH - 1.5f);
             dl.AddRectFilled(valueMin, valueMax, ValueFill, 1.5f * unit);
             dl.AddRect(valueMin, valueMax, Rgba(150, 150, 160), 1.5f * unit, ImDrawFlags.None, 1.2f * unit);
-            dl.AddText(itemFont, itemSize * 0.9f, valueMin + new Vector2(5f * unit, 0.5f * unit), selected ? Yellow : White, value);
+            dl.AddText(itemFont, itemSize * 0.82f, valueMin + new Vector2(4f * unit, 0.8f * unit), selected ? Yellow : White, value);
         }
 
         // Footer legend.
@@ -238,6 +375,77 @@ public static class Launcher
 
         dl.AddText(hintFont, hintSize * 0.8f, P(6, 4), Rgba(200, 200, 210, 200), "NASCAR Rumble Native - fan project");
     }
+
+    private static void DrawControllerTest(
+        ImDrawListPtr dl, ImFontPtr itemFont, ImFontPtr hintFont, float unit, Vector2 origin)
+    {
+        Vector2 P(float x, float y) => origin + new Vector2(x, y) * unit;
+        var pad = RecompOne.Runtime.Runtime.GetGamepadSnapshot();
+        float titleSize = 15f * unit, textSize = 9.5f * unit, chipSize = 8.5f * unit;
+
+        dl.AddText(itemFont, titleSize, P(14, 14), Yellow, "CONTROLLER TEST");
+        string status = pad.Connected ? $"CONNECTED: {pad.Name}" : "NO CONTROLLER DETECTED";
+        dl.AddText(hintFont, textSize, P(14, 34), pad.Connected ? Rgba(120, 240, 140) : Rgba(255, 150, 80), status);
+        dl.AddText(hintFont, textSize, P(14, 48), White,
+            pad.Connected ? "Press buttons and move both sticks. Active inputs turn yellow."
+                          : "Connect an SDL-compatible gamepad; hot-plug detection is enabled.");
+
+        void Chip(string label, int input, float x, float y, float width)
+        {
+            bool active = pad.ActiveInputs.Contains(input);
+            var min = P(x, y);
+            var max = P(x + width, y + 15);
+            dl.AddRectFilled(min, max, active ? SelectedFill : ValueFill, 2f * unit);
+            dl.AddRect(min, max, active ? Yellow : Rgba(145, 145, 155), 2f * unit,
+                ImDrawFlags.None, 1.1f * unit);
+            var size = hintFont.CalcTextSizeA(chipSize, float.MaxValue, 0f, label);
+            dl.AddText(hintFont, chipSize,
+                new Vector2((min.X + max.X - size.X) / 2f, (min.Y + max.Y - size.Y) / 2f),
+                active ? Yellow : White, label);
+        }
+
+        dl.AddText(hintFont, textSize, P(14, 70), Lavender, "D-PAD");
+        Chip("UP", 11, 56, 66, 30); Chip("DOWN", 12, 89, 66, 38);
+        Chip("LEFT", 13, 130, 66, 36); Chip("RIGHT", 14, 169, 66, 42);
+
+        dl.AddText(hintFont, textSize, P(14, 91), Lavender, "FACE");
+        Chip("A / X", 0, 56, 87, 36); Chip("B / O", 1, 95, 87, 36);
+        Chip("X / SQ", 2, 134, 87, 40); Chip("Y / TR", 3, 177, 87, 40);
+
+        dl.AddText(hintFont, textSize, P(14, 112), Lavender, "TOP");
+        Chip("L1", 9, 56, 108, 27); Chip("R1", 10, 86, 108, 27);
+        Chip("L2", 100, 116, 108, 27); Chip("R2", 101, 146, 108, 27);
+        Chip("L3", 7, 176, 108, 27); Chip("R3", 8, 206, 108, 27);
+
+        dl.AddText(hintFont, textSize, P(14, 133), Lavender, "SYSTEM");
+        Chip("BACK", 4, 56, 129, 40); Chip("START", 6, 99, 129, 43);
+
+        string sticks = $"LEFT STICK  {pad.LeftX,+5:0.00;-0.00}  {pad.LeftY,+5:0.00;-0.00}"
+            + $"     RIGHT STICK  {pad.RightX,+5:0.00;-0.00}  {pad.RightY,+5:0.00;-0.00}";
+        dl.AddText(hintFont, textSize, P(14, 153), White, sticks);
+        string triggers = $"TRIGGERS    L2 {pad.LeftTrigger:0.00}    R2 {pad.RightTrigger:0.00}";
+        dl.AddText(hintFont, textSize, P(14, 168), White, triggers);
+
+        string active = pad.ActiveInputs.Length == 0
+            ? "Detected input: none"
+            : "Detected input: " + string.Join(", ", pad.ActiveInputs.Select(PadInputName));
+        string message = _controllerMessage.Length > 0 ? _controllerMessage : active;
+        DrawHintBox(dl, hintFont, textSize, message, P(14, 184), P(306, 211));
+
+        string legend = "ENTER  Auto Map Pad 1        ESC  Back";
+        var legendSize = hintFont.CalcTextSizeA(textSize, float.MaxValue, 0f, legend);
+        dl.AddText(hintFont, textSize, P(160, 222) - new Vector2(legendSize.X / 2f, 0), Yellow, legend);
+    }
+
+    private static string PadInputName(int input) => input switch
+    {
+        0 => "A/Cross", 1 => "B/Circle", 2 => "X/Square", 3 => "Y/Triangle",
+        4 => "Back", 5 => "Guide", 6 => "Start", 7 => "L3", 8 => "R3",
+        9 => "L1", 10 => "R1", 11 => "D-Up", 12 => "D-Down", 13 => "D-Left", 14 => "D-Right",
+        100 => "L2", 101 => "R2", 102 => "LStick Left", 103 => "LStick Right",
+        104 => "LStick Up", 105 => "LStick Down", 106 => "RStick Left", 107 => "RStick Right",
+        108 => "RStick Up", 109 => "RStick Down", _ => $"Button {input}",
+    };
 
     private static void DrawArrows(ImDrawListPtr dl, Vector2 center, float unit, bool selected)
     {
@@ -272,6 +480,15 @@ public static class Launcher
             Console.Error.WriteLine($"[launcher] ignoring {PrefsFile}: {error.Message}");
         }
         return new Prefs();
+    }
+
+    private static Prefs Normalize(Prefs prefs)
+    {
+        if (!Resolutions.Any(r => r.Width == prefs.Width && r.Height == prefs.Height))
+            (prefs.Width, prefs.Height) = (1280, 720);
+        if (prefs.RenderScale is not (1 or 2 or 4)) prefs.RenderScale = 4;
+        if (prefs.Fps is not (30 or 60)) prefs.Fps = 30;
+        return prefs;
     }
 
     private static void Save(Prefs prefs)

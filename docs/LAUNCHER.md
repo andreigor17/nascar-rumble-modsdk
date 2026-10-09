@@ -1,8 +1,9 @@
 # Lançador do port nativo
 
 Menu de abertura do `NascarRumbleNative`, desenhado no mesmo estilo dos menus do jogo, para escolher
-como o jogo vai rodar antes do boot: **30 ou 60 fps** e **modo debug**. Objetivo: o mantenedor (e eu)
-testar o que estamos construindo sem variáveis de ambiente nem terminal.
+como o jogo vai rodar antes do boot: **modo de tela, resolução, qualidade gráfica, controle,
+30/60 fps** e **modo debug**. Objetivo: o mantenedor (e eu) testar o que estamos construindo sem
+variáveis de ambiente nem terminal.
 
 ## Análise
 
@@ -53,22 +54,33 @@ nosso host: traces `RUMBLE_*` (`NATIVE_TRACE`, `LAP_LOG`, `CAR_DUMP`, `DT_PROBE`
 | Item | Valores | Efeito |
 |---|---|---|
 | Start Game | — | inicia o boot com as opções escolhidas |
+| Display Mode | `Windowed` (padrão) / `Fullscreen` | abre em janela ou ocupa a tela; `F11` ainda alterna durante o jogo |
+| Resolution | `960×720`, `1280×720` (padrão), `1600×900`, `1920×1080`, `2560×1440` | tamanho da janela; em fullscreen, é o tamanho restaurado ao voltar para janela |
+| Graphics | `Original` (1×), `Balanced` (2×), `Enhanced` (4×, padrão) | escala interna da VRAM/render 3D; não muda física nem proporção |
+| Scaling | `Smooth` (padrão) / `Sharp` | filtro linear ou nearest-neighbor ao ampliar a imagem final |
+| Controller Test | `Connected` / `Not Found` | abre o diagnóstico ao vivo do Pad 1 e permite aplicar o mapeamento SDL padrão |
 | Frame Rate | `30` (padrão) / `60` | ritmo da corrida (`NativeHooks.RaceFrameMs`); 60 marcado como experimental |
 | Show FPS | `Off` (padrão) / `On` | contador de quadros do jogo no canto superior direito da imagem 4:3 |
 | Debug Mode | `Off` / `On` | tabela acima |
 | Quit | — | fecha |
 
 As escolhas ficam salvas em `launcher.json` (ao lado do `settings.json`, ignorado pelo Git).
+Preferências antigas continuam válidas: os novos campos recebem os padrões acima durante a
+desserialização. Valores de resolução/escala fora da lista são normalizados antes de criar a janela.
 Controles: os mesmos do jogo (teclado mapeado e gamepad, via `Controller.State`): ↑↓ seleciona,
 ←→ muda, ✕/Start confirma. Automação: `RUMBLE_LAUNCHER=0` pula o lançador (os roteiros de medição
-continuam funcionando); variáveis `RUMBLE_*` explícitas continuam valendo e têm prioridade.
+continuam funcionando); `RUMBLE_CONTROLLER_TEST=1` abre diretamente o diagnóstico do controle;
+variáveis `RUMBLE_*` explícitas continuam valendo e têm prioridade.
 
 ## Implementação
 
-1. **RecompOne (patch genérico, pequeno):** `Runtime.PreBoot` (callback após validar o disco),
+1. **RecompOne (patch genérico, pequeno):** `Runtime.ConfigureStartupDisplay` (aplica tamanho,
+   fullscreen, escala e filtro antes de criar a janela), `Runtime.ApplyDisplaySettings` (confirma
+   as escolhas antes do primeiro quadro), `Runtime.PreBoot` (callback após validar o disco),
    `Runtime.PumpUi()` (processa janela/entrada/render sem o jogo), `Runtime.UiOverlay` (callback
    ImGui desenhado por cima de tudo), `Runtime.CreateUiTexture(rgba,w,h)`, `Runtime.UiFonts`
-   (fontes extras carregadas na criação do ImGui) e `Runtime.SetTopBarVisible(bool)`.
+   (fontes extras carregadas na criação do ImGui), `Runtime.GetGamepadSnapshot` (estado bruto
+   padronizado pelo SDL), `Runtime.ApplyStandardGamepadMapping` e `Runtime.TopBarOverride`.
 2. **Host:** `LscImage` (decodificador BS v2), `Launcher` (estado, entrada, desenho no estilo do
    jogo, preferências), `DebugHud` (overlay da corrida), `NativeHooks` com ritmo configurável.
 3. **Validação:** decodificador contra `jpsxdec`; lançador por captura de tela da janela; boot a
@@ -98,6 +110,28 @@ V1 implementada e validada:
 - Patch do RecompOne: `Runtime.PreBoot`, `PumpUi`, `UiOverlay`, `UiFontRequests/UiFonts`,
   `CreateUiTexture`, `TopBarOverride`, `WindowPixelSize`.
 - Fonte: Arial Narrow Bold (sistema macOS); a fonte original (`Cfnt`) fica para a V2.
+
+## Opções de vídeo (2026-10-08)
+
+O lançador agora carrega as preferências de vídeo **antes** de `Runtime.Initialize`, portanto a
+janela já nasce no tamanho e modo escolhidos. No início do jogo ele confirma as opções e, caso a
+escala interna tenha mudado ainda no lançador, recria o backend OpenGL antes do primeiro quadro.
+A apresentação continua calculando a área pelo aspecto do display do jogo, sem esticar 4:3 para
+16:9. O patch canônico do RecompOne foi aplicado sobre um checkout limpo e comparado com
+`tools/RecompOne`; os fontes resultantes são idênticos.
+
+## Teste e mapeamento de controle (2026-10-08)
+
+`Controller Test` informa se o Pad 1 foi reconhecido e mostra o nome retornado pelo SDL. A tela de
+diagnóstico acende, em tempo real, direcionais, botões de face, ombros, gatilhos, Start/Back e
+cliques dos analógicos; também exibe os valores contínuos dos dois sticks e dos gatilhos. É possível
+conectar ou remover o controle com o launcher aberto.
+
+`Enter` aplica o perfil automático do SDL ao Pad 1 e salva em `settings.json`; `Esc` volta. As ações
+ficam no teclado para deixar **todos** os botões físicos, inclusive A/B/Start, livres para diagnóstico
+sem sair da tela nem alterar o perfil por acidente. O perfil cobre os 16 botões do PlayStation,
+aceita tanto D-pad quanto analógico esquerdo para direção e não é aplicado sem ação do usuário,
+preservando configurações personalizadas.
 
 ## Show FPS (2026-10-08)
 

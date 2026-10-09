@@ -32,6 +32,7 @@ if (Environment.GetEnvironmentVariable("RUMBLE_LAUNCHER") == "0")
 }
 else
 {
+    NascarRumble.Host.Launcher.PrepareStartupDisplay();
     NascarRumble.Host.Launcher.RequestFonts();
     RecompOne.Runtime.Runtime.PreBoot = NascarRumble.Host.Launcher.Run;
 }

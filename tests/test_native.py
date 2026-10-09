@@ -102,13 +102,29 @@ class NativeBuildTests(unittest.TestCase):
         )
         for hook in ("PreBoot?.Invoke();", "public static void PumpUi()",
                      "Runtime.UiOverlay?.Invoke();", "CreateRgbaTexture",
-                     "Runtime.TopBarOverride ?? !ConfigManager.View.HideTopBar"):
+                     "Runtime.TopBarOverride ?? !ConfigManager.View.HideTopBar",
+                     "public static void ConfigureStartupDisplay(",
+                     "public static void ApplyDisplaySettings(",
+                     "public static GamepadSnapshot GetGamepadSnapshot(",
+                     "public static bool ApplyStandardGamepadMapping(",
+                     "public static bool SmoothScaling { get; set; } = true;"):
             self.assertIn(hook, text)
         host = ROOT / "recompone" / "host"
         program = (host / "Program.cs").read_text(encoding="utf-8")
         self.assertIn('GetEnvironmentVariable("RUMBLE_LAUNCHER") == "0"', program)
         self.assertIn("Runtime.PreBoot = NascarRumble.Host.Launcher.Run", program)
+        self.assertIn("Launcher.PrepareStartupDisplay()", program)
         launcher = (host / "Launcher.cs").read_text(encoding="utf-8")
+        for option in ("DisplayMode", "Resolution", "Graphics", "Scaling", "Controller"):
+            self.assertIn(option, launcher)
+        for preference in ("Width", "Height", "Fullscreen", "RenderScale", "SmoothScaling"):
+            self.assertIn(f"public {'bool' if preference in ('Fullscreen', 'SmoothScaling') else 'int'} {preference}", launcher)
+        self.assertIn("Runtime.ConfigureStartupDisplay(", launcher)
+        self.assertIn("Runtime.ApplyDisplaySettings(", launcher)
+        self.assertIn("Runtime.GetGamepadSnapshot()", launcher)
+        self.assertIn("Runtime.ApplyStandardGamepadMapping()", launcher)
+        self.assertIn("Standard SDL mapping saved for Pad 1.", launcher)
+        self.assertIn('GetEnvironmentVariable("RUMBLE_CONTROLLER_TEST") == "1"', launcher)
         # Title art comes from the user's disc at run time; no game asset is versioned.
         self.assertIn('ReadFile("CW/FEND/FELD.LSC")', launcher)
         self.assertTrue((host / "LscImage.cs").is_file())

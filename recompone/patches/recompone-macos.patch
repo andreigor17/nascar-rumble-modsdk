@@ -175,7 +175,7 @@ index 18deeb2..841e9de 100644
                  }
                  else if (_index == 1)
 diff --git a/RecompOne.Runtime/Gpu/Hle/Gl/GlBackend.cs b/RecompOne.Runtime/Gpu/Hle/Gl/GlBackend.cs
-index c3792b6..9154f98 100644
+index c3792b6..1461bd0 100644
 --- a/RecompOne.Runtime/Gpu/Hle/Gl/GlBackend.cs
 +++ b/RecompOne.Runtime/Gpu/Hle/Gl/GlBackend.cs
 @@ -36,6 +36,50 @@ public sealed class GlBackend : IGpuBackend
@@ -322,6 +322,15 @@ index c3792b6..9154f98 100644
          _count = 0;
      }
  
+@@ -507,7 +566,7 @@ public sealed class GlBackend : IGpuBackend
+         int presentScale = GpuHle.NativeResolution ? 1 : GlVram.Scale;
+         int fbW = w1x * presentScale;
+         int fbH = h1x * presentScale;
+-        EnsurePresentSize(fbW, fbH, GpuHle.NativeResolution);
++        EnsurePresentSize(fbW, fbH, nearest: !GpuHle.SmoothScaling);
+ 
+         _gl.BindFramebuffer(FramebufferTarget.Framebuffer, _presentFbo);
+         _gl.Viewport(0, 0, (uint)fbW, (uint)fbH);
 diff --git a/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs b/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
 index 169e2b3..bd77e49 100644
 --- a/RecompOne.Runtime/Gpu/Hle/Gl/GlVram.cs
@@ -406,6 +415,18 @@ index 169e2b3..bd77e49 100644
          if (_tex != 0) _gl.DeleteTexture(_tex);
          if (_stageTex != 0) _gl.DeleteTexture(_stageTex);
          if (_scratchTex != 0) _gl.DeleteTexture(_scratchTex);
+diff --git a/RecompOne.Runtime/Gpu/Hle/GpuHle.cs b/RecompOne.Runtime/Gpu/Hle/GpuHle.cs
+index 1686721..797bca9 100644
+--- a/RecompOne.Runtime/Gpu/Hle/GpuHle.cs
++++ b/RecompOne.Runtime/Gpu/Hle/GpuHle.cs
+@@ -8,6 +8,7 @@ public static class GpuHle
+     public static float WideAspect { get; set; }
+     public static float OutputAspect { get; set; } = 4f / 3f;
+     public static bool NativeResolution { get; set; }
++    public static bool SmoothScaling { get; set; } = true;
+     public static float TargetAspect { get; set; } = 4f / 3f;
+     public const float BaseAspect = 4f / 3f;
+ 
 diff --git a/RecompOne.Runtime/Hardware/Gte.cs b/RecompOne.Runtime/Hardware/Gte.cs
 index e13c28a..2aa9976 100644
 --- a/RecompOne.Runtime/Hardware/Gte.cs
@@ -476,11 +497,73 @@ index fff4026..9a0489a 100644
          byte hdr = Ram[addr];
          byte flags = Ram[(addr + 1) & (RamSize - 1)];
  
+diff --git a/RecompOne.Runtime/Host/InputManager.cs b/RecompOne.Runtime/Host/InputManager.cs
+index 928d144..17b4a80 100644
+--- a/RecompOne.Runtime/Host/InputManager.cs
++++ b/RecompOne.Runtime/Host/InputManager.cs
+@@ -1,4 +1,5 @@
+ using System.Numerics;
++using System.Runtime.InteropServices;
+ using Silk.NET.Input;
+ using Silk.NET.SDL;
+ using RecompOne.Runtime.Config;
+@@ -72,6 +73,41 @@ internal static unsafe class InputManager
+ 
+     public static bool IsPadConnected(int pad) => pad == 0 ? _pad0 != null : _pad1 != null;
+ 
++    public static GamepadSnapshot GetGamepadSnapshot(int pad = 0)
++    {
++        var ctrl = pad == 0 ? _pad0 : _pad1;
++        if (_sdl == null || ctrl == null) return GamepadSnapshot.Disconnected;
++
++        var active = new List<int>();
++        for (int b = 0; b < (int)GameControllerButton.Max; b++)
++            if (_sdl.GameControllerGetButton(ctrl, (GameControllerButton)b) != 0)
++                active.Add(b);
++        if (Pressed(ctrl, LeftTrigger)) active.Add(LeftTrigger);
++        if (Pressed(ctrl, RightTrigger)) active.Add(RightTrigger);
++        for (int b = LeftStickLeft; b <= RightStickDown; b++)
++            if (Pressed(ctrl, b)) active.Add(b);
++
++        var namePtr = (nint)_sdl.GameControllerName(ctrl);
++        string name = namePtr == 0 ? "Gamepad" : Marshal.PtrToStringUTF8(namePtr) ?? "Gamepad";
++        return new GamepadSnapshot(
++            true, name, [.. active],
++            NormalizeAxis(_sdl.GameControllerGetAxis(ctrl, GameControllerAxis.Leftx)),
++            NormalizeAxis(_sdl.GameControllerGetAxis(ctrl, GameControllerAxis.Lefty)),
++            NormalizeAxis(_sdl.GameControllerGetAxis(ctrl, GameControllerAxis.Rightx)),
++            NormalizeAxis(_sdl.GameControllerGetAxis(ctrl, GameControllerAxis.Righty)),
++            NormalizeTrigger(_sdl.GameControllerGetAxis(ctrl, GameControllerAxis.Triggerleft)),
++            NormalizeTrigger(_sdl.GameControllerGetAxis(ctrl, GameControllerAxis.Triggerright)));
++    }
++
++    public static bool ApplyStandardGamepadMapping(int pad = 0)
++    {
++        if (!IsPadConnected(pad)) return false;
++        if (pad == 0) ConfigManager.Game.Pad = new GamepadBindings();
++        else ConfigManager.Game.Pad2 = new GamepadBindings();
++        ConfigManager.SaveGame();
++        return true;
++    }
++
+     public static bool IsKeyDown(Key k) => _keyboard?.IsKeyPressed(k) ?? false;
+ 
+     public static void Poll()
+@@ -294,6 +330,9 @@ internal static unsafe class InputManager
+         return (byte)Math.Clamp((int)MathF.Round((f + 1.0f) * 127.5f), 0, 255);
+     }
+ 
++    static float NormalizeAxis(short axis) => Math.Clamp(axis / 32768.0f, -1.0f, 1.0f);
++    static float NormalizeTrigger(short axis) => Math.Clamp(axis / 32767.0f, 0.0f, 1.0f);
++
+     public static void SetRumble(byte large, byte small)
+     {
+         if (_sdl == null || _pad0 == null) return;
 diff --git a/RecompOne.Runtime/Host/Window/HostWindow.cs b/RecompOne.Runtime/Host/Window/HostWindow.cs
-index 4a3da3d..1e320c3 100644
+index 4a3da3d..825514f 100644
 --- a/RecompOne.Runtime/Host/Window/HostWindow.cs
 +++ b/RecompOne.Runtime/Host/Window/HostWindow.cs
-@@ -42,6 +42,9 @@ internal static class HostWindow
+@@ -42,15 +42,23 @@ internal static class HostWindow
  
          try
          {
@@ -489,12 +572,16 @@ index 4a3da3d..1e320c3 100644
 +                : new APIVersion(4, 5);
              var options = WindowOptions.Default with
              {
-                 Size = new Vector2D<int>(1280, 720),
-@@ -50,7 +53,11 @@ internal static class HostWindow
+-                Size = new Vector2D<int>(1280, 720),
++                Size = new Vector2D<int>(Runtime.StartupWindowWidth ?? 1280, Runtime.StartupWindowHeight ?? 720),
+                 Title = title,
+                 VSync = false,
                  UpdatesPerSecond = 0,
                  FramesPerSecond = 0,
-                 WindowState = ConfigManager.View.Fullscreen ? WindowState.Fullscreen : WindowState.Normal,
+-                WindowState = ConfigManager.View.Fullscreen ? WindowState.Fullscreen : WindowState.Normal,
 -                API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(4, 5)),
++                WindowState = (Runtime.StartupFullscreen ?? ConfigManager.View.Fullscreen)
++                    ? WindowState.Fullscreen : WindowState.Normal,
 +                API = new GraphicsAPI(
 +                    ContextAPI.OpenGL,
 +                    ContextProfile.Core,
@@ -503,7 +590,7 @@ index 4a3da3d..1e320c3 100644
              };
              _window = Silk.NET.Windowing.Window.Create(options);
              _window.Load += OnLoad;
-@@ -89,6 +96,30 @@ internal static class HostWindow
+@@ -89,6 +97,34 @@ internal static class HostWindow
          _window.DoRender();
      }
  
@@ -518,6 +605,10 @@ index 4a3da3d..1e320c3 100644
 +
 +    internal static (int Width, int Height) FramebufferSize =>
 +        _window == null ? (0, 0) : (_window.FramebufferSize.X, _window.FramebufferSize.Y);
++
++    internal static GamepadSnapshot GetGamepadSnapshot(int pad) => InputManager.GetGamepadSnapshot(pad);
++
++    internal static bool ApplyStandardGamepadMapping(int pad) => InputManager.ApplyStandardGamepadMapping(pad);
 +
 +    internal static nint CreateRgbaTexture(byte[] rgba, int width, int height)
 +    {
@@ -534,7 +625,44 @@ index 4a3da3d..1e320c3 100644
      internal static void Pump()
      {
          if (_headless || _window == null) return;
-@@ -114,6 +145,14 @@ internal static class HostWindow
+@@ -110,10 +146,51 @@ internal static class HostWindow
+         _window.WindowState = on ? WindowState.Fullscreen : WindowState.Normal;
+     }
+ 
++    internal static void ApplyDisplaySettings(int width, int height, bool fullscreen, int renderScale, bool smoothScaling)
++    {
++        width = Math.Clamp(width, 640, 7680);
++        height = Math.Clamp(height, 480, 4320);
++        renderScale = renderScale is 1 or 2 or 4 ? renderScale : 4;
++
++        ConfigManager.View.Fullscreen = fullscreen;
++        if (_window != null)
++        {
++            // Set the requested windowed size before entering fullscreen so leaving fullscreen
++            // returns to the launcher's selected dimensions.
++            _window.Size = new Vector2D<int>(width, height);
++            SetFullscreen(fullscreen);
++        }
++
++        Hle.GpuHle.SmoothScaling = smoothScaling;
++        Hle.GpuHle.NativeResolution = renderScale == 1;
++
++        if (_gl == null || renderScale == Hle.GlVram.Scale) return;
++        if (_gpu != null)
++        {
++            Console.Error.WriteLine("[Host] render scale can only change before the game starts");
++            return;
++        }
++
++        _glBackend?.Dispose();
++        Hle.GlVram.Scale = renderScale;
++        _glBackend = new Hle.GlBackend(_gl);
++        _glBackend.InitGl();
++        Hle.GpuHle.Active = _glBackend.Ready;
++        Hle.GpuHle.Backend = _glBackend;
++    }
++
+     public static bool IsKeyDown(Key k) => InputManager.IsKeyDown(k);
  
      public static void RequestDiscPath() => _discPicker?.Show();
  
@@ -549,7 +677,25 @@ index 4a3da3d..1e320c3 100644
      public static void WaitForValidDisc() // wait for disc path to be valid before running it!!
      {
          if (_headless || _window == null) return;
-@@ -198,6 +237,13 @@ internal static class HostWindow
+@@ -153,12 +230,15 @@ internal static class HostWindow
+         _vramTex= CreateTexture(_gl);
+         _ramTex = CreateTexture(_gl);
+ 
+-        Hle.GlVram.Scale = ConfigManager.View.NativeResolution ? 1 : 4;
++        Hle.GlVram.Scale = Runtime.StartupRenderScale
++            ?? (ConfigManager.View.NativeResolution ? 1 : 4);
+         _glBackend = new Hle.GlBackend(_gl);
+         _glBackend.InitGl();
+         Hle.GpuHle.Active = _glBackend.Ready;
+         Hle.GpuHle.Backend = _glBackend;
+-        Hle.GpuHle.NativeResolution = ConfigManager.View.NativeResolution;
++        Hle.GpuHle.NativeResolution = Hle.GlVram.Scale == 1;
++        Hle.GpuHle.SmoothScaling = Runtime.StartupSmoothScaling
++            ?? !Hle.GpuHle.NativeResolution;
+ 
+         _imgui = new ImGuiController(_gl, _window, input, null, ConfigureImGui);
+ 
+@@ -198,6 +278,13 @@ internal static class HostWindow
  
          if (Config.ConfigManager.ApplyImGuiLayout())
              _layoutPending = false;
@@ -563,7 +709,7 @@ index 4a3da3d..1e320c3 100644
      }
  
      static void OnRender(double dt)
-@@ -247,7 +293,7 @@ internal static class HostWindow
+@@ -247,7 +334,7 @@ internal static class HostWindow
              if (_ramReady) FlushRamTexture(gl);
          }
  
@@ -572,7 +718,7 @@ index 4a3da3d..1e320c3 100644
              MainMenuBar.Draw();
  
          DrawDockspace();
-@@ -256,6 +302,7 @@ internal static class HostWindow
+@@ -256,6 +343,7 @@ internal static class HostWindow
          Modding.ModLoadingPopup.Draw();
          NoticePopup.Draw();
          if (StartupNotice.NeedsAck) StartupNotice.Draw();
@@ -680,10 +826,55 @@ index c1476f7..a023923 100644
  
      private uint Hw32(uint phys)
 diff --git a/RecompOne.Runtime/Runtime.cs b/RecompOne.Runtime/Runtime.cs
-index bcefd60..0dc1bf6 100644
+index bcefd60..e811845 100644
 --- a/RecompOne.Runtime/Runtime.cs
 +++ b/RecompOne.Runtime/Runtime.cs
-@@ -39,7 +39,39 @@ public static class Runtime
+@@ -7,6 +7,20 @@ namespace RecompOne.Runtime;
+ 
+ public enum RunMode { Retail, Devkit }
+ 
++public readonly record struct GamepadSnapshot(
++    bool Connected,
++    string Name,
++    int[] ActiveInputs,
++    float LeftX,
++    float LeftY,
++    float RightX,
++    float RightY,
++    float LeftTrigger,
++    float RightTrigger)
++{
++    public static GamepadSnapshot Disconnected => new(false, "", [], 0f, 0f, 0f, 0f, 0f, 0f);
++}
++
+ public static class Runtime
+ {
+     public static CpuContext? Cpu { get; private set; }
+@@ -18,6 +32,23 @@ public static class Runtime
+     public static RunMode Mode { get; private set; } = RunMode.Retail;
+     public static void SetMode(RunMode mode) => Mode = mode; //devkit vs retail, devkits reads from sim and has more ram
+     public static string CdPath => Config.ConfigManager.Game.CdPath;
++
++    // Optional host-display overrides supplied before Initialize. Keeping these nullable preserves
++    // RecompOne's existing interface.ini behaviour for hosts that do not provide a launcher.
++    public static int? StartupWindowWidth { get; private set; }
++    public static int? StartupWindowHeight { get; private set; }
++    public static bool? StartupFullscreen { get; private set; }
++    public static int? StartupRenderScale { get; private set; }
++    public static bool? StartupSmoothScaling { get; private set; }
++
++    public static void ConfigureStartupDisplay(int width, int height, bool fullscreen, int renderScale, bool smoothScaling)
++    {
++        StartupWindowWidth = Math.Clamp(width, 640, 7680);
++        StartupWindowHeight = Math.Clamp(height, 480, 4320);
++        StartupFullscreen = fullscreen;
++        StartupRenderScale = renderScale is 1 or 2 or 4 ? renderScale : 4;
++        StartupSmoothScaling = smoothScaling;
++    }
+     
+     public static Config.ViewConfig View => Config.ConfigManager.View;
+     public static void SaveView() => Config.ConfigManager.SaveView(Host.Window.PanelManager.Panels);
+@@ -39,7 +70,55 @@ public static class Runtime
          }
      }
  
@@ -721,10 +912,26 @@ index bcefd60..0dc1bf6 100644
 +
 +    /// <summary>Framebuffer size of the main window, in pixels.</summary>
 +    public static (int Width, int Height) WindowPixelSize => HostWindow.FramebufferSize;
++
++    /// <summary>Returns the current physical state of a host keyboard key.</summary>
++    public static bool IsKeyDown(Silk.NET.Input.Key key) => HostWindow.IsKeyDown(key);
++
++    /// <summary>Raw standardized SDL state for launcher diagnostics and remapping.</summary>
++    public static GamepadSnapshot GetGamepadSnapshot(int pad = 0) => HostWindow.GetGamepadSnapshot(pad);
++
++    /// <summary>Maps a connected controller's standardized SDL inputs to every PlayStation button.</summary>
++    public static bool ApplyStandardGamepadMapping(int pad = 0) => HostWindow.ApplyStandardGamepadMapping(pad);
++
++    /// <summary>
++    /// Applies launcher display choices. Render scale can only be rebuilt before the first game
++    /// frame; window size, fullscreen and presentation filtering remain safe at any time.
++    /// </summary>
++    public static void ApplyDisplaySettings(int width, int height, bool fullscreen, int renderScale, bool smoothScaling) =>
++        HostWindow.ApplyDisplaySettings(width, height, fullscreen, renderScale, smoothScaling);
      
      public static void ShowNotice(string message) => Host.Window.NoticePopup.Show(message);
      public static void SetStartupNotice(string message, string title = "Notice", string ackKey = "StartupNoticeAck") => Host.Window.StartupNotice.Set(message, title, ackKey);
-@@ -56,10 +88,22 @@ public static class Runtime
+@@ -56,10 +135,22 @@ public static class Runtime
          Audio.Attach(Spu);
          FrameClock.Throttle();
          Sdk.LibCd.Tick();
