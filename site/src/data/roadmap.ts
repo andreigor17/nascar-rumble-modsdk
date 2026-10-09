@@ -12,7 +12,7 @@ export const ROADMAP: Phase[] = [
   { n: 5, status: 'done', pt: 'Corrida completa', en: 'Complete race',
     pt_d: 'Corrida do grid à bandeirada com física e IA conferidas contra o PS1; campeonato completo com pontos e desbloqueios; 30 ou 60 fps.', en_d: 'Grid-to-flag race with physics and AI checked against the PS1; full championship with points and unlocks; 30 or 60 fps.' },
   { n: 6, status: 'doing', pt: 'Paridade e estabilidade', en: 'Parity and stability',
-    pt_d: 'Single Race, Championship, Showdown, Time Trial e Showcase validados. Faltam memory card, 2 jogadores e a aderência da arrancada a 60 fps.', en_d: 'Single Race, Championship, Showdown, Time Trial and Showcase validated. Memory card, 2 players and 60 fps launch grip remain.' },
+    pt_d: 'Single Race, Championship, Showdown, Time Trial, Showcase e memory card validados. Faltam 2 jogadores e a aderência da arrancada a 60 fps.', en_d: 'Single Race, Championship, Showdown, Time Trial, Showcase and memory card validated. 2 players and 60 fps launch grip remain.' },
   { n: 7, status: 'todo', pt: 'Pacotes por plataforma', en: 'Platform packages',
     pt_d: 'Aplicativo macOS e builds Windows/Linux usando a cópia legal do usuário.', en_d: 'macOS app and Windows/Linux builds using the user’s legal copy.' },
   { n: 8, status: 'todo', pt: 'Melhorias e mods', en: 'Enhancements and mods',

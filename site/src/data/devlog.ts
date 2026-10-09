@@ -12,6 +12,37 @@ export interface DevlogEntry {
 
 export const DEVLOG: DevlogEntry[] = [
   {
+    slug: 'sessao-017-memory-card',
+    date: '2026-10-08',
+    session: '017',
+    tag: 'Port nativo',
+    image: '/shots/memcard-saved.jpg',
+    pt: {
+      title: 'Memory card: o progresso agora fica salvo',
+      summary:
+        'Salvar depois da corrida não trava mais em “Checking...”. O port grava no memory card virtual, mostra “Saved Successfully” e, num novo boot, carrega o save de volta com recordes e progresso.',
+      points: [
+        'O driver de memory card do jogo funciona por eventos da BIOS: um tipo avisa que o cartão respondeu (SwCARD) e outro que um setor de 128 bytes foi transferido (HwCARD). O runtime disparava os dois em toda operação, e o jogo entende um SwCARD no meio de uma leitura ou gravação como “aborta e começa de novo”. Resultado: a leitura do diretório nunca terminava e a tela ficava em “Checking...”.',
+        'A referência foi o OpenBIOS, a BIOS do emulador PCSX-Redux: leitura e gravação de setor geram só HwCARD, e a consulta ao cartão gera SwCARD e depois HwCARD. Isso também explica um detalhe do jogo: ele ignora o primeiro HwCARD de cada transferência, justamente o que chega logo depois do SwCARD que a iniciou.',
+        'Segundo ajuste: no console cada setor leva alguns milissegundos, e a tela de Load só percebe o fim do carregamento vendo o status “carregando” mudar entre uma consulta e outra. No port as 60 leituras terminavam no mesmo quadro e a tela ficava em “Loading...” para sempre; agora cada setor conclui em um quadro.',
+        'Testado no port: salvar num cartão vazio após uma Single Race, sobrescrever um save existente e carregar em Game Options › Load and Save. O recorde de Copper Canyon da sessão anterior volta depois do Load.',
+        'O save ocupa 1 bloco (8 KB) no memory card virtual, com o nome original BASLUS-01068NASCRMBL.',
+      ],
+    },
+    en: {
+      title: 'Memory card: progress now gets saved',
+      summary:
+        'Saving after a race no longer hangs at “Checking...”. The port writes to the virtual memory card, shows “Saved Successfully” and, on a new boot, loads the save back with records and progress.',
+      points: [
+        'The game’s memory card driver runs on BIOS events: one kind says the card answered (SwCARD), another that a 128-byte sector was transferred (HwCARD). The runtime fired both for every operation, and the game reads a SwCARD in the middle of a read or write as “abort and start over”. So the directory read never finished and the screen stayed at “Checking...”.',
+        'The reference was OpenBIOS, the BIOS of the PCSX-Redux emulator: sector reads and writes raise only HwCARD, and the card query raises SwCARD and then HwCARD. That also explains a detail in the game: it ignores the first HwCARD of every transfer, which is exactly the one arriving right after the SwCARD that started it.',
+        'Second fix: on the console each sector takes a few milliseconds, and the Load screen only notices the load is done by seeing the “loading” status change between polls. In the port all 60 reads finished within one frame and the screen stayed at “Loading...” forever; now each sector completes in one frame.',
+        'Tested in the port: saving to a blank card after a Single Race, overwriting an existing save, and loading from Game Options › Load and Save. The Copper Canyon record from the previous session comes back after Load.',
+        'The save takes 1 block (8 KB) on the virtual memory card, under the original name BASLUS-01068NASCRMBL.',
+      ],
+    },
+  },
+  {
     slug: 'sessao-016-campeonato-completo',
     date: '2026-10-08',
     session: '016',
